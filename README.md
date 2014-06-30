@@ -37,5 +37,7 @@ This module should contain the following:
  * Each entity must support customer comments.
  * Each EAV entity must have a section for managing attributes (similar to product attribtues).
  
-After this is complete (or almost) it will become the base source for the Ultimate Module Creator 2.0 which will be a version for Magento 2.0 of the <a href="https://github.com/tzyganu/UMC1.9">Ultimate Module Creator for Magento 1.7+</a>.
+After this is complete (or almost) it will become the base source for the Ultimate Module Creator 2.0 which will be a version for Magento 2.0 of the <a href="https://github.com/tzyganu/UMC1.9">Ultimate Module Creator for Magento 1.7+</a>. 
+
+Any other ideas and pieces of code are welcomed even encouraged.
  
