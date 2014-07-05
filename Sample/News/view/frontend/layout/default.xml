@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_single.xsd">
+    <referenceBlock name="top.links">
+        <block class="Sample\News\Block\Article\Link" name="sample-news-article">
+            <arguments>
+                <argument name="label" xsi:type="string">Articles</argument>
+            </arguments>
+        </block>
+    </referenceBlock>
+</layout>

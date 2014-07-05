@@ -1,0 +1,5 @@
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_single.xsd">
+    <container name="root" label="Root" output="1">
+        <block class="Sample\News\Block\Adminhtml\Catalog\Product\Edit\Tab\Article" name="product.edit.tab.article"/>
+    </container>
+</layout>

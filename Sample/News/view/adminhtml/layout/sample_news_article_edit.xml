@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="editor"/>
+    <referenceBlock name="head">
+        <block class="Magento\Theme\Block\Html\Head\Css" name="jquery-fileuploader-css-jquery-fileupload-ui-css">
+            <arguments>
+                <argument name="file" xsi:type="string">jquery/fileUploader/css/jquery.fileupload-ui.css</argument>
+            </arguments>
+        </block>
+        <block class="Magento\Theme\Block\Html\Head\Script" name="jquery-fileuploader-jquery-iframe-transport-js">
+            <arguments>
+                <argument name="file" xsi:type="string">jquery/fileUploader/jquery.iframe-transport.js</argument>
+            </arguments>
+        </block>
+        <block class="Magento\Theme\Block\Html\Head\Script" name="jquery-fileuploader-jquery-fileupload-js">
+            <arguments>
+                <argument name="file" xsi:type="string">jquery/fileUploader/jquery.fileupload.js</argument>
+            </arguments>
+        </block>
+        <block class="Magento\Theme\Block\Html\Head\Script" name="jquery-fileuploader-load-image-min-js">
+            <arguments>
+                <argument name="file" xsi:type="string">jquery/fileUploader/load-image.min.js</argument>
+            </arguments>
+        </block>
+        <block class="Magento\Theme\Block\Html\Head\Script" name="jquery-fileuploader-canvas-to-blob-min-js">
+            <arguments>
+                <argument name="file" xsi:type="string">jquery/fileUploader/canvas-to-blob.min.js</argument>
+            </arguments>
+        </block>
+        <block class="Magento\Theme\Block\Html\Head\Script" name="jquery-fileuploader-jquery-fileupload-fp-js">
+            <arguments>
+                <argument name="file" xsi:type="string">jquery/fileUploader/jquery.fileupload-fp.js</argument>
+            </arguments>
+        </block>
+    </referenceBlock>
+    <update handle="editor"/>
+    <referenceContainer name="content">
+        <block class="Sample\News\Block\Adminhtml\Article\Edit" name="sample_news_article_edit"/>
+    </referenceContainer>
+    <referenceContainer name="left">
+        <block class="Sample\News\Block\Adminhtml\Article\Edit\Tabs" name="sample_news_article_tabs">
+            <!--<block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Article" name="sample_news_edit_tab_article"/>-->
+            <!--<block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Meta" name="sample_news_edit_tab_article_meta"/>-->
+            <!--<block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Stores" name="sample_news_edit_tab_article_stores"/>-->
+            <!--<action method="addTab">-->
+                <!--<argument name="name" xsi:type="string">article_section</argument>-->
+                <!--<argument name="block" xsi:type="string">sample_news_edit_tab_article</argument>-->
+            <!--</action>-->
+            <!--<action method="addTab">-->
+                <!--<argument name="name" xsi:type="string">meta_section</argument>-->
+                <!--<argument name="block" xsi:type="string">sample_news_edit_tab_article_meta</argument>-->
+            <!--</action>-->
+            <!--<action method="addTab">-->
+                <!--<argument name="name" xsi:type="string">stores_section</argument>-->
+                <!--<argument name="block" xsi:type="string">sample_news_edit_tab_article_stores</argument>-->
+            <!--</action>-->
+        </block>
+    </referenceContainer>
+</layout>

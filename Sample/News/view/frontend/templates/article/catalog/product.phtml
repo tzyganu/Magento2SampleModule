@@ -1,0 +1,77 @@
+<?php
+    $_productCollection = $this->getProductCollection();
+    $_helper = $this->helper('Magento\Catalog\Helper\Output');
+    $imageBlock =  $this->getLayout()->createBlock('Magento\Catalog\Block\Product\Image');
+    $viewMode ='grid';
+    $image = 'category_page_grid';
+    $showDescription = false;
+    $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+
+?>
+
+<?php if ($_productCollection->count() > 0) :?>
+    <h2><?php echo __('Products');?></h2>
+    <div class="products wrapper <?php echo $viewMode;?>">
+        <?php $iterator = 1; ?>
+        <ol class="products list items">
+            <?php /** @var $_product \Magento\Catalog\Model\Product */ ?>
+            <?php foreach ($_productCollection as $_product): ?>
+                <?php echo ($iterator++==1) ? '<li class="item product">' : '</li><li class="item product">' ?>
+                <div class="product">
+                    <?php // Product Image ?>
+                    <a href="<?php echo $_product->getProductUrl() ?>" class="product photo">
+                        <?php echo $imageBlock->init($_product, $image)->toHtml() ?>
+                    </a>
+                    <div class="product details">
+                        <?php $_productNameStripped = $this->stripTags($_product->getName(), null, true); ?>
+                        <strong class="product name">
+                            <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped; ?>">
+                                <?php echo $_helper->productAttribute($_product, $_product->getName(), 'name'); ?>
+                            </a>
+                        </strong>
+                        <?php echo $this->getReviewsSummaryHtml($_product, $templateType); ?>
+                        <?php echo $this->getProductPrice($_product) ?>
+                        <div class="product actions">
+                            <div class="primary">
+                                <?php if ($_product->isSaleable()): ?>
+                                    <button type="button" title="<?php echo __('Add to Cart') ?>" class="action tocart primary"
+                                            data-post='<?php echo $this->getAddToCartPostParams($_product); ?>'>
+                                        <span><?php echo __('Add to Cart') ?></span>
+                                    </button>
+                                <?php else: ?>
+                                    <?php if ($_product->getIsSalable()): ?>
+                                        <p class="stock available"><span><?php echo __('In stock') ?></span></p>
+                                    <?php else: ?>
+                                        <p class="stock unavailable"><span><?php echo __('Out of stock') ?></span></p>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                            <div data-role="add-to-links" class="secondary">
+                                <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()): ?>
+                                    <a href="#" title="<?php echo __('Add to Wishlist') ?>"
+                                       data-post='<?php echo $this->getAddToWishlistParams($_product); ?>'
+                                       class="action towishlist" data-action="add-to-wishlist">
+                                        <span><?php echo __('Add to Wishlist') ?></span>
+                                    </a>
+                                <?php endif; ?>
+                                <?php
+                                $compareHelper = $this->helper('Magento\Catalog\Helper\Product\Compare');
+                                ?>
+                                <a href="#" class="action tocompare" title="<?php echo __('Add to Compare') ?>"
+                                   data-post='<?php echo $compareHelper->getPostDataParams($_product); ?>'>
+                                    <span><?php echo __('Add to Compare') ?></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="product description">
+                            <?php echo $_helper->productAttribute($_product, $_product->getShortDescription(), 'short_description') ?>
+                            <a href="<?php echo $_product->getProductUrl() ?>" title="<?php echo $_productNameStripped ?>"
+                               class="action more"><?php echo __('Learn More') ?></a>
+                        </div>
+                    </div>
+                </div>
+                <?php echo ($iterator==count($_productCollection)+1) ? '</li>' : '' ?>
+            <?php endforeach; ?>
+        </ol>
+    </div>
+<?php endif;?>

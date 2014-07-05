@@ -1,0 +1,16 @@
+<?php $_articles = $this->getArticles(); ?>
+<div class="articles">
+    <?php if ($_articles->getSize() > 0) :?>
+        <?php echo $this->getPagerHtml(); ?>
+        <div class="article-list-container">
+            <?php foreach ($_articles as $_article) : ?>
+                <div class="article-list-item">
+                    <a href="<?php echo $_article->getArticleUrl();?>"><?php echo $_article->getTitle();?></a>
+                </div>
+            <?php endforeach;?>
+        </div>
+        <?php echo $this->getPagerHtml(); ?>
+    <?php else : ?>
+        <?php echo __('There are no articles at this moment');?>
+    <?php endif;?>
+</div>

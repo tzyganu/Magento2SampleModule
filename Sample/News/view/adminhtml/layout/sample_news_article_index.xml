@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <update handle="formkey"/>
+    <update handle="sample_news_article_grid_block"/>
+    <referenceContainer name="content">
+        <block class="Sample\News\Block\Adminhtml\Article" name="adminhtml.sample_news.article.grid.container">
+        </block>
+    </referenceContainer>
+</layout>

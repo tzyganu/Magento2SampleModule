@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_single.xsd">
+    <update handle="page_one_column" />
+    <referenceBlock name="content">
+        <block class="Sample\News\Block\Article\ViewArticle" template="Sample_News::article/view.phtml" />
+        <block class="Sample\News\Block\Article\Catalog\Product" template="sample_News::article/catalog/product.phtml" />
+    </referenceBlock>
+</layout>

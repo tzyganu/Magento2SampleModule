@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config>
+    <module name="Sample_News" schema_version="2.0.0.0" active="true">
+        <sequence>
+            <module name="Magento_Core"/>
+            <module name="Magento_Catalog"/>
+        </sequence>
+        <depends>
+            <module name="Magento_Core"/>
+            <module name="Magento_Theme"/>
+            <module name="Magento_Widget"/>
+            <module name="Magento_Backend"/>
+            <module name="Magento_Catalog"/>
+            <module name="Magento_Email"/>
+            <module name="Magento_Install"/>
+        </depends>
+    </module>
+</config>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config>
+    <router id="admin">
+        <route id="sample_news" frontName="sample_news">
+            <module name="Sample_News_Adminhtml" before="Magento_Adminhtml" />
+        </route>
+    </router>
+</config>
