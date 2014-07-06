@@ -122,9 +122,18 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
             'config'    => $this->_wysiwygConfig->getConfig()
         ));
 
+        $fieldset->addField('categories_ids', '\Sample\News\Block\Adminhtml\Article\Helper\Category', array(
+            'name'  => 'categories_ids',
+            'label'     => __('Categories'),
+            'title'     => __('Categories'),
+        ));
+
         $articleData = $this->_session->getSampleNewsArticleData(true);
         if ($articleData) {
             $article->addData($articleData);
+        }
+        if (is_null($article->getCategoriesIds())) {
+            $article->setCategoriesIds($article->getCategoryIds());
         }
         $form->setValues($article->getData());
         $this->setForm($form);

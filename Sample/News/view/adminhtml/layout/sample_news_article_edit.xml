@@ -32,10 +32,21 @@
                 <argument name="file" xsi:type="string">jquery/fileUploader/jquery.fileupload-fp.js</argument>
             </arguments>
         </block>
+        <block class="Magento\Theme\Block\Html\Head\Css" name="magento-adminhtml-catalog-category-selector-css">
+            <arguments>
+                <argument name="file" xsi:type="string">Magento_Catalog::catalog/category-selector.css</argument>
+            </arguments>
+        </block>
+        <block class="Magento\Theme\Block\Html\Head\Script" name="magento-catalog-js-new-category-dialog-js">
+            <arguments>
+                <argument name="file" xsi:type="string">Magento_Catalog::js/new-category-dialog.js</argument>
+            </arguments>
+        </block>
     </referenceBlock>
     <update handle="editor"/>
     <referenceContainer name="content">
         <block class="Sample\News\Block\Adminhtml\Article\Edit" name="sample_news_article_edit"/>
+        <block class="Magento\Catalog\Block\Adminhtml\Product\Edit\NewCategory" name="new-category" template="Magento_Catalog::catalog/product/edit/category/new/form.phtml"/>
     </referenceContainer>
     <referenceContainer name="left">
         <block class="Sample\News\Block\Adminhtml\Article\Edit\Tabs" name="sample_news_article_tabs">

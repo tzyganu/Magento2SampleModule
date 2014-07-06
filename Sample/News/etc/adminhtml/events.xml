@@ -6,4 +6,7 @@
     <event name="catalog_product_save_after">
         <observer name="sample_news_article_product" instance="Sample\News\Model\Adminhtml\Article\Observer" method="saveProductData" />
     </event>
+    <!--<event name="adminhtml_catalog_category_tabs">-->
+        <!--<observer name="sample_news_article_category" instance="Sample\News\Model\Adminhtml\Article\Observer" method="addCategoryArticleTab" />-->
+    <!--</event>-->
 </config>

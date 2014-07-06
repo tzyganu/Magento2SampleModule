@@ -5,8 +5,9 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
     protected $_store  = null;
     protected $_date;
     protected $_storeManager;
-    protected $dateTime;
+    protected $_dateTime;
     protected $_articleProductTable;
+    protected $_articleCategoryTable;
     protected $_productHelper;
     protected $_eventManager = null;
 
@@ -29,10 +30,12 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
         parent::__construct($resource);
         $this->_date = $date;
         $this->_storeManager = $storeManager;
-        $this->dateTime = $dateTime;
-        $this->_articleProductTable = $this->getTable('sample_news_article_product');
+        $this->_dateTime = $dateTime;
         $this->_eventManager = $eventManager;
         $this->_productHelper = $productHelper;
+        $this->_articleProductTable = $this->getTable('sample_news_article_product');
+        $this->_articleCategoryTable = $this->getTable('sample_news_article_category');
+
     }
 
     /**
@@ -71,7 +74,7 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 //         * If they are empty we need to convert them into DB
 //         * type NULL so in DB they will be empty and not some default value
 //         */
-        //TODO: Transforma any date field
+        //TODO: Transform any date field
 //        foreach (array('custom_theme_from', 'custom_theme_to') as $field) {
 //            $value = !$object->getData($field) ? null : $object->getData($field);
 //            $object->setData($field, $this->dateTime->formatDate($value));
@@ -138,6 +141,7 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
             $this->_getWriteAdapter()->insertMultiple($table, $data);
         }
         $this->_saveProductRelation($object);
+        $this->_saveCategoryRelation($object);
         return parent::_afterSave($object);
     }
 
@@ -435,8 +439,63 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
         return $this;
     }
 
-    public function updateAttributes($articleIds, $attributes){
+    protected function _saveCategoryRelation($article){
+        $article->setIsChangedCategoryList(false);
+        $id = $article->getId();
+        $categories = $article->getCategoriesIds();
 
+        if ($categories === null) {
+            return $this;
+        }
+        $oldCategoryIds = $article->getCategoryIds();
+        $insert = array_diff_key($categories, $oldCategoryIds);
+        $delete = array_diff_key($oldCategoryIds, $categories);
+//        $update = array_intersect_key($categories, $oldCategoryIds);
+//        $update = array_diff_assoc($update, $oldCategoryIds);
+
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = array('category_id IN(?)' => $delete, 'article_id=?' => $id);
+            $adapter->delete($this->_articleCategoryTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = array();
+            foreach ($insert as $categoryId) {
+                $data[] = array(
+                    'article_id' => (int)$id,
+                    'category_id' => (int)$categoryId,
+                    'position' => 1
+                );
+            }
+            $adapter->insertMultiple($this->_articleCategoryTable, $data);
+        }
+
+//        if (!empty($update)) {
+//            foreach ($update as $productId => $position) {
+//                $where = array('article_id = ?' => (int)$id, 'category_id = ?' => (int)$productId);
+//                $bind = array('position' => (int)$position['position']);
+//                $adapter->update($this->_articleProductTable, $bind, $where);
+//            }
+//        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $categoryIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->_eventManager->dispatch(
+                'sample_news_article_change_categories',
+                array('article' => $article, 'category_ids' => $categoryIds)
+            );
+        }
+
+        if (!empty($insert) /*|| !empty($update)*/ || !empty($delete)) {
+            $article->setIsChangedCategoryList(true);
+            $categoryIds = array_keys($insert + $delete /* + $update*/);
+            $article->setAffectedCategoryIds($categoryIds);
+        }
+        return $this;
+    }
+
+    public function updateAttributes($articleIds, $attributes){
+        //TODO: check if this is needed.
     }
 
     public function getProductsPosition($article)
@@ -473,7 +532,7 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 
         $delete = array_diff_key($oldArticles, $articles);
         $update = array_intersect_key($articles, $oldArticles);
-        //TODO: check with this: https://bugs.php.net/bug.php?id=62115
+        //TODO: check against this: https://bugs.php.net/bug.php?id=62115
         $update = array_diff_assoc($update, $oldArticles);
 
 
@@ -516,5 +575,20 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
             $product->setAffectedArticleIds($articleIds);
         }
         return $this;
+    }
+
+    public function getCategoryIds($article)
+    {
+        $adapter = $this->_getReadAdapter();
+
+        $select = $adapter->select()->from(
+            $this->_articleCategoryTable,
+            'category_id'
+        )->where(
+                'article_id = ?',
+                (int)$article->getId()
+            );
+
+        return $adapter->fetchCol($select);
     }
 } 
