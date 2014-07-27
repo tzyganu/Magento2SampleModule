@@ -17,13 +17,13 @@
 ?>
 <?php $articles = $this->getArticleCollection();?>
 <?php if ($articles && $articles->count() > 0) :?>
-    <div class="block-content content">
-        <h2><?php echo __('Articles')?></h2>
-        <?php /** @var \Sample\News\Model\Article $_article */?>
-        <?php foreach ($articles as $_article) : ?>
-            <div class="item">
-                <a href="<?php echo $_article->getArticleUrl();?>"><?php echo $_article->getTitle();?></a>
-            </div>
-        <?php endforeach; ?>
-    </div>
+<div class="block-content content">
+    <h2><?php echo __('Articles')?></h2>
+    <?php /** @var \Sample\News\Model\Article $_article */?>
+    <?php foreach ($articles as $_article) : ?>
+        <div class="item">
+            <a href="<?php echo $_article->getArticleUrl();?>"><?php echo $_article->getTitle();?></a>
+        </div>
+    <?php endforeach; ?>
+</div>
 <?php endif;?>

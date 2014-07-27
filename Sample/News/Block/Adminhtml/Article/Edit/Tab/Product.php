@@ -1,8 +1,54 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
 namespace Sample\News\Block\Adminhtml\Article\Edit\Tab;
 class Product
     extends \Magento\Backend\Block\Widget\Grid\Extended {
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
+    protected $_productFactory;
+    /**
+     * @var \Magento\Catalog\Model\Product\Type
+     */
+    protected $_type;
+    /**
+     * @var \Magento\Catalog\Model\Product\Attribute\Source\Status
+     */
+    protected $_status;
+    /**
+     * @var \Magento\Catalog\Model\Product\Visibility
+     */
+    protected $_visibility;
+    /**
+     * @var  \Magento\Framework\Registry
+     */
+    protected $_coreRegistry;
 
+    /**
+     * @access public
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Catalog\Model\Product\Type $type
+     * @param \Magento\Catalog\Model\Product\Attribute\Source\Status $status
+     * @param \Magento\Catalog\Model\Product\Visibility $visibility
+     * @param \Magento\Framework\Registry $coreRegistry
+     * @param array $data
+     */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
@@ -24,7 +70,6 @@ class Product
     /**
      * Set grid params
      * @access protected
-     * @author Ultimate Module Creator
      */
     public function _construct(){
         parent::_construct();
@@ -36,6 +81,12 @@ class Product
             $this->setDefaultFilter(array('in_products'=>1));
         }
     }
+
+    /**
+     * prepare the collection
+     * @access protected
+     * @return $this
+     */
     protected function _prepareCollection() {
         $collection = $this->_productFactory->create()->getCollection();
         $collection->addAttributeToSelect('price');
@@ -58,10 +109,18 @@ class Product
         return $this;
     }
 
+    /**
+     * @access
+     * @return $this
+     */
     protected function _prepareMassaction(){
         return $this;
     }
 
+    /**
+     * @access protected
+     * @return $this
+     */
     protected function _prepareColumns(){
         $this->addColumn('in_products', array(
             'header_css_class'  => 'a-center',
@@ -90,12 +149,12 @@ class Product
             'index' => 'position',
             'editable'  => true,
         ));
+        return $this;
     }
     /**
      * Retrieve selected products
      * @access protected
      * @return array
-     * @author Ultimate Module Creator
      */
     protected function _getSelectedProducts(){
         $products = $this->getArticleProducts();
@@ -107,9 +166,8 @@ class Product
     }
     /**
      * Retrieve selected products
-     * @access protected
+     * @access public
      * @return array
-     * @author Ultimate Module Creator
      */
     public function getSelectedProducts() {
         $products = array();
@@ -123,6 +181,7 @@ class Product
         return $products;
     }
     /**
+     * @access public
      * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $item
      * @return string
      */
@@ -133,7 +192,6 @@ class Product
      * get grid url
      * @access public
      * @return string
-     * @author Ultimate Module Creator
      */
     public function getGridUrl(){
         return $this->getUrl('*/*/productsGrid', array(
@@ -142,11 +200,11 @@ class Product
     }
 
     /**
+     * @access public
      * @return mixed
      */
     public function getArticle(){
         return $this->_coreRegistry->registry('sample_news_article');
-//        return Mage::registry('current_article');
     }
 
     /**
@@ -154,7 +212,6 @@ class Product
      * @return $this
      */
     protected function _addColumnFilterToCollection($column){
-        // Set custom filter for in product flag
         if ($column->getId() == 'in_products') {
             $productIds = $this->_getSelectedProducts();
             if (empty($productIds)) {

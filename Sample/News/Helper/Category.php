@@ -15,7 +15,7 @@
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
 namespace Sample\News\Helper;
-class Product
+class Category
     extends \Magento\Framework\App\Helper\AbstractHelper {
     /**
      * @var null|\Sample\News\Model\ArticleFactory
@@ -37,28 +37,28 @@ class Product
 
     /**
      * @access public
-     * @param \Magento\Catalog\Model\Product $product
+     * @param \Magento\Catalog\Model\Category $category
      * @return mixed
      */
-    public function getSelectedArticles(\Magento\Catalog\Model\Product $product){
-        if (!$product->hasSelectedArticles()) {
+    public function getSelectedArticles(\Magento\Catalog\Model\Category $category){
+        if (!$category->hasSelectedArticles()) {
             $articles = [];
-            foreach ($this->getSelectedArticlesCollection($product) as $article) {
+            foreach ($this->getSelectedArticlesCollection($category) as $article) {
                 $articles[] = $article;
             }
-            $product->setSelectedArticles($articles);
+            $category->setSelectedArticles($articles);
         }
-        return $product->getData('selected_articles');
+        return $category->getData('selected_articles');
     }
 
     /**
      * @access public
-     * @param \Magento\Catalog\Model\Product $product
+     * @param \Magento\Catalog\Model\Category $category
      * @return mixed
      */
-    public function getSelectedArticlesCollection(\Magento\Catalog\Model\Product $product){
+    public function getSelectedArticlesCollection(\Magento\Catalog\Model\Category $category){
         $collection = $this->_articleFactory->create()->getResourceCollection()
-            ->addProductFilter($product);
+            ->addCategoryFilter($category);
         return $collection;
     }
 }

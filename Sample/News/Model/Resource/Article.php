@@ -1,23 +1,69 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
 namespace Sample\News\Model\Resource;
-class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
-{
+class Article
+    extends \Magento\Framework\Model\Resource\Db\AbstractDb {
+    /**
+     * @var null
+     */
     protected $_store  = null;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
     protected $_date;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
     protected $_dateTime;
+    /**
+     * @var string
+     */
     protected $_articleProductTable;
+    /**
+     * @var string
+     */
     protected $_articleCategoryTable;
+    /**
+     * @var \Sample\News\Helper\Product
+     */
     protected $_productHelper;
-    protected $_eventManager = null;
+    /**
+     * @var \Sample\News\Helper\Category
+     */
+    protected $_categoryHelper;
+    /**
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $_eventManager;
 
 
     /**
+     * @access public
      * @param \Magento\Framework\App\Resource $resource
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Sample\News\Helper\Product $productHelper
+     * @param \Sample\News\Helper\Category $categoryHelper
      */
     public function __construct(
         \Magento\Framework\App\Resource $resource,
@@ -25,7 +71,8 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Sample\News\Helper\Product $productHelper
+        \Sample\News\Helper\Product $productHelper,
+        \Sample\News\Helper\Category $categoryHelper
     ) {
         parent::__construct($resource);
         $this->_date = $date;
@@ -33,6 +80,7 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
         $this->_dateTime = $dateTime;
         $this->_eventManager = $eventManager;
         $this->_productHelper = $productHelper;
+        $this->_categoryHelper = $categoryHelper;
         $this->_articleProductTable = $this->getTable('sample_news_article_product');
         $this->_articleCategoryTable = $this->getTable('sample_news_article_category');
 
@@ -40,23 +88,21 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 
     /**
      * Initialize resource model
-     *
+     * @access protected
      * @return void
      */
-    protected function _construct()
-    {
+    protected function _construct() {
         $this->_init('sample_news_article', 'entity_id');
     }
 
     /**
      * Process page data before deleting
-     *
+     * @access protected
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
      */
-    protected function _beforeDelete(\Magento\Framework\Model\AbstractModel $object)
-    {
-        $condition = array('article_id = ?' => (int) $object->getId());
+    protected function _beforeDelete(\Magento\Framework\Model\AbstractModel $object) {
+        $condition = ['article_id = ?' => (int) $object->getId()];
         $this->_getWriteAdapter()->delete($this->getTable('sample_news_article_store'), $condition);
         return parent::_beforeDelete($object);
     }
@@ -66,8 +112,7 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
      * @return $this
      * @throws \Magento\Framework\Exception
      */
-    protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object)
-    {
+    protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object) {
 //        /*
 //         * For two attributes which represent timestamp data in DB
 //         * we should make converting such as:
@@ -79,7 +124,7 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 //            $value = !$object->getData($field) ? null : $object->getData($field);
 //            $object->setData($field, $this->dateTime->formatDate($value));
 //        }
-
+        //TODO: autogenerate url key if not specified
         if (!$this->getIsUniqueArticleToStores($object)) {
             throw new \Magento\Framework\Exception(__('A page URL key for specified store already exists.'));
         }
@@ -104,12 +149,11 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 
     /**
      * Assign page to store views
-     *
+     * @access public
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
      */
-    protected function _afterSave(\Magento\Framework\Model\AbstractModel $object)
-    {
+    protected function _afterSave(\Magento\Framework\Model\AbstractModel $object) {
         $oldStores = $this->lookupStoreIds($object->getId());
         $newStores = (array)$object->getStores();
         if (empty($newStores)) {
@@ -147,19 +191,17 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 
     /**
      * Perform operations after object load
-     *
+     * @access protected
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
      */
-    protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object)
-    {
+    protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object) {
         if ($object->getId()) {
             $stores = $this->lookupStoreIds($object->getId());
 
             $object->setData('store_id', $stores);
 
         }
-
         return parent::_afterLoad($object);
     }
 
@@ -169,10 +211,9 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
      * @param string $field
      * @param mixed $value
      * @param \Magento\Cms\Model\Page $object
-     * @return \Zend_Db_Select
+     * @return \Magento\Framework\Db\Select
      */
-    protected function _getLoadSelect($field, $value, $object)
-    {
+    protected function _getLoadSelect($field, $value, $object) {
         $select = parent::_getLoadSelect($field, $value, $object);
 
         if ($object->getStoreId()) {
@@ -191,13 +232,13 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
     }
 
     /**
+     * @accessprotected
      * @param $identifier
      * @param $store
      * @param null $isActive
      * @return \Magento\Framework\DB\Select
      */
-    protected function _getLoadByIdentifierSelect($identifier, $store, $isActive = null)
-    {
+    protected function _getLoadByIdentifierSelect($identifier, $store, $isActive = null) {
         $select = $this->_getReadAdapter()->select()
             ->from(array('main' => $this->getMainTable()))
             ->join(
@@ -216,12 +257,11 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
 
     /**
      * Check for unique of identifier of page to selected store(s).
-     *
+     * @access public
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return bool
      */
-    public function getIsUniqueArticleToStores(\Magento\Framework\Model\AbstractModel $object)
-    {
+    public function getIsUniqueArticleToStores(\Magento\Framework\Model\AbstractModel $object) {
         if ($this->_storeManager->hasSingleStore() || !$object->hasStores()) {
             $stores = array(\Magento\Store\Model\Store::DEFAULT_STORE_ID);
         } else {
@@ -242,20 +282,20 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
     }
 
     /**
+     * @access protected
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return int
      */
-    protected function isNumericArticleIdentifier(\Magento\Framework\Model\AbstractModel $object)
-    {
+    protected function isNumericArticleIdentifier(\Magento\Framework\Model\AbstractModel $object) {
         return preg_match('/^[0-9]+$/', $object->getData('identifier'));
     }
 
     /**
+     * @access protected
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return int
      */
-    protected function isValidArticleIdentifier(\Magento\Framework\Model\AbstractModel $object)
-    {
+    protected function isValidArticleIdentifier(\Magento\Framework\Model\AbstractModel $object) {
         return preg_match('/^[a-z0-9][a-z0-9_\/-]+(\.[a-z0-9_-]+)?$/', $object->getData('identifier'));
     }
 
@@ -577,18 +617,82 @@ class Article extends \Magento\Framework\Model\Resource\Db\AbstractDb
         return $this;
     }
 
-    public function getCategoryIds($article)
-    {
-        $adapter = $this->_getReadAdapter();
+    public function saveArticleCategoryRelation($category, $articles) {
+        $category->setIsChangedArticleList(false);
+        $id = $category->getId();
+        if ($articles === null) {
+            return $this;
+        }
+        $oldArticleObjects = $this->_categoryHelper->getSelectedArticles($category);
+        if (!is_array($oldArticleObjects)) {
+            $oldArticleObjects = array();
+        }
+        $oldArticles = array();
+        foreach ($oldArticleObjects as $article) {
+            $oldArticles[$article->getId()] = array('position' => $article->getPosition());
+        }
+        $insert = array_diff_key($articles, $oldArticles);
+        $delete = array_diff_key($oldArticles, $articles);
+        $update = array_intersect_key($articles, $oldArticles);
+        //TODO: check against this: https://bugs.php.net/bug.php?id=62115
+        $update = array_diff_assoc($update, $oldArticles);
 
+
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = array('article_id IN(?)' => array_keys($delete), 'category_id=?' => $id);
+            $adapter->delete($this->_articleCategoryTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = array();
+            foreach ($insert as $articleId => $position) {
+                $data[] = array(
+                    'category_id' => (int)$id,
+                    'article_id' => (int)$articleId,
+                    'position' => (int)$position
+                );
+            }
+            $adapter->insertMultiple($this->_articleCategoryTable, $data);
+        }
+
+        if (!empty($update)) {
+            foreach ($update as $articleId => $position) {
+                $where = array('category_id = ?' => (int)$id, 'article_id = ?' => (int)$articleId);
+                $bind = array('position' => (int)$position['position']);
+                $adapter->update($this->_articleCategoryTable, $bind, $where);
+            }
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $articleIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->_eventManager->dispatch(
+                'sample_news_category_change_articles',
+                array('category' => $category, 'article_ids' => $articleIds)
+            );
+        }
+
+        if (!empty($insert) || !empty($update) || !empty($delete)) {
+            $category->setIsChangedArticleList(true);
+            $articleIds = array_keys($insert + $delete + $update);
+            $category->setAffectedArticleIds($articleIds);
+        }
+        return $this;
+    }
+
+    /**
+     * @access public
+     * @param $article
+     * @return array
+     */
+    public function getCategoryIds($article) {
+        $adapter = $this->_getReadAdapter();
         $select = $adapter->select()->from(
             $this->_articleCategoryTable,
             'category_id'
         )->where(
-                'article_id = ?',
-                (int)$article->getId()
-            );
-
+            'article_id = ?',
+            (int)$article->getId()
+        );
         return $adapter->fetchCol($select);
     }
-} 
+}

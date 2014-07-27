@@ -1,0 +1,85 @@
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<?php echo $this->getChildHtml() ?>
+<div class="no-display">
+    <input type="hidden" name="category_demo_articles" id="in_category_demo_articles" value=""/>
+</div>
+<?php if(($block = $this->getLayout()->getBlock('category.demo.article.grid')) && ($_gridJsObject = $block->getJsObjectName())): ?>
+    <script type="text/javascript">
+        var categoryDemoArticles = $H(<?php echo json_encode($block->getSelectedArticles()) ?>);
+        $('in_category_demo_articles').value = Object.toJSON(categoryDemoArticles);
+
+        function registerCategoryDemoArticle(grid, element, checked){
+            if(checked){
+                if(element.positionElement){
+                    element.positionElement.disabled = false;
+                    categoryDemoArticles.set(element.value, element.positionElement.value);
+                }
+            }
+            else{
+                if(element.positionElement){
+                    element.positionElement.disabled = true;
+                }
+                categoryDemoArticles.unset(element.value);
+            }
+            $('in_category_demo_articles').value = Object.toJSON(categoryDemoArticles);
+            grid.reloadParams = {'category_articles[]':categoryDemoArticles.keys()};
+        }
+        function categoryDemoArticleRowClick(grid, event){
+
+            var trElement = Event.findElement(event, 'tr');
+            var isInput   = Event.element(event).tagName == 'INPUT';
+            if(trElement){
+                var checkbox = Element.getElementsBySelector(trElement, 'input');
+                if(checkbox[0]){
+                    var checked = isInput ? checkbox[0].checked : !checkbox[0].checked;
+                    <?php echo $_gridJsObject ?>.setCheckboxChecked(checkbox[0], checked);
+                }
+            }
+        }
+        function demoArticlePositionChange(event){
+            var element = Event.element(event);
+            if(element && element.checkboxElement && element.checkboxElement.checked){
+                categoryDemoArticles.set(element.checkboxElement.value, element.value);
+                $('in_category_demo_articles').value = Object.toJSON(categoryDemoArticles);
+            }
+        }
+
+        var tabIndex = 1000;
+        function categoryDemoArticleRowInit(grid, row){
+            var checkbox = $(row).getElementsByClassName('checkbox')[0];
+            var position = $(row).getElementsByClassName('input-text')[0];
+            if(checkbox && position){
+                checkbox.positionElement = position;
+                position.checkboxElement = checkbox;
+                position.disabled = !checkbox.checked;
+                position.tabIndex = tabIndex++;
+                Event.observe(position,'keyup',demoArticlePositionChange);
+            }
+        }
+
+
+        <?php echo $_gridJsObject ?>.rowClickCallback = categoryDemoArticleRowClick;
+        <?php echo $_gridJsObject ?>.initRowCallback = categoryDemoArticleRowInit;
+        <?php echo $_gridJsObject ?>.checkboxCheckCallback = registerCategoryDemoArticle;
+        <?php echo $_gridJsObject ?>.rows.each(function(row){
+            categoryDemoArticleRowInit(<?php echo $_gridJsObject ?>, row)
+        });
+
+    </script>
+<?php endif;?>

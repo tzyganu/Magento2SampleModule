@@ -1,13 +1,27 @@
 <?php
-namespace Sample\News\Block\Adminhtml\Article\Edit\Tab;
-
 /**
- * Adminhtml cms block edit form
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
-class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Magento\Backend\Block\Widget\Tab\TabInterface
-{
+namespace Sample\News\Block\Adminhtml\Article\Edit\Tab;
+class Article
+    extends \Magento\Backend\Block\Widget\Form\Generic
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface {
+    /**
+     * @var \Magento\Cms\Model\Wysiwyg\Config
+     */
     protected $_wysiwygConfig;
-    protected $_systemStore;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
@@ -29,11 +43,10 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
 
     /**
      * Init form
-     *
+     * @access public
      * @return void
      */
-    protected function _construct()
-    {
+    protected function _construct() {
         parent::_construct();
         $this->setId('article_form');
         $this->setTitle(__('Article Information'));
@@ -41,11 +54,10 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
 
     /**
      * Load Wysiwyg on demand and Prepare layout
-     *
+     * @accessprotected
      * @return void
      */
-    protected function _prepareLayout()
-    {
+    protected function _prepareLayout() {
         parent::_prepareLayout();
         if ($this->_wysiwygConfig->isEnabled()) {
             $this->getLayout()->getBlock('head')->setCanLoadTinyMce(true);
@@ -54,34 +66,27 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
 
     /**
      * Prepare form
-     *
+     * @access protected
      * @return $this
      */
     protected function _prepareForm()
     {
         $article = $this->_coreRegistry->registry('sample_news_article');
-
         $form   = $this->_formFactory->create();
-
         $form->setHtmlIdPrefix('article_');
         $form->setFieldNameSuffix('article');
-
-
         $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('General Information'), 'class' => 'fieldset-wide'));
-
         if ($article->getId()) {
             $fieldset->addField('entity_id', 'hidden', array(
                 'name' => 'entity_id',
             ));
         }
-
         $fieldset->addField('title', 'text', array(
             'name'      => 'title',
             'label'     => __('Title'),
             'title'     => __('Title'),
             'required'  => true,
         ));
-
         $fieldset->addField('identifier', 'text', array(
             'name'      => 'identifier',
             'label'     => __('Identifier'),
@@ -90,7 +95,6 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
             'class'     => 'validate-xml-identifier',
         ));
 
-        /* Check is single store mode */
         if ($this->_storeManager->isSingleStoreMode()) {
             $fieldset->addField('store_id', 'hidden', array(
                 'name'      => 'stores[]',
@@ -132,12 +136,16 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
         if ($articleData) {
             $article->addData($articleData);
         }
+        else {
+            if (!$article->getId()) {
+                $article->addData($article->getDefaultValues());
+            }
+        }
         if (is_null($article->getCategoriesIds())) {
             $article->setCategoriesIds($article->getCategoryIds());
         }
         $form->setValues($article->getData());
         $this->setForm($form);
-
         return parent::_prepareForm();
     }
 
@@ -146,8 +154,7 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
      * @access public
      * @return string
      */
-    public function getTabLabel()
-    {
+    public function getTabLabel() {
         return __('Article');
     }
 
@@ -156,8 +163,7 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
      * @access public
      * @return string
      */
-    public function getTabTitle()
-    {
+    public function getTabTitle() {
         return __('Article');
     }
 
@@ -166,8 +172,7 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
      * @access public
      * @return boolean
      */
-    public function canShowTab()
-    {
+    public function canShowTab() {
         return true;
     }
 
@@ -176,8 +181,7 @@ class Article extends \Magento\Backend\Block\Widget\Form\Generic implements \Mag
      * @access public
      * @return boolean
      */
-    public function isHidden()
-    {
+    public function isHidden() {
         return false;
     }
 }

@@ -1,10 +1,24 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
 namespace Sample\News\Block\Adminhtml\Article\Helper;
 
 use Magento\Catalog\Model\Resource\Category\Collection;
 use Magento\Framework\AuthorizationInterface;
-class Category extends \Magento\Framework\Data\Form\Element\Multiselect
-{
+class Category extends \Magento\Framework\Data\Form\Element\Multiselect {
     /**
      * @var \Magento\Framework\View\LayoutInterface
      */
@@ -33,6 +47,7 @@ class Category extends \Magento\Framework\Data\Form\Element\Multiselect
     protected $authorization;
 
     /**
+     * @access public
      * @param \Magento\Framework\Data\Form\Element\Factory $factoryElement
      * @param \Magento\Framework\Data\Form\Element\CollectionFactory $factoryCollection
      * @param \Magento\Framework\Escaper $escaper
@@ -64,24 +79,20 @@ class Category extends \Magento\Framework\Data\Form\Element\Multiselect
 
     /**
      * Get no display
-     *
+     * @access public
      * @return bool
-     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      */
-    public function getNoDisplay()
-    {
-
+    public function getNoDisplay() {
         $isNotAllowed = !$this->authorization->isAllowed('Magento_Catalog::categories');
         return $this->getData('no_display') || $isNotAllowed;
     }
 
     /**
      * Get values for select
-     *
+     * @access public
      * @return array
      */
-    public function getValues()
-    {
+    public function getValues() {
         $collection = $this->_getCategoriesCollection();
         $values = $this->getValue();
         if (!is_array($values)) {
@@ -89,9 +100,7 @@ class Category extends \Magento\Framework\Data\Form\Element\Multiselect
         }
         $collection->addAttributeToSelect('name');
         $collection->addIdFilter($values);
-
         $options = [];
-
         foreach ($collection as $category) {
             $options[] = ['label' => $category->getName(), 'value' => $category->getId()];
         }
@@ -100,37 +109,32 @@ class Category extends \Magento\Framework\Data\Form\Element\Multiselect
 
     /**
      * Get categories collection
-     *
-     * @return Collection
+     * @access protected
+     * @return \Magento\Catalog\Model\Resource\Category\Collection
      */
-    protected function _getCategoriesCollection()
-    {
+    protected function _getCategoriesCollection() {
         return $this->_collectionFactory->create();
     }
 
     /**
      * Attach category suggest widget initialization
-     *
+     * @access public
      * @return string
      */
-    public function getAfterElementHtml()
-    {
+    public function getAfterElementHtml() {
         $htmlId = $this->getHtmlId();
         $suggestPlaceholder = __('start typing to search category');
         $selectorOptions = $this->_jsonEncoder->encode($this->_getSelectorOptions());
         $newCategoryCaption = __('New Category');
 
-        $button = $this->_layout->createBlock(
-            'Magento\Backend\Block\Widget\Button'
-        )->setData(
-                [
-                    'id' => 'add_category_button',
-                    'label' => $newCategoryCaption,
-                    'title' => $newCategoryCaption,
-                    'onclick' => 'jQuery("#new-category").dialog("open")',
-                    'disabled' => $this->getDisabled()
-                ]
-            );
+        $button = $this->_layout->createBlock('Magento\Backend\Block\Widget\Button')
+            ->setData([
+                'id' => 'add_category_button',
+                'label' => $newCategoryCaption,
+                'title' => $newCategoryCaption,
+                'onclick' => 'jQuery("#new-category").dialog("open")',
+                'disabled' => $this->getDisabled()
+            ]);
         $return = <<<HTML
     <input id="{$htmlId}-suggest" placeholder="$suggestPlaceholder" />
     <script>
@@ -142,11 +146,10 @@ HTML;
 
     /**
      * Get selector options
-     *
+     * @access protected
      * @return array
      */
-    protected function _getSelectorOptions()
-    {
+    protected function _getSelectorOptions() {
         return [
             'source' => $this->_backendData->getUrl('catalog/category/suggestCategories'),
             'valueField' => '#' . $this->getHtmlId(),

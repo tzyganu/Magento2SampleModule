@@ -14,7 +14,7 @@
  * @copyright      Copyright (c) 2014
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Sample\News\Block\Catalog\Product;
+namespace Sample\News\Block\Catalog\Category;
 
 class ListArticle
     extends \Magento\Framework\View\Element\Template {
@@ -23,24 +23,24 @@ class ListArticle
      */
     protected $_registry;
     /**
-     * @var \Sample\News\Helper\Product
+     * @var \Sample\News\Helper\Category
      */
-    protected $_productHelper;
+    protected $_categoryHelper;
 
     /**
      * @access public
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Sample\News\Helper\Product $productHelper
+     * @param \Sample\News\Helper\Category $categoryHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
         \Magento\Framework\View\Element\Template\Context $context,
-        \Sample\News\Helper\Product $productHelper,
+        \Sample\News\Helper\Category $categoryHelper,
         array $data = []
     ) {
-        $this->_productHelper = $productHelper;
+        $this->_categoryHelper = $categoryHelper;
         $this->_registry = $registry;
         parent::__construct($context, $data);
     }
@@ -50,13 +50,18 @@ class ListArticle
      * @return \Sample\News\Model\Resource\Article\Collection
      */
     public function getArticleCollection() {
-        $collection = $this->_productHelper->getSelectedArticlesCollection($this->getProduct());
+        $collection = $this->_categoryHelper->getSelectedArticlesCollection($this->getCategory());
         $collection->addStoreFilter($this->_storeManager->getStore()->getId());
         $collection->addFieldToFilter('status', 1);
         $collection->getSelect()->order('position');
         return $collection;
     }
-    public function getProduct() {
-        return $this->_registry->registry('current_product');
+
+    /**
+     * @access public
+     * @return \Magento\Catalog\Model\Category
+     */
+    public function getCategory() {
+        return $this->_registry->registry('current_category');
     }
 }

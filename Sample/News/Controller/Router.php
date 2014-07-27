@@ -1,51 +1,61 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
 namespace Sample\News\Controller;
 
-class Router extends \Magento\Framework\App\Router\AbstractRouter
-{
+class Router
+    extends \Magento\Framework\App\Router\AbstractRouter {
     /**
      * Event manager
-     *
      * @var \Magento\Framework\Event\ManagerInterface
      */
     protected $_eventManager;
 
     /**
      * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
 
     /**
-     * Page factory
-     *
+     * Article factory
      * @var \Sample\News\Model\ArticleFactory
      */
     protected $_articleFactory;
 
     /**
      * Config primary
-     *
      * @var \Magento\Framework\App\State
      */
     protected $_appState;
 
     /**
      * Url
-     *
      * @var \Magento\Framework\UrlInterface
      */
     protected $_url;
 
     /**
      * Response
-     *
      * @var \Magento\Framework\App\ResponseInterface
      */
     protected $_response;
 
     /**
+     * @access public
      * @param \Magento\Framework\App\ActionFactory $actionFactory
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Framework\UrlInterface $url
@@ -73,29 +83,22 @@ class Router extends \Magento\Framework\App\Router\AbstractRouter
     }
 
     /**
-     * Validate and Match Cms Page and modify request
-     *
+     * Validate and Match News Article and modify request
      * @param \Magento\Framework\App\RequestInterface $request
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.ExitExpression)
      */
-    public function match(\Magento\Framework\App\RequestInterface $request)
-    {
+    public function match(\Magento\Framework\App\RequestInterface $request) {
         if (!$this->_appState->isInstalled()) {
             $this->_response->setRedirect($this->_url->getUrl('install'))->sendResponse();
             exit;
         }
-
         $identifier = trim($request->getPathInfo(), '/');
-
         $condition = new \Magento\Framework\Object(array('identifier' => $identifier, 'continue' => true));
         $this->_eventManager->dispatch(
             'sample_news_controller_router_match_before',
             array('router' => $this, 'condition' => $condition)
         );
         $identifier = $condition->getIdentifier();
-
         if ($condition->getRedirectUrl()) {
             $this->_response->setRedirect($condition->getRedirectUrl());
             $request->setDispatched(true);
@@ -104,23 +107,19 @@ class Router extends \Magento\Framework\App\Router\AbstractRouter
                 array('request' => $request)
             );
         }
-
         if (!$condition->getContinue()) {
             return null;
         }
-
         $article = $this->_articleFactory->create();
         $id = $article->checkIdentifier($identifier, $this->_storeManager->getStore()->getId());
         if (!$id) {
             return null;
         }
-
         $request->setModuleName('sample_news')
             ->setControllerName('article')
             ->setActionName('view')
             ->setParam('id', $id);
         $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);
-
         return $this->_actionFactory->createController(
             'Magento\Framework\App\Action\Forward',
             array('request' => $request)

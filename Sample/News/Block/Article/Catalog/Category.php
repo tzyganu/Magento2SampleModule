@@ -16,32 +16,25 @@
  */
 namespace Sample\News\Block\Article\Catalog;
 
-class Product
+class Category
     extends \Magento\Framework\View\Element\Template {
     /**
      * @var \Magento\Framework\Registry|null
      */
     protected $_coreRegistry = null;
-    /**
-     * @var \Magento\Catalog\Model\Product\Visibility|null
-     */
-    protected $_productVisibility = null;
 
     /**
      * @access public
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Registry $registry,
-        \Magento\Catalog\Model\Product\Visibility $productVisibility,
         array $data = array()
     ) {
         $this->_coreRegistry = $registry;
-        $this->_productVisibility = $productVisibility;
         parent::__construct($context, $data);
     }
 
@@ -55,18 +48,14 @@ class Product
 
     /**
      * @access public
-     * @return \Magento\Catalog\Model\Resource\Product\Collection
+     * @return \Magento\Catalog\Model\Resource\Category\Collection
      */
-    public function getProductCollection() {
-        $collection = $this->getArticle()->getSelectedProductsCollection()
+    public function getCategoryCollection() {
+        $collection = $this->getArticle()->getSelectedCategoriesCollection()
             ->setStore($this->_storeManager->getStore())
-            ->addMinimalPrice()
-            ->addFinalPrice()
-            ->addTaxPercents()
-            ->addStoreFilter()
-            ->addUrlRewrite()
-            ->setVisibility($this->_productVisibility->getVisibleInCatalogIds());
-        $collection->getSelect()->order('position');
+            ->addAttributeToSelect(array('name', 'url_key', 'url_path'))
+            ->addAttributeToFilter('is_active', 1);
+        $collection->getSelect()->order('at_position.position');
         return $collection;
     }
 }

@@ -15,7 +15,12 @@
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
 ?>
-<?php $_article = $this->getCurrentArticle();?>
-<div class="article-view">
-    <?php echo __('Content') ?>: <?php echo $_article->getContent()?>
-</div>
+<?php $_categoryCollection = $this->getCategoryCollection();?>
+<?php if ($_categoryCollection->count() > 0) :?>
+    <h2><?php echo __('Categories');?></h2>
+    <div class="article-categories wrapper">
+        <?php foreach($_categoryCollection as $_category) : ?>
+            <a href="<?php echo $_category->getUrl()?>"><?php echo $_category->getName();?></a><br />
+        <?php endforeach;?>
+    </div>
+<?php endif;?>

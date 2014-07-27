@@ -14,29 +14,29 @@
  * @copyright      Copyright (c) 2014
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Sample\News\Block\Adminhtml\Catalog\Product\Edit\Tab;
+namespace Sample\News\Block\Adminhtml\Catalog\Category\Tab;
 
 class Article
     extends \Magento\Backend\Block\Widget\Grid\Extended {
     /**
-     * @var null|\Sample\News\Model\ArticleFactory
+     * @var \Sample\News\Model\ArticleFactory
      */
-    protected $_articleFactory = null;
+    protected $_articleFactory;
     /**
-     * @var null|\Sample\News\Helper\Product
+     * @var \Sample\News\Helper\Category
      */
-    protected $_productHelper = null;
+    protected $_categoryHelper;
     /**
-     * @var \Magento\Framework\Registry|null
+     * @var \Magento\Framework\Registry
      */
-    protected $_registry = null;
+    protected $_registry;
 
     /**
      * @access public
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Sample\News\Model\ArticleFactory $articleFactory
-     * @param \Sample\News\Helper\Product $productHelper
+     * @param \Sample\News\Helper\Category $categoryHelper
      * @param \Magento\Framework\Registry $registry
      * @param array $data
      */
@@ -44,12 +44,12 @@ class Article
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Backend\Helper\Data $backendHelper,
         \Sample\News\Model\ArticleFactory $articleFactory,
-        \Sample\News\Helper\Product $productHelper,
+        \Sample\News\Helper\Category $categoryHelper,
         \Magento\Framework\Registry $registry,
         array $data = array()
     ) {
         $this->_articleFactory = $articleFactory;
-        $this->_productHelper = $productHelper;
+        $this->_categoryHelper = $categoryHelper;
         $this->_registry = $registry;
         parent::__construct($context, $backendHelper, $data);
     }
@@ -59,13 +59,20 @@ class Article
      */
     public function _construct() {
         parent::_construct();
-        $this->setId('article_grid');
-        $this->setDefaultSort('position');
-        $this->setDefaultDir('ASC');
+        $this->setId('catalog_category_sample_news_article');
+        $this->setDefaultSort('entity_id');
         $this->setUseAjax(true);
-        if ($this->getProduct()->getId()) {
+        if ($this->getCategory()->getId()) {
             $this->setDefaultFilter(array('in_articles'=>1));
         }
+    }
+
+    /**
+     * get current category
+     * @return \Magento\Catalog\Model\Category
+     */
+    public function getCategory() {
+        return $this->_registry->registry('current_category');
     }
 
     /**
@@ -75,14 +82,14 @@ class Article
      */
     protected function _prepareCollection() {
         $collection = $this->_articleFactory->create()->getResourceCollection();
-        if ($this->getProduct()->getId()){
-            $constraint = 'related.product_id='.$this->getProduct()->getId();
+        if ($this->getCategory()->getId()){
+            $constraint = 'related.category_id='.$this->getCategory()->getId();
         }
         else{
-            $constraint = 'related.product_id=0';
+            $constraint = 'related.category_id=0';
         }
         $collection->getSelect()->joinLeft(
-            array('related'=>$collection->getTable('sample_news_article_product')),
+            array('related' => $collection->getTable('sample_news_article_category')),
             'related.article_id=main_table.entity_id AND '.$constraint,
             array('position')
         );
@@ -92,20 +99,11 @@ class Article
     }
 
     /**
-     * no mass action here
-     * @access protected
-     * @return $this
-     */
-    protected function _prepareMassaction(){
-        return $this;
-    }
-
-    /**
      * prepare columns
      * @access protected
      * @return $this
      */
-    protected function _prepareColumns(){
+    protected function _prepareColumns() {
         $this->addColumn('in_articles', array(
             'header_css_class'  => 'a-center',
             'type'  => 'checkbox',
@@ -113,6 +111,12 @@ class Article
             'values'=> $this->_getSelectedArticles(),
             'align' => 'center',
             'index' => 'entity_id'
+        ));
+        $this->addColumn('entity_id', array(
+            'header'=> __('Id'),
+            'type'  => 'number',
+            'align' => 'left',
+            'index' => 'entity_id',
         ));
         $this->addColumn('title', array(
             'header'=> __('Title'),
@@ -130,8 +134,14 @@ class Article
         ));
         return parent::_prepareColumns();
     }
+
+    /**
+     * get selected articles
+     * @access protected
+     * @return array
+     */
     protected function _getSelectedArticles(){
-        $articles = $this->getProductArticles();
+        $articles = $this->getCategoryArticles();
         if (!is_array($articles)) {
             $articles = array_keys($this->getSelectedArticles());
         }
@@ -139,24 +149,23 @@ class Article
     }
 
     /**
-     * get selected articles
      * @access public
      * @return array
      */
     public function getSelectedArticles() {
         $articles = array();
-        $selected = $this->_productHelper->getSelectedArticles($this->getProduct());
+        $selected = $this->_categoryHelper->getSelectedArticles($this->getCategory());
         if (!is_array($selected)){
             $selected = array();
         }
         foreach ($selected as $article) {
-            $articles[$article->getId()] = array('position' => $article->getPosition());
+            $articles[$article->getId()] = $article->getPosition();
         }
         return $articles;
     }
 
     /**
-     * get row url
+     * get row URL
      * @access public
      * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $item
      * @return string
@@ -171,18 +180,9 @@ class Article
      * @return string
      */
     public function getGridUrl(){
-        return $this->_urlBuilder->getUrl('*/*/articlesGrid', array(
-            'id'=>$this->getProduct()->getId()
+        return $this->getUrl('sample_news/catalog_category/articlesgrid', array(
+            'id'=>$this->getCategory()->getId()
         ));
-    }
-
-    /**
-     * get current product
-     * @access public
-     * @return \Magento\Catalog\Model\Product
-     */
-    public function getProduct(){
-        return $this->_registry->registry('current_product');
     }
 
     /**

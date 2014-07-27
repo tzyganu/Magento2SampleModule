@@ -1,11 +1,35 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
 namespace Sample\News\Controller\Adminhtml;
-class Article extends \Magento\Backend\App\Action{
+class Article
+    extends \Magento\Backend\App\Action{
+    /**
+     * @var \Magento\Framework\Registry|null
+     */
     protected $_coreRegistry = null;
+    /**
+     * @var \Magento\Backend\Helper\Js|null
+     */
     protected $_jsHelper = null;
 
     /**
+     * @access public
      * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Backend\Helper\Js $jsHelper
      * @param \Magento\Framework\Registry $coreRegistry
      */
     public function __construct(
@@ -17,6 +41,11 @@ class Article extends \Magento\Backend\App\Action{
         $this->_jsHelper = $jsHelper;
         parent::__construct($context);
     }
+
+    /**
+     * index action
+     * @access public
+     */
     public function indexAction(){
         $this->_view->loadLayout();
         $this->_title->add(__('News'))->add(__('Article'));
@@ -25,11 +54,18 @@ class Article extends \Magento\Backend\App\Action{
         $this->_view->renderLayout();
     }
 
-    public function newAction()
-    {
+    /**
+     * new action
+     * @access public
+     */
+    public function newAction() {
         $this->_forward('edit');
     }
 
+    /**
+     * init article
+     * @return \Sample\News\Model\Article
+     */
     protected function _initArticle() {
         $articleId  = (int) $this->getRequest()->getParam('id');
         $article    = $this->_objectManager->create('Sample\News\Model\Article');
@@ -38,16 +74,13 @@ class Article extends \Magento\Backend\App\Action{
         }
         $this->_coreRegistry->register('sample_news_article', $article);
         return $article;
-
     }
 
     /**
-     * Edit CMS block
-     *
-     * @return void
+     * edit action
+     * @access public
      */
-    public function editAction()
-    {
+    public function editAction() {
         $articleId  = (int) $this->getRequest()->getParam('id');
         $this->_title->add(__('Articles'));
         $article = $this->_initArticle();
@@ -63,8 +96,11 @@ class Article extends \Magento\Backend\App\Action{
         $this->_view->renderLayout();
     }
 
-    public function saveAction()
-    {
+    /**
+     * save action
+     * @access public
+     */
+    public function saveAction() {
         $data = $this->getRequest()->getPost('article');
         if ($data) {
             $article = $this->_objectManager->create('Sample\News\Model\Article');
@@ -102,11 +138,20 @@ class Article extends \Magento\Backend\App\Action{
         }
         $this->_redirect('*/*/');
     }
+
+    /**
+     * grid action
+     * @access public
+     */
     public function gridAction(){
         $this->_view->loadLayout(false);
         $this->_view->renderLayout();
     }
 
+    /**
+     * mass status change action
+     * @access public
+     */
     public function massStatusAction(){
         $articleIds = (array)$this->getRequest()->getParam('entity_ids');
         $status     = (int)$this->getRequest()->getParam('status');
@@ -131,48 +176,51 @@ class Article extends \Magento\Backend\App\Action{
             $this->_getSession()
                 ->addException($e, __('Something went wrong while updating the article(s) status.'));
         }
-
         $this->_redirect('*/*/');
     }
 
+    /**
+     * delete action
+     * @access public
+     */
     public function deleteAction() {
         // check if we know what should be deleted
         $id = $this->getRequest()->getParam('id');
         if ($id) {
             try {
-                // init model and delete
                 $article = $this->_objectManager->create('Sample\News\Model\Article');
                 $article->load($id);
                 $article->delete();
-                // display success message
                 $this->messageManager->addSuccess(__('The article has been deleted.'));
-                // go to grid
                 $this->_redirect('*/*/');
                 return;
             } catch (\Exception $e) {
-                // display error message
                 $this->messageManager->addError($e->getMessage());
-                // go back to edit form
                 $this->_redirect('*/*/edit', array('id' => $id));
                 return;
             }
         }
-        // display error message
         $this->messageManager->addError(__('We can\'t find a article to delete.'));
-        // go to grid
         $this->_redirect('*/*/');
     }
 
+    /**
+     * products action
+     * @access public
+     */
     public function productsAction() {
-
         $this->_initArticle();
         $this->_view->loadLayout();
         $this->_view->getLayout()->getBlock('article.edit.tab.product')
             ->setArticleProducts($this->getRequest()->getPost('article_products', null));
         $this->_view->renderLayout();
     }
-    public function productsgridAction() {
 
+    /**
+     * products grid action
+     * @access public
+     */
+    public function productsgridAction() {
         $this->_initArticle();
         $this->_view->loadLayout();
         $this->_view->getLayout()->getBlock('article.edit.tab.product')

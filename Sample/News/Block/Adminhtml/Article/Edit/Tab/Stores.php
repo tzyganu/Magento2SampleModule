@@ -1,27 +1,33 @@
 <?php
-
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
 namespace Sample\News\Block\Adminhtml\Article\Edit\Tab;
 
-/**
- * Adminhtml cms block edit form
- */
 class Stores
     extends \Magento\Backend\Block\Widget\Form\Generic
-    implements \Magento\Backend\Block\Widget\Tab\TabInterface
-{
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface {
     /**
-     * Init form
-     *
-     * @return void
+     * @var \Magento\Store\Model\System\Store
      */
-
     protected $_systemStore;
 
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig
      * @param \Magento\Store\Model\System\Store $systemStore
      * @param array $data
      */
@@ -29,7 +35,6 @@ class Stores
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig,
         \Magento\Store\Model\System\Store $systemStore,
         array $data = array()
     ) {
@@ -37,24 +42,17 @@ class Stores
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
-
-//    protected function _construct()
-//    {
-//        parent::_construct();
-//        $this->setId('stores_form');
-//        $this->setTitle(__('Stores'));
-//    }
-    protected function _prepareForm()
-    {
+    /**
+     * @access protected
+     * @return $this
+     */
+    protected function _prepareForm() {
         $model = $this->_coreRegistry->registry('sample_news_article');
-        /** @var \Magento\Data\Form $form */
         $form   = $this->_formFactory->create();
         $form->setHtmlIdPrefix('article_');
         $form->setFieldNameSuffix('article');
-
         $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Stores'), 'class' => 'fieldset-wide'));
-        /* Check is single store mode */
-        $field =$fieldset->addField('store_id', 'multiselect', array(
+        $field = $fieldset->addField('store_id', 'multiselect', array(
             'name'      => 'stores[]',
             'label'     => __('Store View'),
             'title'     => __('Store View'),
@@ -76,8 +74,7 @@ class Stores
      * @access public
      * @return string
      */
-    public function getTabLabel()
-    {
+    public function getTabLabel() {
         return __('Stores');
     }
 
@@ -86,8 +83,7 @@ class Stores
      * @access public
      * @return string
      */
-    public function getTabTitle()
-    {
+    public function getTabTitle() {
         return __('Stores');
     }
 
@@ -96,8 +92,7 @@ class Stores
      * @access public
      * @return boolean
      */
-    public function canShowTab()
-    {
+    public function canShowTab() {
         return !$this->_storeManager->isSingleStoreMode();
     }
 
@@ -106,8 +101,7 @@ class Stores
      * @access public
      * @return boolean
      */
-    public function isHidden()
-    {
+    public function isHidden() {
         return false;
     }
 }
