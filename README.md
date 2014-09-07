@@ -1,6 +1,10 @@
 Magento 2.0 Sample Module
 ====================
 
+YEAH...this doesn't work on alpha93 or later.  
+Wait for an update.  
+
+
 <img src="http://i.imgur.com/Ma6v2gs.jpg" alt="Magento 2 Sample Module" />
 
 The purpose of this repository is to hold a sample CRUD module for Magento 2.0.  
