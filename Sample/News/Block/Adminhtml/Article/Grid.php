@@ -15,7 +15,6 @@
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
 namespace Sample\News\Block\Adminhtml\Article;
-use \Magento\Backend\Block\Widget\Grid as WidgetGrid;
-class Grid extends WidgetGrid {
+class Grid extends \Magento\Backend\Block\Widget\Grid {
 
 }

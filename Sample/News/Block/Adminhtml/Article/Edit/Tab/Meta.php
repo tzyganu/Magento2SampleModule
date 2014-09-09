@@ -80,7 +80,7 @@ class Meta
      * @return string
      */
     public function getTabTitle() {
-        return __('Meta');
+        return $this->getTabLabel();
     }
 
     /**

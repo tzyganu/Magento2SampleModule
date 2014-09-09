@@ -75,7 +75,7 @@ class Article
         $form   = $this->_formFactory->create();
         $form->setHtmlIdPrefix('article_');
         $form->setFieldNameSuffix('article');
-        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('General Information'), 'class' => 'fieldset-wide'));
+        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Article Information'), 'class' => 'fieldset-wide'));
         if ($article->getId()) {
             $fieldset->addField('entity_id', 'hidden', array(
                 'name' => 'entity_id',
@@ -91,7 +91,6 @@ class Article
             'name'      => 'identifier',
             'label'     => __('Identifier'),
             'title'     => __('Identifier'),
-            'required'  => true,
             'class'     => 'validate-xml-identifier',
         ));
 
@@ -126,12 +125,6 @@ class Article
             'config'    => $this->_wysiwygConfig->getConfig()
         ));
 
-        $fieldset->addField('categories_ids', '\Sample\News\Block\Adminhtml\Article\Helper\Category', array(
-            'name'  => 'categories_ids',
-            'label'     => __('Categories'),
-            'title'     => __('Categories'),
-        ));
-
         $articleData = $this->_session->getSampleNewsArticleData(true);
         if ($articleData) {
             $article->addData($articleData);
@@ -164,7 +157,7 @@ class Article
      * @return string
      */
     public function getTabTitle() {
-        return __('Article');
+        return $this->getTabLabel();
     }
 
     /**

@@ -180,7 +180,7 @@ class Article
      * @return string
      */
     public function getGridUrl(){
-        return $this->getUrl('sample_news/catalog_category/articlesgrid', array(
+        return $this->getUrl('sample_news/catalog_category/articlesGrid', array(
             'id'=>$this->getCategory()->getId()
         ));
     }

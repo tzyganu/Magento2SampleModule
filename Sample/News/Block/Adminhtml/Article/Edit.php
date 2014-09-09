@@ -25,13 +25,12 @@ class Edit
     protected $_coreRegistry = null;
 
     /**
-     * @access public
-     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Block\Widget\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Block\Widget\Context $context,
         \Magento\Framework\Registry $registry,
         array $data = array()
     ) {
@@ -48,10 +47,10 @@ class Edit
         $this->_blockGroup = 'Sample_News';
         $this->_controller = 'adminhtml_article';
         parent::_construct();
-        $this->_updateButton('save', 'label', __('Save Article'));
-        $this->_updateButton('delete', 'label', __('Delete Article'));
+        $this->buttonList->update('save', 'label', __('Save Article'));
+        $this->buttonList->update('delete', 'label', __('Delete Article'));
 
-        $this->_addButton('saveandcontinue', array(
+        $this->buttonList->add('saveandcontinue', array(
             'label'     => __('Save and Continue Edit'),
             'class'     => 'save',
             'data_attribute'  => array(

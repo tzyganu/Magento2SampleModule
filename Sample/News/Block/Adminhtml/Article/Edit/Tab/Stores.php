@@ -84,7 +84,7 @@ class Stores
      * @return string
      */
     public function getTabTitle() {
-        return __('Stores');
+        return $this->getTabLabel();
     }
 
     /**

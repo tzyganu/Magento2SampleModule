@@ -42,6 +42,22 @@ class Article
      */
     protected $_productFactory;
     /**
+     * @var \Magento\Framework\Filter\FilterManager
+     */
+    protected $_filter;
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
+    protected $_urlBuilder;
+    /**
+     * @var
+     */
+    protected $_productCollection;
+    /**
+     * @var
+     */
+    protected $_categoryCollection;
+    /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $_categoryFactory;
@@ -51,6 +67,8 @@ class Article
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Framework\Filter\FilterManager $filter,
+        \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\Model\Resource\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\Db $resourceCollection = null,
         array $data = array()
@@ -58,6 +76,8 @@ class Article
         $this->_productFactory = $productFactory;
         $this->_categoryFactory = $categoryFactory;
         $this->_articleHelper = $articleHelper;
+        $this->_filter = $filter;
+        $this->_urlBuilder = $urlBuilder;
         parent::__construct($context, $registry, $resource, $resourceCollection);
     }
     /**
@@ -92,7 +112,11 @@ class Article
      * @return string
      */
     public function getArticleUrl() {
-        return $this->_articleHelper->getArticleUrl($this);
+        $identifier = $this->getIdentifier();
+        if ($identifier) {
+            return $this->_urlBuilder->getUrl('', array('_direct' => $identifier));
+        }
+        return $this->_urlBuilder->getUrl('sample_news/article/view', array('id' => $this->getId()));
     }
 
     /**
@@ -120,23 +144,25 @@ class Article
         }
         return $array;
     }
-    //TODO: cache in member var
+
     /**
      * @access public
      * @param string $attributes
      * @return object
      */
     public function getSelectedProductsCollection($attributes = '*') {
-        $collection = $this->_productFactory->create()->getResourceCollection();
-        $collection->addAttributeToSelect($attributes);
-        $collection->joinField('position',
-            'sample_news_article_product',
-            'position',
-            'product_id=entity_id',
-            '{{table}}.article_id='.$this->getId(),
-            'inner');
-//        echo $collection->getSelect();exit;
-        return $collection;
+        if (is_null($this->_productCollection)) {
+            $collection = $this->_productFactory->create()->getResourceCollection();
+            $collection->addAttributeToSelect($attributes);
+            $collection->joinField('position',
+                'sample_news_article_product',
+                'position',
+                'product_id=entity_id',
+                '{{table}}.article_id='.$this->getId(),
+                'inner');
+            $this->_productCollection = $collection;
+        }
+        return $this->_productCollection;
     }
 
     /**
@@ -144,15 +170,18 @@ class Article
      * @return \Magento\Catalog\Model\Resource\Category\Collection
      */
     public function getSelectedCategoriesCollection($attributes = '*') {
-        $collection = $this->_categoryFactory->create()->getResourceCollection();
-        $collection->addAttributeToSelect($attributes);
-        $collection->joinField('position',
-            'sample_news_article_category',
-            'position',
-            'category_id=entity_id',
-            '{{table}}.article_id='.$this->getId(),
-            'inner');
-        return $collection;
+        if (is_null($this->_categoryCollection)) {
+            $collection = $this->_categoryFactory->create()->getResourceCollection();
+            $collection->addAttributeToSelect($attributes);
+            $collection->joinField('position',
+                'sample_news_article_category',
+                'position',
+                'category_id=entity_id',
+                '{{table}}.article_id='.$this->getId(),
+                'inner');
+            $this->_categoryCollection = $collection;
+        }
+        return $this->_categoryCollection;
     }
 
     /**
@@ -175,5 +204,14 @@ class Article
         return array(
             'status' => 1,
         );
+    }
+
+    /**
+     * format the url key
+     * @param $string
+     * @return string
+     */
+    public function formatUrlKey($string) {
+        return $this->_filter->translitUrl($string);
     }
 }

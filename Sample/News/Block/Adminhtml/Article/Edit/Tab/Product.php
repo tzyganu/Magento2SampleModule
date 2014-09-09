@@ -16,7 +16,8 @@
  */
 namespace Sample\News\Block\Adminhtml\Article\Edit\Tab;
 class Product
-    extends \Magento\Backend\Block\Widget\Grid\Extended {
+    extends \Magento\Backend\Block\Widget\Grid\Extended
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface {
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
@@ -130,6 +131,7 @@ class Product
             'align' => 'center',
             'index' => 'entity_id'
         ));
+
         $this->addColumn('product_name', array(
             'header'=> __('Name'),
             'align' => 'left',
@@ -230,5 +232,47 @@ class Product
             parent::_addColumnFilterToCollection($column);
         }
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabLabel() {
+        return __('Associated Products');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden() {
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabTitle() {
+        return $this->getTabLabel();
+    }
+
+    /**
+     * @return bool
+     */
+    public function canShowTab() {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabUrl() {
+        return $this->getUrl('sample_news/article/products', array('_current' => true));
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabClass() {
+        return 'ajax only';
     }
 }

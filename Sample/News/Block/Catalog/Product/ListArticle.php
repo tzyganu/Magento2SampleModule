@@ -56,6 +56,10 @@ class ListArticle
         $collection->getSelect()->order('position');
         return $collection;
     }
+
+    /**
+     * @return \Magento\Catalog\Model\Product|null
+     */
     public function getProduct() {
         return $this->_registry->registry('current_product');
     }

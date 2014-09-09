@@ -17,7 +17,11 @@
 namespace Sample\News\Controller;
 
 class Router
-    extends \Magento\Framework\App\Router\AbstractRouter {
+    implements \Magento\Framework\App\RouterInterface {
+    /**
+     * @var \Magento\Framework\App\ActionFactory
+     */
+    protected $_actionFactory;
     /**
      * Event manager
      * @var \Magento\Framework\Event\ManagerInterface
@@ -73,7 +77,7 @@ class Router
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\ResponseInterface $response
     ) {
-        parent::__construct($actionFactory);
+        $this->_actionFactory = $actionFactory;
         $this->_eventManager = $eventManager;
         $this->_url = $url;
         $this->_appState = $appState;
@@ -120,7 +124,7 @@ class Router
             ->setActionName('view')
             ->setParam('id', $id);
         $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);
-        return $this->_actionFactory->createController(
+        return $this->_actionFactory->create(
             'Magento\Framework\App\Action\Forward',
             array('request' => $request)
         );

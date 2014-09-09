@@ -16,7 +16,7 @@
 * @license        http://opensource.org/licenses/mit-license.php MIT License
 */
 -->
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../Magento/Core/etc/layout_generic.xsd">
     <referenceBlock name="adminhtml.sample_news.article.grid.container">
         <block class="Magento\Backend\Block\Widget\Grid" name="adminhtml.sample_news.article.grid" as="grid">
             <arguments>
@@ -142,4 +142,4 @@
             </block>
         </block>
     </referenceBlock>
-</layout>
+</page>

@@ -16,7 +16,7 @@
 * @license        http://opensource.org/licenses/mit-license.php MIT License
 */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Core/etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Core/etc/config.xsd">
     <default>
         <sample_news>
             <article>

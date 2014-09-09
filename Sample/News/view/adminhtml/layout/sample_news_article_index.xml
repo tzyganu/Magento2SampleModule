@@ -16,11 +16,10 @@
 * @license        http://opensource.org/licenses/mit-license.php MIT License
 */
 -->
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../Magento/Core/etc/page.xsd">
     <update handle="formkey"/>
     <update handle="sample_news_article_grid_block"/>
     <referenceContainer name="content">
-        <block class="Sample\News\Block\Adminhtml\Article" name="adminhtml.sample_news.article.grid.container">
-        </block>
+        <block class="Sample\News\Block\Adminhtml\Article" name="adminhtml.sample_news.article.grid.container" />
     </referenceContainer>
-</layout>
+</page>

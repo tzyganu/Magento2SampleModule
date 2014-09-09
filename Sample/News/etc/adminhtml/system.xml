@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Sample_News extension
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the MIT License
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/mit-license.php
+*
+* @category       Sample
+* @package        Sample_News
+* @copyright      Copyright (c) 2014
+* @license        http://opensource.org/licenses/mit-license.php MIT License
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/system_file.xsd">
+    <system>
+        <tab id="sample_news" sortOrder="2000">
+            <label>News</label>
+        </tab>
+        <section id="sample_news" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>News</label>
+            <tab>sample_news</tab>
+            <resource>Sample_News::sample_news</resource>
+            <group id="article" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Articles</label>
+                <field id="breadcrumbs" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Breadcrumbs</label>
+                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="meta_title" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Article list meta title</label>
+                </field>
+                <field id="meta_description" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Article list meta description</label>
+                </field>
+                <field id="meta_keywords" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Article list meta keywords</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

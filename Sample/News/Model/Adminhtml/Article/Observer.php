@@ -59,23 +59,6 @@ class Observer {
         $this->_articleResource = $articleResource;
     }
 
-    /**
-     * @access public
-     * @param $observer
-     * @return $this
-     */
-    public function addProductTab($observer) {
-        $block = $observer->getEvent()->getBlock();
-        //TODO: find a better way to add the tab.
-        if ($block instanceof \Magento\Catalog\Block\Adminhtml\Product\Edit\Tabs){
-            $block->addTab('sample_news_articles', array(
-                'label' => __('Articles'),
-                'url'   => $this->_urlBuilder->getUrl('sample_news/catalog_product/articles', array('_current' => true)),
-                'class' => 'ajax',
-            ));
-        }
-        return $this;
-    }
 
     /**
      * save product data
@@ -108,7 +91,7 @@ class Observer {
         $container->setTemplate('Sample_News::catalog/category/article.phtml');
         $tab = $tabs->getLayout()->createBlock(
                 'Sample\News\Block\Adminhtml\Catalog\Category\Tab\Article',
-                'category.demo.article.grid'
+                'category.sample_news.article.grid'
         );
 
         $container->setChild('grid', $tab);
@@ -126,7 +109,7 @@ class Observer {
      * @return $this
      */
     public function saveCategoryData($observer) {
-        $post = $this->_context->getRequest()->getPost('category_demo_articles', -1);
+        $post = $this->_context->getRequest()->getPost('category_sample_news_articles', -1);
         if ($post != '-1') {
             $post = json_decode($post, true);
             $category = $this->_coreRegistry->registry('category');

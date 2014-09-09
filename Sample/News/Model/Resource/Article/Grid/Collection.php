@@ -36,5 +36,6 @@ class Collection
         if ($field == 'store_id') {
             return $this->addStoreFilter($field);
         }
+        else parent::addFieldToFilter($field, $condition);
     }
 }

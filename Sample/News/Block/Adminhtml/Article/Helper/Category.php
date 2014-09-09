@@ -46,6 +46,7 @@ class Category extends \Magento\Framework\Data\Form\Element\Multiselect {
      */
     protected $authorization;
 
+
     /**
      * @access public
      * @param \Magento\Framework\Data\Form\Element\Factory $factoryElement
@@ -135,11 +136,29 @@ class Category extends \Magento\Framework\Data\Form\Element\Multiselect {
                 'onclick' => 'jQuery("#new-category").dialog("open")',
                 'disabled' => $this->getDisabled()
             ]);
+        $widgetOptions = $this->_jsonEncoder->encode(
+            array(
+                'suggestOptions' => array(
+                    'source' => $this->getUrl('catalog/category/suggestCategories'),
+                    'valueField' => '#new_category_parent',
+                    'className' => 'category-select',
+                    'multiselect' => true,
+                    'showAll' => true
+                ),
+                'saveCategoryUrl' => $this->getUrl('catalog/category/save')
+            )
+        );
+        //TODO: move this somewhere else when magento team decides to move it.
         $return = <<<HTML
-    <input id="{$htmlId}-suggest" placeholder="$suggestPlaceholder" />
-    <script>
-        jQuery('#{$htmlId}-suggest').mage('treeSuggest', {$selectorOptions});
-    </script>
+        <input id="{$htmlId}-suggest" placeholder="$suggestPlaceholder" />
+        <script type="text/javascript">
+require(["jquery","mage/mage"],function($) {  // waiting for dependencies at first
+    $(function(){ // waiting for page to load to have '#category_ids-template' available
+        $('#new-category').mage('newCategoryDialog', {$widgetOptions});
+        $('#{$htmlId}-suggest').mage('treeSuggest', {$selectorOptions});
+    });
+});
+</script>
 HTML;
         return $return . $button->toHtml();
     }

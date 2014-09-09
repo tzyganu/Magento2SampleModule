@@ -17,7 +17,8 @@
 namespace Sample\News\Block\Adminhtml\Catalog\Product\Edit\Tab;
 
 class Article
-    extends \Magento\Backend\Block\Widget\Grid\Extended {
+    extends \Magento\Backend\Block\Widget\Grid\Extended
+    implements \Magento\Backend\Block\Widget\Tab\TabInterface{
     /**
      * @var null|\Sample\News\Model\ArticleFactory
      */
@@ -209,5 +210,43 @@ class Article
             parent::_addColumnFilterToCollection($column);
         }
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabLabel() {
+        return __('Associated Articles');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden() {
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabTitle() {
+        return $this->getTabLabel();
+    }
+
+    /**
+     * @return bool
+     */
+    public function canShowTab() {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTabUrl() {
+        return $this->getUrl('sample_news/catalog_product/articles', array('_current' => true));
+    }
+    public function getTabClass() {
+        return 'ajax only';
     }
 }

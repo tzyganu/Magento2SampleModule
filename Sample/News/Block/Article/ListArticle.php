@@ -16,12 +16,8 @@
  */
 namespace Sample\News\Block\Article;
 
-use Sample\News\Model\Resource\Article\CollectionFactory;
-use Magento\Framework\UrlFactory;
-use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Element\Template\Context;
 
-class ListArticle extends Template {
+class ListArticle extends \Magento\Framework\View\Element\Template {
     /**
      * @var \Sample\News\Model\Resource\Article\CollectionFactory
      */
@@ -33,16 +29,15 @@ class ListArticle extends Template {
 
 
     /**
-     * @access public
-     * @param Context $context
-     * @param CollectionFactory $articleCollectionFactory
-     * @param UrlFactory $urlFactory
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory
+     * @param \Magento\Framework\UrlFactory $urlFactory
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        CollectionFactory $articleCollectionFactory,
-        UrlFactory $urlFactory,
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory,
+        \Magento\Framework\UrlFactory $urlFactory,
         array $data = []
     ) {
         $this->_articleCollectionFactory = $articleCollectionFactory;

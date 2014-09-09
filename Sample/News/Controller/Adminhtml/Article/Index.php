@@ -14,19 +14,19 @@
  * @copyright      Copyright (c) 2014
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Sample\News\Controller\Adminhtml\Catalog;
+namespace Sample\News\Controller\Adminhtml\Article;
 
-class Category
-    extends \Magento\Catalog\Controller\Adminhtml\Category {
+class Index
+    extends \Sample\News\Controller\Adminhtml\Article {
     /**
-     * articles grid action
-     * @access public
+     * Index action
+     *
+     * @return void
      */
-    public function articlesgridAction(){
-        $category = $this->_initCategory(false);
-        $this->_view->loadLayout();
-        $this->_view->getLayout()->getBlock('category.article.grid')
-            ->setCategoryArticles($this->getRequest()->getPost('category_articles', null));
+    public function execute() {
+        $this->_title->add(__('Articles'));
+
+        $this->_initAction();
         $this->_view->renderLayout();
     }
 }

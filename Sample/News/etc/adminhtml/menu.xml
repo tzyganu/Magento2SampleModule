@@ -16,7 +16,7 @@
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
 -->
-<config>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
     <menu>
         <add id="Sample_News::sample_news_article" title="Articles" module="Sample_News" sortOrder="65" action="sample_news/article" resource="Sample_News::sample_news_article"/>
     </menu>

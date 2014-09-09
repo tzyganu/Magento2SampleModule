@@ -110,40 +110,37 @@ class Article
     /**
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
-     * @throws \Magento\Framework\Exception
      */
-    protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object) {
-//        /*
-//         * For two attributes which represent timestamp data in DB
-//         * we should make converting such as:
-//         * If they are empty we need to convert them into DB
-//         * type NULL so in DB they will be empty and not some default value
-//         */
-        //TODO: Transform any date field
-//        foreach (array('custom_theme_from', 'custom_theme_to') as $field) {
-//            $value = !$object->getData($field) ? null : $object->getData($field);
-//            $object->setData($field, $this->dateTime->formatDate($value));
-//        }
-        //TODO: autogenerate url key if not specified
-        if (!$this->getIsUniqueArticleToStores($object)) {
-            throw new \Magento\Framework\Exception(__('A page URL key for specified store already exists.'));
-        }
-
-        if (!$this->isValidArticleIdentifier($object)) {
-            throw new \Magento\Framework\Exception(__('The page URL key contains capital letters or disallowed symbols.'));
-        }
-
-        if ($this->isNumericArticleIdentifier($object)) {
-            throw new \Magento\Framework\Exception(__('The page URL key cannot be made of only numbers.'));
-        }
-
-        // modify create / update dates
+    protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object){
         if ($object->isObjectNew() && !$object->hasCreationTime()) {
             $object->setCreationTime($this->_date->gmtDate());
         }
-
+        $urlKey = $object->getData('identifier');
+        if ($urlKey == '') {
+            $urlKey = $object->getTitle();
+        }
+        $urlKey = $object->formatUrlKey($urlKey);
+        $object->setIdentifier($urlKey);
+        $validKey = false;
+        while (!$validKey) {
+            if ($this->getIsUniqueArticleToStores($object)) {
+                $validKey = true;
+            }
+            else {
+                $parts = explode('-', $urlKey);
+                $last = $parts[count($parts) - 1];
+                if (!is_numeric($last)){
+                    $urlKey = $urlKey.'-1';
+                }
+                else {
+                    $suffix = '-'.($last + 1);
+                    unset($parts[count($parts) - 1]);
+                    $urlKey = implode('-', $parts).$suffix;
+                }
+                $object->setData('identifier', $urlKey);
+            }
+        }
         $object->setUpdateTime($this->_date->gmtDate());
-
         return parent::_beforeSave($object);
     }
 
@@ -232,7 +229,7 @@ class Article
     }
 
     /**
-     * @accessprotected
+     * @access protected
      * @param $identifier
      * @param $store
      * @param null $isActive
@@ -282,26 +279,6 @@ class Article
     }
 
     /**
-     * @access protected
-     * @param \Magento\Framework\Model\AbstractModel $object
-     * @return int
-     */
-    protected function isNumericArticleIdentifier(\Magento\Framework\Model\AbstractModel $object) {
-        return preg_match('/^[0-9]+$/', $object->getData('identifier'));
-    }
-
-    /**
-     * @access protected
-     * @param \Magento\Framework\Model\AbstractModel $object
-     * @return int
-     */
-    protected function isValidArticleIdentifier(\Magento\Framework\Model\AbstractModel $object) {
-        return preg_match('/^[a-z0-9][a-z0-9_\/-]+(\.[a-z0-9_-]+)?$/', $object->getData('identifier'));
-    }
-
-
-
-    /**
      * Check if page identifier exist for specific store
      * return page id if page exists
      *
@@ -327,8 +304,7 @@ class Article
      * @param string $identifier
      * @return string|false
      */
-    public function getArticleTitleByIdentifier($identifier)
-    {
+    public function getArticleTitleByIdentifier($identifier) {
         $stores = array(\Magento\Core\Model\Store::DEFAULT_STORE_ID);
         if ($this->_store) {
             $stores[] = (int)$this->getStore()->getId();
@@ -349,8 +325,7 @@ class Article
      * @param string $id
      * @return string|false
      */
-    public function getArticlePageTitleById($id)
-    {
+    public function getArticlePageTitleById($id) {
         $adapter = $this->_getReadAdapter();
 
         $select  = $adapter->select()
@@ -370,8 +345,7 @@ class Article
      * @param string $id
      * @return string|false
      */
-    public function getArticleIdentifierById($id)
-    {
+    public function getArticleIdentifierById($id) {
         $adapter = $this->_getReadAdapter();
 
         $select  = $adapter->select()
@@ -391,8 +365,7 @@ class Article
      * @param int $articleId
      * @return array
      */
-    public function lookupStoreIds($articleId)
-    {
+    public function lookupStoreIds($articleId) {
         $adapter = $this->_getReadAdapter();
 
         $select  = $adapter->select()
@@ -408,8 +381,7 @@ class Article
      * @param \Magento\Core\Model\Store $store
      * @return $this
      */
-    public function setStore($store)
-    {
+    public function setStore($store) {
         $this->_store = $store;
         return $this;
     }
@@ -419,12 +391,11 @@ class Article
      *
      * @return \Magento\Core\Model\Store
      */
-    public function getStore()
-    {
+    public function getStore() {
         return $this->_storeManager->getStore($this->_store);
     }
 
-    protected function _saveProductRelation($article){
+    protected function _saveProductRelation($article) {
         $article->setIsChangedProductList(false);
         $id = $article->getId();
         $products = $article->getProductsData();
@@ -440,8 +411,8 @@ class Article
 
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
-            $cond = array('product_id IN(?)' => array_keys($delete), 'article_id=?' => $id);
-            $adapter->delete($this->_articleProductTable, $cond);
+            $condition = array('product_id IN(?)' => array_keys($delete), 'article_id=?' => $id);
+            $adapter->delete($this->_articleProductTable, $condition);
         }
         if (!empty($insert)) {
             $data = array();
@@ -490,8 +461,6 @@ class Article
         $oldCategoryIds = $article->getCategoryIds();
         $insert = array_diff_key($categories, $oldCategoryIds);
         $delete = array_diff_key($oldCategoryIds, $categories);
-//        $update = array_intersect_key($categories, $oldCategoryIds);
-//        $update = array_diff_assoc($update, $oldCategoryIds);
 
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
@@ -510,14 +479,6 @@ class Article
             $adapter->insertMultiple($this->_articleCategoryTable, $data);
         }
 
-//        if (!empty($update)) {
-//            foreach ($update as $productId => $position) {
-//                $where = array('article_id = ?' => (int)$id, 'category_id = ?' => (int)$productId);
-//                $bind = array('position' => (int)$position['position']);
-//                $adapter->update($this->_articleProductTable, $bind, $where);
-//            }
-//        }
-
         if (!empty($insert) || !empty($delete)) {
             $categoryIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
             $this->_eventManager->dispatch(
@@ -534,23 +495,23 @@ class Article
         return $this;
     }
 
-    public function updateAttributes($articleIds, $attributes){
-        //TODO: check if this is needed.
-    }
-
-    public function getProductsPosition($article)
-    {
+    public function getProductsPosition($article) {
         $select = $this->_getWriteAdapter()->select()->from(
             $this->_articleProductTable,
             array('product_id', 'position')
         )->where(
-                'article_id = :article_id'
-            );
+            'article_id = :article_id'
+        );
         $bind = array('article_id' => (int)$article->getId());
 
         return $this->_getWriteAdapter()->fetchPairs($select, $bind);
     }
 
+    /**
+     * @param $product
+     * @param $articles
+     * @return $this
+     */
     public function saveArticleProductRelation($product, $articles) {
         $product->setIsChangedArticleList(false);
         $id = $product->getId();
@@ -565,17 +526,19 @@ class Article
         foreach ($oldArticleObjects as $article) {
             $oldArticles[$article->getId()] = array('position' => $article->getPosition());
         }
-//        echo "<pre>";
-//        print_r($oldArticles);
-//        print_r($articles);exit;
         $insert = array_diff_key($articles, $oldArticles);
 
         $delete = array_diff_key($oldArticles, $articles);
         $update = array_intersect_key($articles, $oldArticles);
-        //TODO: check against this: https://bugs.php.net/bug.php?id=62115
-        $update = array_diff_assoc($update, $oldArticles);
+        $toUpdate = array();
+        foreach ($update as $productId => $values) {
+            if (isset($oldArticles[$productId]) && $oldArticles[$productId]['position'] != $values['position']) {
+                $toUpdate[$productId] = array();
+                $toUpdate[$productId]['position'] = $values['position'];
+            }
+        }
 
-
+        $update = $toUpdate;
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
             $condition = array('article_id IN(?)' => array_keys($delete), 'product_id=?' => $id);
@@ -617,6 +580,11 @@ class Article
         return $this;
     }
 
+    /**
+     * @param $category
+     * @param $articles
+     * @return $this
+     */
     public function saveArticleCategoryRelation($category, $articles) {
         $category->setIsChangedArticleList(false);
         $id = $category->getId();
@@ -629,12 +597,11 @@ class Article
         }
         $oldArticles = array();
         foreach ($oldArticleObjects as $article) {
-            $oldArticles[$article->getId()] = array('position' => $article->getPosition());
+            $oldArticles[$article->getId()] = $article->getPosition();
         }
         $insert = array_diff_key($articles, $oldArticles);
         $delete = array_diff_key($oldArticles, $articles);
         $update = array_intersect_key($articles, $oldArticles);
-        //TODO: check against this: https://bugs.php.net/bug.php?id=62115
         $update = array_diff_assoc($update, $oldArticles);
 
 
@@ -658,7 +625,7 @@ class Article
         if (!empty($update)) {
             foreach ($update as $articleId => $position) {
                 $where = array('category_id = ?' => (int)$id, 'article_id = ?' => (int)$articleId);
-                $bind = array('position' => (int)$position['position']);
+                $bind = array('position' => (int)$position);
                 $adapter->update($this->_articleCategoryTable, $bind, $where);
             }
         }

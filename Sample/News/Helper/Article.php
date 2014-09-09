@@ -61,21 +61,6 @@ class Article
     }
 
     /**
-     * get article url
-     * @param \Sample\News\Model\Article $article
-     * @return string
-     * //TODO: move this to model class
-     * //TODO: add url prefix and suffix
-     */
-    public function getArticleUrl(\Sample\News\Model\Article $article) {
-        $identifier = $article->getIdentifier();
-        if ($identifier) {
-            return $this->_getUrl('', array('_direct' => $identifier));
-        }
-        return $this->_getUrl('sample_news/article/view', array('id' => $article->getId()));
-    }
-
-    /**
      * @access public
      * @return bool
      */

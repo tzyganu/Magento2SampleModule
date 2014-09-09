@@ -16,11 +16,10 @@
 * @license        http://opensource.org/licenses/mit-license.php MIT License
 */
 -->
-<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Core/etc/layout_single.xsd">
-    <update handle="page_one_column" />
-    <referenceBlock name="content">
+<page layout="2columns-left"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../Magento/Core/etc/page.xsd">
+    <referenceContainer name="content">
         <block class="Sample\News\Block\Article\ViewArticle" template="Sample_News::article/view.phtml" />
-        <block class="Sample\News\Block\Article\Catalog\Product" template="sample_News::article/catalog/product.phtml" />
-        <block class="Sample\News\Block\Article\Catalog\Category" template="sample_News::article/catalog/category.phtml" />
-    </referenceBlock>
-</layout>
+        <block class="Sample\News\Block\Article\Catalog\Product" template="Sample_News::article/catalog/product.phtml" />
+        <block class="Sample\News\Block\Article\Catalog\Category" template="Sample_News::article/catalog/category.phtml" />
+    </referenceContainer>
+</page>
