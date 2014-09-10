@@ -56,8 +56,14 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
             ->setOrder('title','desc');
         $this->setArticles($articles);
     }
-    public function isRssCatalogEnable() {
-        $this->_scopeConfig->getValue('sample_news/article/rss', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+    /**
+     * @return bool
+     */
+    public function isRssEnabled() {
+        return
+            $this->_scopeConfig->getValue('rss/config/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) &&
+            $this->_scopeConfig->getValue('sample_news/article/rss', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -70,6 +76,11 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
             ->setCollection($this->getArticles());
         $this->setChild('pager', $pager);
         $this->getArticles()->load();
+        $headBlock = $this->getLayout()->getBlock('head');
+        if ($this->isRssEnabled()) {
+            $title = __('Articles RSS Feed');
+            $headBlock->addRss($title, $this->getRssLink());
+        }
         return $this;
     }
 
@@ -79,5 +90,12 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
      */
     public function getPagerHtml() {
         return $this->getChildHtml('pager');
+    }
+
+    /**
+     * @return string
+     */
+    public function getRssLink() {
+        return $this->_urlBuilder->getUrl('sample_news/article/rss', array('store' => $this->_storeManager->getStore()->getId()));
     }
 }

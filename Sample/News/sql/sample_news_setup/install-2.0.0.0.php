@@ -43,6 +43,10 @@ if (!$this->tableExists('sample_news_article')) {
             'nullable'  => false,
             'default'   => '1',
         ), 'Is Article Active')
+        ->addColumn('in_rss', \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER, null, array(
+            'nullable'  => false,
+            'default'   => '1',
+        ), 'Show in rss')
         ->addColumn('creation_time', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP, null, array(
         ), 'Creation Time')
         ->addColumn('update_time', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP, null, array(

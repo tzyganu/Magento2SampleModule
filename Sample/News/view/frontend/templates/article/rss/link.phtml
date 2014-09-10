@@ -1,0 +1,20 @@
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<?php if($this->isRssEnabled()): ?>
+    <a href="<?php echo $this->getRssLink() ?>" class="action link rss"><span><?php echo __('Subscribe to RSS Feed') ?></span></a>
+<?php endif; ?>

@@ -51,6 +51,10 @@ class Router
      * @var \Magento\Framework\UrlInterface
      */
     protected $_url;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
 
     /**
      * Response
@@ -59,13 +63,13 @@ class Router
     protected $_response;
 
     /**
-     * @access public
      * @param \Magento\Framework\App\ActionFactory $actionFactory
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Framework\UrlInterface $url
      * @param \Magento\Framework\App\State $appState
      * @param \Sample\News\Model\ArticleFactory $articleFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\App\ResponseInterface $response
      */
     public function __construct(
@@ -75,6 +79,7 @@ class Router
         \Magento\Framework\App\State $appState,
         \Sample\News\Model\ArticleFactory $articleFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\App\ResponseInterface $response
     ) {
         $this->_actionFactory = $actionFactory;
@@ -84,6 +89,7 @@ class Router
         $this->_articleFactory = $articleFactory;
         $this->_storeManager = $storeManager;
         $this->_response = $response;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -114,19 +120,60 @@ class Router
         if (!$condition->getContinue()) {
             return null;
         }
-        $article = $this->_articleFactory->create();
-        $id = $article->checkIdentifier($identifier, $this->_storeManager->getStore()->getId());
-        if (!$id) {
-            return null;
-        }
-        $request->setModuleName('sample_news')
-            ->setControllerName('article')
-            ->setActionName('view')
-            ->setParam('id', $id);
-        $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);
-        return $this->_actionFactory->create(
-            'Magento\Framework\App\Action\Forward',
-            array('request' => $request)
+
+        $settings = array();
+        $settings['article'] = array(
+            'prefix'        => $this->_scopeConfig->getValue(\Sample\News\Model\Article::XML_URL_PREFIX_PATH),
+            'suffix'        => $this->_scopeConfig->getValue(\Sample\News\Model\Article::XML_URL_SUFFIX_PATH),
+            'list_key'      => $this->_scopeConfig->getValue(\Sample\News\Helper\Article::LIST_PATH),
+            'list_action'   => 'index',
+            'model_factory' => $this->_articleFactory,
+            'controller'    => 'article',
+            'action'        => 'view',
+            'param'         => 'id',
+            'check_path'    => 0
         );
+
+        foreach ($settings as $entity => $settings) {
+            if ($settings['list_key']) {
+                if ($settings['list_key'] == $identifier) {
+                    $request->setModuleName('sample_news')
+                        ->setControllerName($settings['controller'])
+                        ->setActionName($settings['list_action']);
+                    $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);
+                    return $this->_actionFactory->create(
+                        'Magento\Framework\App\Action\Forward',
+                        array('request' => $request)
+                    );
+                }
+            }
+            if ($settings['prefix']){
+                $parts = explode('/', $identifier);
+                if ($parts[0] != $settings['prefix'] || count($parts) != 2){
+                    return null;
+                }
+                $identifier = $parts[1];
+            }
+            if ($settings['suffix']){
+                $identifier = substr($identifier, 0 , -strlen($settings['suffix']) - 1);
+            }
+            /** @var \Sample\News\Model\ArticleFactory $articleFactory */
+            $articleFactory = $settings['model_factory'];
+            $article = $articleFactory->create();
+            $id = $article->checkIdentifier($identifier, $this->_storeManager->getStore()->getId());
+            if (!$id) {
+                return null;
+            }
+            $request->setModuleName('sample_news')
+                ->setControllerName($settings['controller'])
+                ->setActionName($settings['action'])
+                ->setParam($settings['param'], $id);
+            $request->setAlias(\Magento\Framework\Url::REWRITE_REQUEST_PATH_ALIAS, $identifier);
+            return $this->_actionFactory->create(
+                'Magento\Framework\App\Action\Forward',
+                array('request' => $request)
+            );
+        }
+        return null;
     }
 }

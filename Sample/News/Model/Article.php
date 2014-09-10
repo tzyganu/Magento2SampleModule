@@ -19,6 +19,8 @@ namespace Sample\News\Model;
 class Article
     extends \Magento\Framework\Model\AbstractModel
     implements \Magento\Framework\Object\IdentityInterface {
+    const XML_URL_PREFIX_PATH = 'sample_news/article/url_prefix';
+    const XML_URL_SUFFIX_PATH = 'sample_news/article/url_suffix';
     /**
      * cache tag
      */
@@ -35,7 +37,9 @@ class Article
      * @var string
      */
     protected $_eventPrefix = 'sample_news_article';
-
+    /**
+     * @var \Sample\News\Helper\Article
+     */
     protected  $_articleHelper;
     /**
      * @var \Magento\Catalog\Model\ProductFactory
@@ -61,6 +65,24 @@ class Article
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $_categoryFactory;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
+
+    /**
+     * @param \Sample\News\Helper\Article $articleHelper
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Filter\FilterManager $filter
+     * @param \Magento\Framework\UrlInterface $urlBuilder
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Model\Resource\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\Db $resourceCollection
+     * @param array $data
+     */
     public function __construct(
         \Sample\News\Helper\Article $articleHelper,
         \Magento\Catalog\Model\ProductFactory $productFactory,
@@ -69,6 +91,7 @@ class Article
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Filter\FilterManager $filter,
         \Magento\Framework\UrlInterface $urlBuilder,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Model\Resource\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\Db $resourceCollection = null,
         array $data = array()
@@ -78,6 +101,7 @@ class Article
         $this->_articleHelper = $articleHelper;
         $this->_filter = $filter;
         $this->_urlBuilder = $urlBuilder;
+        $this->_scopeConfig = $scopeConfig;
         parent::__construct($context, $registry, $resource, $resourceCollection);
     }
     /**
@@ -99,21 +123,18 @@ class Article
 
     /**
      * @access public
-     * @param $articleIds
-     * @param $attributes
-     * @return mixed
-     */
-    public function updateAttributes($articleIds, $attributes){
-        return $this->getResource()->updateAttributes($articleIds, $attributes);
-    }
-
-    /**
-     * @access public
      * @return string
      */
     public function getArticleUrl() {
-        $identifier = $this->getIdentifier();
-        if ($identifier) {
+        if ($this->getIdentifier()) {
+            $identifier = '';
+            if ($prefix = $this->_scopeConfig->getValue(self::XML_URL_PREFIX_PATH)) {
+                $identifier .= $prefix.'/';
+            }
+            $identifier .= $this->getIdentifier();
+            if ($suffix = $this->_scopeConfig->getValue(self::XML_URL_SUFFIX_PATH)) {
+                $identifier .= '.'.$suffix;
+            }
             return $this->_urlBuilder->getUrl('', array('_direct' => $identifier));
         }
         return $this->_urlBuilder->getUrl('sample_news/article/view', array('id' => $this->getId()));

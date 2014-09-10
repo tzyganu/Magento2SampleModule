@@ -34,6 +34,10 @@ class Article
      */
     const LIST_META_KEYWORDS_CONFIG_PATH = 'sample_news/article/meta_keywords';
     /**
+     * list url key path
+     */
+    const LIST_PATH = 'sample_news/article/list_url';
+    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $_scopeConfig;
@@ -57,6 +61,9 @@ class Article
      * @return string
      */
     public function getArticlesUrl() {
+        if ($listKey = $this->_scopeConfig->getValue(self::LIST_PATH)) {
+            return $this->_getUrl('', array('_direct' => $listKey));
+        }
         return $this->_getUrl('sample_news/article/index');
     }
 

@@ -40,6 +40,19 @@
                 <field id="meta_keywords" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Article list meta keywords</label>
                 </field>
+                <field id="list_url" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Article list url</label>
+                </field>
+                <field id="url_prefix" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Article list url</label>
+                </field>
+                <field id="url_suffix" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Article list url</label>
+                </field>
+                <field id="rss" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable RSS</label>
+                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
     </system>

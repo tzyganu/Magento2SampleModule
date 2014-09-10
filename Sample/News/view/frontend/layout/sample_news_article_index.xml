@@ -25,6 +25,9 @@
         </block>
     </referenceBlock>
     <referenceContainer name="content">
-        <block class="Sample\News\Block\Article\ListArticle" template="Sample_News::article/list.phtml"></block>
+        <block class="Sample\News\Block\Article\ListArticle" template="Sample_News::article/list.phtml" />
     </referenceContainer>
+    <referenceBlock name="page.main.title">
+        <block class="Sample\News\Block\Article\ListArticle\Rss" name="article.rss.link" template="Sample_News::article/rss/link.phtml"/>
+    </referenceBlock>
 </page>

@@ -112,8 +112,19 @@ class Article
                 '0' => __('Disabled'),
             ),
         ));
+        $fieldset->addField('in_rss', 'select', array(
+            'label'     => __('Show in RSS'),
+            'title'     => __('Show in RSS'),
+            'name'      => 'in_rss',
+            'required'  => true,
+            'options'   => array(
+                '1' => __('Yes'),
+                '0' => __('No'),
+            ),
+        ));
         if (!$article->getId()) {
             $article->setData('status', '1');
+            $article->setData('in_rss', 1);
         }
 
         $fieldset->addField('content', 'editor', array(

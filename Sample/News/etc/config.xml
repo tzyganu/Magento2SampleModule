@@ -22,6 +22,10 @@
             <article>
                 <breadcrumbs>1</breadcrumbs>
                 <meta_title>Articles</meta_title>
+                <url_prefix>article</url_prefix>
+                <url_suffix>html</url_suffix>
+                <list_url>articles.html</list_url>
+                <rss>1</rss>
             </article>
         </sample_news>
     </default>
