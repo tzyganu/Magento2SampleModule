@@ -1,0 +1,51 @@
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<?php $_sections = $this->getSections(); ?>
+<div class="sections">
+    <?php if ($_sections->getSize() > 0) :?>
+        <?php if ($this->getDisplayMode() == 0) : ?>
+            <div class="sample-news-sections-toolbar toolbar top"><?php echo $this->getPagerHtml(); ?></div>
+            <div class="sample-news-sections-list-container">
+                <?php foreach ($_sections as $_section) : ?>
+                    <div class="sample-news-section-list-item">
+                        <a href="<?php echo $_section->getSectionUrl();?>"><?php echo $_section->getName();?></a>
+                    </div>
+                <?php endforeach;?>
+            </div>
+            <div class="sample-news-sections-toolbar toolbar bottom"><?php echo $this->getPagerHtml(); ?></div>
+        <?php else : ?>
+            <ul id="sections-list">
+                <?php foreach ($_sections as $_section) : ?>
+                    <?php echo $this->drawSection($_section);?>
+                <?php endforeach;?>
+            </ul>
+            <script type="text/javascript">
+                require([
+                    "jquery",
+                    "jquery/ui",
+                    "Sample_News/js/tree"
+                ], function(){
+                    jQuery('#sections-list').treeDisplay();
+                });
+                //newsTree('sections-list');
+            </script>
+        <?php endif;?>
+    <?php else : ?>
+        <?php echo __('There are no sections at this moment');?>
+    <?php endif;?>
+</div>

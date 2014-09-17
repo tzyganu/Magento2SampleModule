@@ -18,6 +18,7 @@ namespace Sample\News\Model\Resource\Article;
 
 class Collection
     extends \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection {
+    protected $_joinedFields = array();
     /**
      * Define resource model
      * @access protected

@@ -19,5 +19,6 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../Magento/Core/etc/page.xsd">
     <referenceContainer name="content">
         <block class="Sample\News\Block\Catalog\Category\ListArticle" name="catalog.category.list.sample.news.article" template="Sample_News::catalog/category/article.phtml" after="-" />
+        <block class="Sample\News\Block\Catalog\Category\ListSection" name="catalog.category.list.sample.news.section" template="Sample_News::catalog/category/section.phtml" after="-" />
     </referenceContainer>
 </page>

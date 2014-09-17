@@ -39,6 +39,7 @@ class Router
      * @var \Sample\News\Model\ArticleFactory
      */
     protected $_articleFactory;
+    protected $_sectionFactory;
 
     /**
      * Config primary
@@ -68,6 +69,7 @@ class Router
      * @param \Magento\Framework\UrlInterface $url
      * @param \Magento\Framework\App\State $appState
      * @param \Sample\News\Model\ArticleFactory $articleFactory
+     * @param \Sample\News\Model\ArticleFactory $sectionFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\App\ResponseInterface $response
@@ -78,6 +80,7 @@ class Router
         \Magento\Framework\UrlInterface $url,
         \Magento\Framework\App\State $appState,
         \Sample\News\Model\ArticleFactory $articleFactory,
+        \Sample\News\Model\SectionFactory $sectionFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\App\ResponseInterface $response
@@ -87,6 +90,7 @@ class Router
         $this->_url = $url;
         $this->_appState = $appState;
         $this->_articleFactory = $articleFactory;
+        $this->_sectionFactory = $sectionFactory;
         $this->_storeManager = $storeManager;
         $this->_response = $response;
         $this->_scopeConfig = $scopeConfig;
@@ -121,8 +125,8 @@ class Router
             return null;
         }
 
-        $settings = array();
-        $settings['article'] = array(
+        $entities = array();
+        $entities['article'] = array(
             'prefix'        => $this->_scopeConfig->getValue(\Sample\News\Model\Article::XML_URL_PREFIX_PATH),
             'suffix'        => $this->_scopeConfig->getValue(\Sample\News\Model\Article::XML_URL_SUFFIX_PATH),
             'list_key'      => $this->_scopeConfig->getValue(\Sample\News\Helper\Article::LIST_PATH),
@@ -133,8 +137,19 @@ class Router
             'param'         => 'id',
             'check_path'    => 0
         );
+        $entities['section'] = array(
+            'prefix'        => $this->_scopeConfig->getValue(\Sample\News\Model\Section::XML_URL_PREFIX_PATH),
+            'suffix'        => $this->_scopeConfig->getValue(\Sample\News\Model\Section::XML_URL_SUFFIX_PATH),
+            'list_key'      => $this->_scopeConfig->getValue(\Sample\News\Helper\Section::LIST_PATH),
+            'list_action'   => 'index',
+            'model_factory' => $this->_sectionFactory,
+            'controller'    => 'section',
+            'action'        => 'view',
+            'param'         => 'id',
+            'check_path'    => 0
+        );
 
-        foreach ($settings as $entity => $settings) {
+        foreach ($entities as $entity => $settings) {
             if ($settings['list_key']) {
                 if ($settings['list_key'] == $identifier) {
                     $request->setModuleName('sample_news')
@@ -150,19 +165,18 @@ class Router
             if ($settings['prefix']){
                 $parts = explode('/', $identifier);
                 if ($parts[0] != $settings['prefix'] || count($parts) != 2){
-                    return null;
+                    continue;
                 }
                 $identifier = $parts[1];
             }
             if ($settings['suffix']){
                 $identifier = substr($identifier, 0 , -strlen($settings['suffix']) - 1);
             }
-            /** @var \Sample\News\Model\ArticleFactory $articleFactory */
-            $articleFactory = $settings['model_factory'];
-            $article = $articleFactory->create();
-            $id = $article->checkIdentifier($identifier, $this->_storeManager->getStore()->getId());
+            $factory = $settings['model_factory'];
+            $model = $factory->create();
+            $id = $model->checkIdentifier($identifier, $this->_storeManager->getStore()->getId());
             if (!$id) {
-                return null;
+                continue;
             }
             $request->setModuleName('sample_news')
                 ->setControllerName($settings['controller'])

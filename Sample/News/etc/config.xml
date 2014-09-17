@@ -27,6 +27,16 @@
                 <list_url>articles.html</list_url>
                 <rss>1</rss>
             </article>
+            <section>
+                <breadcrumbs>1</breadcrumbs>
+                <meta_title>Sections</meta_title>
+                <url_prefix>section</url_prefix>
+                <url_suffix>html</url_suffix>
+                <list_url>sections.html</list_url>
+                <rss>1</rss>
+                <tree>1</tree>
+                <recursion>0</recursion>
+            </section>
         </sample_news>
     </default>
 </config>

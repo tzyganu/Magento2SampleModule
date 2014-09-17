@@ -14,7 +14,7 @@
  * @copyright      Copyright (c) 2014
  * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Sample\News\Block\Adminhtml\Article\Helper;
+namespace Sample\News\Block\Adminhtml\Helper;
 
 use Magento\Catalog\Model\Resource\Category\Collection;
 use Magento\Framework\AuthorizationInterface;

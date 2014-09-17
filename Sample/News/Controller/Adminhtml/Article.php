@@ -1,13 +1,21 @@
 <?php
-namespace Sample\News\Controller\Adminhtml;
-
 /**
- * Cms manage blocks controller
+ * Sample_News extension
  *
- * @author      Magento Core Team <core@magentocommerce.com>
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
  */
-class Article extends \Magento\Backend\App\Action
-{
+namespace Sample\News\Controller\Adminhtml;
+class Article extends \Magento\Backend\App\Action {
     /**
      * Core registry
      *
@@ -35,7 +43,7 @@ class Article extends \Magento\Backend\App\Action
         // load layout, set active menu and breadcrumbs
         $this->_view->loadLayout();
         $this->_setActiveMenu(
-            'Sample_News::sample_news_article'
+            'Sample_News::news_article'
         )->_addBreadcrumb(
             __('News'),
             __('News')
@@ -53,7 +61,7 @@ class Article extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Sample_News::sample_news_article');
+        return $this->_authorization->isAllowed('Sample_News::news_article');
     }
     protected function _initArticle() {
         $articleId  = (int) $this->getRequest()->getParam('id');

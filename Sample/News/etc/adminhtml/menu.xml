@@ -18,6 +18,8 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
     <menu>
-        <add id="Sample_News::sample_news_article" title="Articles" module="Sample_News" sortOrder="65" action="sample_news/article" resource="Sample_News::sample_news_article"/>
+        <add id="Sample_News::news" title="News" module="Sample_News" sortOrder="65" resource="Sample_News::news"/>
+        <add id="Sample_News::news_article" title="Articles" module="Sample_News" sortOrder="10" action="sample_news/article" resource="Sample_News::article" parent="Sample_News::news" />
+        <add id="Sample_News::news_section" title="Sections" module="Sample_News" sortOrder="20" action="sample_news/section" resource="Sample_News::section" parent="Sample_News::news" />
     </menu>
 </config>

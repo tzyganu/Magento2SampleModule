@@ -21,17 +21,20 @@ class Product
      * @var null|\Sample\News\Model\ArticleFactory
      */
     protected $_articleFactory = null;
+    protected $_sectionFactory = null;
 
     /**
-     * @access public
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Sample\News\Model\ArticleFactory $articleFactory
+     * @param \Sample\News\Model\SectionFactory $sectionFactory
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Sample\News\Model\ArticleFactory $articleFactory
+        \Sample\News\Model\ArticleFactory $articleFactory,
+        \Sample\News\Model\SectionFactory $sectionFactory
     ) {
         $this->_articleFactory = $articleFactory;
+        $this->_sectionFactory = $sectionFactory;
         parent::__construct($context);
     }
 
@@ -58,6 +61,27 @@ class Product
      */
     public function getSelectedArticlesCollection(\Magento\Catalog\Model\Product $product){
         $collection = $this->_articleFactory->create()->getResourceCollection()
+            ->addProductFilter($product);
+        return $collection;
+    }
+    public function getSelectedSections(\Magento\Catalog\Model\Product $product){
+        if (!$product->hasSelectedSections()) {
+            $sections = [];
+            foreach ($this->getSelectedSectionsCollection($product) as $section) {
+                $sections[] = $section;
+            }
+            $product->setSelectedSections($sections);
+        }
+        return $product->getData('selected_sections');
+    }
+
+    /**
+     * @access public
+     * @param \Magento\Catalog\Model\Product $product
+     * @return mixed
+     */
+    public function getSelectedSectionsCollection(\Magento\Catalog\Model\Product $product){
+        $collection = $this->_sectionFactory->create()->getResourceCollection()
             ->addProductFilter($product);
         return $collection;
     }

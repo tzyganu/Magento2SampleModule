@@ -25,7 +25,7 @@
             <label>News</label>
             <tab>sample_news</tab>
             <resource>Sample_News::sample_news</resource>
-            <group id="article" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="article" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Articles</label>
                 <field id="breadcrumbs" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Breadcrumbs</label>
@@ -51,6 +51,39 @@
                 </field>
                 <field id="rss" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable RSS</label>
+                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="section" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Articles</label>
+                <field id="breadcrumbs" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Breadcrumbs</label>
+                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="meta_title" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section list meta title</label>
+                </field>
+                <field id="meta_description" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section list meta description</label>
+                </field>
+                <field id="meta_keywords" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section list meta keywords</label>
+                </field>
+                <field id="list_url" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section list url</label>
+                </field>
+                <field id="url_prefix" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section list url</label>
+                </field>
+                <field id="url_suffix" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section list url</label>
+                </field>
+                <field id="rss" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable RSS</label>
+                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="tree" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display as tree in list page</label>
                     <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>

@@ -1,0 +1,127 @@
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<div class="category-edit-title">
+    <h3 class="title"><?php echo $this->escapeHtml($this->getHeader()) . ($this->getSectionId() ? ' (' . __('ID: %1', $this->getSectionId()) . ')' : '') ?></h3>
+</div>
+<div class="page-actions">
+    <?php echo $this->getResetButtonHtml() ?>
+    <?php if ($this->getSectionId()): ?>
+        <?php echo $this->getDeleteButtonHtml() ?>
+    <?php endif; ?>
+    <?php echo $this->getAdditionalButtonsHtml(); ?>
+    <?php echo $this->getSaveButtonHtml() ?>
+</div>
+<?php echo $this->getTabsHtml() ?>
+<iframe name="iframeSave" style="display:none; width:100%;" src="<?php echo $this->getViewFileUrl('blank.html') ?>"></iframe>
+<form target="iframeSave" id="section_edit_form" action="<?php echo $this->getSaveUrl() ?>" method="post" enctype="multipart/form-data">
+    <div class="no-display">
+        <input type="hidden" name="isIframe" value="1"/>
+        <input name="form_key" type="hidden" value="<?php echo $this->getFormKey() ?>"/>
+        <input type="hidden" name="section_products" id="in_section_products" value=""/>
+        <input type="hidden" name="active_tab_id" id="active_tab_id" value=""/>
+    </div>
+    <div id="section_tab_content"></div>
+</form>
+<script type="text/javascript">
+    require(['jquery', "mage/mage"], function($){
+        $.mage.extend('sectionForm', 'form', 'Sample_News/section/form');
+        $('#section_edit_form')
+            .mage('sectionForm', {refreshUrl: '<?php echo $this->getRefreshPathUrl() ?>'})
+            .mage('validation', {submitHandler: function(form){
+                form.submit();
+                displayLoadingMask();
+            }});
+    });
+    <?php if(($block = $this->getLayout()->getBlock('sample_news.section.products')) && ($_gridJsObject = $block->getJsObjectName())): ?>
+    require([
+        "mage/adminhtml/grid"
+    ], function(){
+
+        var sectionProducts = $H(<?php echo $this->getProductsJson() ?>);
+        $('in_section_products').value = Object.toJSON(sectionProducts);
+
+        function registerSectionProduct(grid, element, checked){
+            if(checked){
+                if(element.positionElement){
+                    element.positionElement.disabled = false;
+                    sectionProducts.set(element.value, element.positionElement.value);
+                }
+            }
+            else{
+                if(element.positionElement){
+                    element.positionElement.disabled = true;
+                }
+                sectionProducts.unset(element.value);
+            }
+            $('in_section_products').value = Object.toJSON(sectionProducts);
+            grid.reloadParams = {'selected_products[]':sectionProducts.keys()};
+        }
+        function sectionProductRowClick(grid, event){
+            var trElement = Event.findElement(event, 'tr');
+            var isInput   = Event.element(event).tagName == 'INPUT';
+            if(trElement){
+                var checkbox = Element.getElementsBySelector(trElement, 'input');
+                if(checkbox[0]){
+                    var checked = isInput ? checkbox[0].checked : !checkbox[0].checked;
+                    <?php echo $_gridJsObject ?>.setCheckboxChecked(checkbox[0], checked);
+                }
+            }
+        }
+        function positionChange(event){
+            var element = Event.element(event);
+            if(element && element.checkboxElement && element.checkboxElement.checked){
+                sectionProducts.set(element.checkboxElement.value, element.value);
+                $('in_section_products').value = Object.toJSON(sectionProducts);
+            }
+        }
+
+        var tabIndex = 1000;
+        function sectionProductRowInit(grid, row){
+            var checkbox = $(row).getElementsByClassName('checkbox')[0];
+            var position = $(row).getElementsByClassName('input-text')[0];
+            if(checkbox && position){
+                checkbox.positionElement = position;
+                position.checkboxElement = checkbox;
+                position.disabled = !checkbox.checked;
+                position.tabIndex = tabIndex++;
+                Event.observe(position,'keyup',positionChange);
+            }
+        }
+
+
+        <?php echo $_gridJsObject ?>.rowClickCallback = sectionProductRowClick;
+        <?php echo $_gridJsObject ?>.initRowCallback = sectionProductRowInit;
+        <?php echo $_gridJsObject ?>.checkboxCheckCallback = registerSectionProduct;
+        if(<?php echo $_gridJsObject ?>.rows) {
+            <?php echo $_gridJsObject ?>.rows.each(function(row){sectionProductRowInit(<?php echo $_gridJsObject ?>, row)});
+        }
+    });
+    <?php endif; ?>
+    <?php if($this->isAjax() && ($block = $this->getLayout()->getBlock('tabs')) && ($_tabsJsObject=$block->getJsObjectName())): ?>
+    // Temporary solution, will be replaced after refactoring of manage section functionality
+    <?php $tabsBlock = $this->getLayout()->getBlock('tabs'); ?>
+    require(["jquery","mage/backend/tabs"],function($){
+        var activeAnchor = $('#<?php echo $tabsBlock->getId() ?>').tabs('activeAnchor');
+        if (activeAnchor.length) {
+            $('active_tab_id').value = activeAnchor.prop('id');
+        }
+        $('active_tab_id').tabsJsObject = $('#<?php echo $tabsBlock->getId() ?>');
+    });
+    <?php endif; ?>
+
+</script>

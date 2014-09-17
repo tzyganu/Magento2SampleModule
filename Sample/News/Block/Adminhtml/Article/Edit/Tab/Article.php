@@ -91,7 +91,6 @@ class Article
             'name'      => 'identifier',
             'label'     => __('Identifier'),
             'title'     => __('Identifier'),
-            'class'     => 'validate-xml-identifier',
         ));
 
         if ($this->_storeManager->isSingleStoreMode()) {

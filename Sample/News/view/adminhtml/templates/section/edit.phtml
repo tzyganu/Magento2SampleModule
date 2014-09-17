@@ -1,0 +1,171 @@
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category       Sample
+ * @package        Sample_News
+ * @copyright      Copyright (c) 2014
+ * @license        http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<div id="section-edit-container" class="category-content">
+    <?php echo $this->getChildHtml('form') ?>
+</div>
+<script type="text/javascript">
+require([
+    "jquery/file-uploader",
+    "Sample_News/section/edit"
+]);
+require([
+    "jquery",
+    "js/theme",
+    "mage/backend/floating-header"
+], function(jQuery){
+
+//<![CDATA[
+    function sectionReset(url,useAjax){
+        if(useAjax){
+            var params = {active_tab_id:false};
+            updateContent(url, params);
+        }else{
+            location.href = url;
+        }
+    }
+    function sectionDelete(url, useAjax, sectionId) {
+        if (confirm('<?php echo __('Are you sure you want to delete this section?') ?>')){
+            if (useAjax){
+                tree.nodeForDelete = sectionId;
+                updateContent(url, {}, true);
+            } else {
+                location.href = url;
+            }
+        }
+    }
+
+    /**
+     * Update category content area
+     */
+    function updateContent(url, params, refreshTree) {
+        var win = this;
+        var params = jQuery.extend(params || {}, {
+            form_key: FORM_KEY
+        });
+
+        if (params.node_name) {
+            this.tree.getNodeById(tree.currentNodeId).currentNode.setText(params.node_name);
+        }
+
+        (function($){
+            var $sectionContainer = $('#section-edit-container');
+            $.ajax({
+                url: url + (url.match(new RegExp('\\?')) ? '&isAjax=true' : '?isAjax=true' ),
+                data: params,
+                context: $('body'),
+                showLoader: true
+            }).done(function(data){
+                if (data.content) {
+                    $('.page-actions').floatingHeader('destroy');
+                    try {
+                        $('#section-edit-container .wysiwyg-editor').each(function(index, element) {
+                            tinyMCE.execCommand('mceRemoveControl', false, $(element).attr('id'));
+                        });
+                        $sectionContainer.html('');
+                    } catch(e) {
+                        alert(e.message);
+                    }
+                    $sectionContainer.html(data.content).trigger('contentUpdated');
+                    setTimeout(function() {
+                        $('#section-edit-container .wysiwyg-editor').each(function(index, element) {
+                            tinyMCE.execCommand('mceRemoveControl', false, $(element).attr('id'));
+                            tinyMCE.execCommand('mceAddControl', true, $(element).attr('id'));
+                        });
+                        $('.page-actions').floatingHeader({ 'title': '.section-edit-title'});
+                        try {
+                            if (refreshTree) {
+                                win.refreshTreeArea();
+                            }
+                        } catch (e) {
+                            alert(e.message);
+                        };
+                    }, 25);
+                }
+                if (data.messages && data.messages.length > 0) {
+                    $('.messages').html(data.messages);
+                }
+            });
+        })(jQuery);
+    }
+
+    /**
+     * Refresh tree nodes after saving or deleting a category
+     */
+    function refreshTreeArea(transport)
+    {;
+        if (tree && window.editingSectionBreadcrumbs) {
+            //section deleted - delete its node
+            if (tree.nodeForDelete) {
+                var node = tree.getNodeById(tree.nodeForDelete);
+                tree.nodeForDelete = false;
+
+                if (node) { // Check maybe tree became somehow not synced with ajax and we're trying to delete unknown node
+                    node.parentNode.removeChild(node);
+                    tree.currentNodeId = false;
+                }
+            }
+            // section created - add its node
+            else if (tree.addNodeTo) {
+                var parent = tree.getNodeById(tree.addNodeTo);
+                tree.addNodeTo = false;
+
+                if (parent) { // Check maybe tree became somehow not synced with ajax and we're trying to add to unknown node
+                    var node = new Ext.tree.AsyncTreeNode(window.editingSectionBreadcrumbs[window.editingSectionBreadcrumbs.length - 1]);
+                    node.loaded = true;
+                    tree.currentNodeId = node.id;
+                    parent.appendChild(node);
+
+                    if (parent.expanded) {
+                        tree.selectCurrentNode();
+                    } else {
+                        var timer;
+                        parent.expand();
+                        var f = function(){
+                            if(parent.expanded){ // done expanding
+                                clearInterval(timer);
+                                tree.selectCurrentNode();
+                            }
+                        };
+                        timer = setInterval(f, 200);
+                    }
+                }
+            }
+
+            // update all affected categories nodes names
+            for (var i = 0; i < window.editingSectionBreadcrumbs.length; i++) {
+                var node = tree.getNodeById(window.editingSectionBreadcrumbs[i].id);
+                if (node) {
+                    node.setText(window.editingSectionBreadcrumbs[i].text);
+                }
+            }
+        }
+    }
+
+    function displayLoadingMask() {
+        jQuery('body').loadingPopup();
+    }
+
+    window.refreshTreeArea = refreshTreeArea;
+    window.updateContent = updateContent;
+    window.sectionDelete = sectionDelete;
+    window.sectionReset = sectionReset;
+    window.displayLoadingMask = displayLoadingMask;
+//]]>
+
+});
+</script>

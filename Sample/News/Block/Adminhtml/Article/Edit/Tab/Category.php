@@ -55,7 +55,7 @@ class Category
         $form->setHtmlIdPrefix('article_');
         $form->setFieldNameSuffix('article');
         $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Categories'), 'class' => 'fieldset-wide'));
-        $fieldset->addField('categories_ids', '\Sample\News\Block\Adminhtml\Article\Helper\Category', array(
+        $fieldset->addField('categories_ids', '\Sample\News\Block\Adminhtml\Helper\Category', array(
             'name'  => 'categories_ids',
             'label'     => __('Categories'),
             'title'     => __('Categories'),

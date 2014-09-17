@@ -23,5 +23,10 @@
                 <argument name="title" translate="true" xsi:type="string">Articles</argument>
             </arguments>
         </block>
+        <block class="Sample\News\Block\Catalog\Product\ListSection" name="catalog.product.list.sample.news.section" template="Sample_News::catalog/product/section.phtml"  group="detailed_info">
+            <arguments>
+                <argument name="title" translate="true" xsi:type="string">Sections</argument>
+            </arguments>
+        </block>
     </referenceContainer>
 </page>

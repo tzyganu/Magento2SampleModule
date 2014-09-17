@@ -28,6 +28,6 @@
         <block class="Sample\News\Block\Article\ListArticle" template="Sample_News::article/list.phtml" />
     </referenceContainer>
     <referenceBlock name="page.main.title">
-        <block class="Sample\News\Block\Article\ListArticle\Rss" name="article.rss.link" template="Sample_News::article/rss/link.phtml"/>
+        <block class="Sample\News\Block\Article\ListArticle\Rss" name="article.rss.link" template="Sample_News::rss/link.phtml"/>
     </referenceBlock>
 </page>

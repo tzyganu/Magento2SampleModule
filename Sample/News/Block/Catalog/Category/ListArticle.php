@@ -53,7 +53,7 @@ class ListArticle
         $collection = $this->_categoryHelper->getSelectedArticlesCollection($this->getCategory());
         $collection->addStoreFilter($this->_storeManager->getStore()->getId());
         $collection->addFieldToFilter('status', 1);
-        $collection->getSelect()->order('position');
+        $collection->getSelect()->order('related_category.position');
         return $collection;
     }
 
