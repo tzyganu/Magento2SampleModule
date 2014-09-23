@@ -29,7 +29,9 @@ class Tabs
      * @var \Magento\Framework\Registry|null
      */
     protected $_coreRegistry = null;
-
+    /**
+     * @var null|\Sample\News\Helper\Section
+     */
     protected $_helperSection = null;
 
     /**
@@ -37,13 +39,20 @@ class Tabs
      */
     protected $_collectionFactory;
 
-
+    /**
+     * @param \Magento\Framework\Registry $registry
+     * @param \Sample\News\Helper\Section $helperSection
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
+     * @param \Magento\Backend\Model\Auth\Session $authSession
+     * @param array $data
+     */
     public function __construct(
+        \Magento\Framework\Registry $registry,
+        \Sample\News\Helper\Section $helperSection,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
         \Magento\Backend\Model\Auth\Session $authSession,
-        \Sample\News\Helper\Section $helperSection,
-        \Magento\Framework\Registry $registry,
         array $data = array()
     ) {
         $this->_coreRegistry = $registry;
@@ -56,28 +65,25 @@ class Tabs
      *
      * @return void
      */
-    protected function _construct()
-    {
+    protected function _construct() {
         parent::_construct();
         $this->setId('section_info_tabs');
         $this->setDestElementId('section_tab_content');
         $this->setTitle(__('Section Data'));
     }
 
-
-    public function getSection()
-    {
+    /**
+     * @return \Sample\News\Model\Data
+     */
+    public function getSection() {
         return $this->_coreRegistry->registry('sample_news_section');
     }
 
     /**
      * Prepare Layout Content
-     *
      * @return $this
      */
-    protected function _prepareLayout()
-    {
-
+    protected function _prepareLayout() {
         $this->addTab('section', array(
             'label' => __('Section Info'),
             'content' => $this->getLayout()->createBlock(
@@ -101,17 +107,24 @@ class Tabs
         ));
 
         $this->addTab('products', array(
-            'label' => __('Associated products'),
+            'label' => __('Products'),
             'content' => $this->getLayout()->createBlock(
                 'Sample\News\Block\Adminhtml\Section\Tab\Product',
                 'sample_news.section.products'
             )->toHtml()
         ));
         $this->addTab('categories', array(
-            'label' => __('Associated categories'),
+            'label' => __('Categories'),
             'content' => $this->getLayout()->createBlock(
                 'Sample\News\Block\Adminhtml\Section\Tab\Category',
                 'sample_news.section.categories'
+            )->toHtml()
+        ));
+        $this->addTab('articles', array(
+            'label' => __('Articles'),
+            'content' => $this->getLayout()->createBlock(
+                'Sample\News\Block\Adminhtml\Section\Tab\Article',
+                'sample_news.section.articles'
             )->toHtml()
         ));
 

@@ -21,8 +21,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container {
     /**
      * @return void
      */
-    protected function _construct()
-    {
+    protected function _construct() {
         $this->_objectId = 'entity_id';
         $this->_blockGroup = 'Sample_News';
         $this->_controller = 'adminhtml_section';

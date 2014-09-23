@@ -18,6 +18,9 @@ namespace Sample\News\Model\Resource\Article;
 
 class Collection
     extends \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection {
+    /**
+     * @var array
+     */
     protected $_joinedFields = array();
     /**
      * Define resource model
@@ -30,7 +33,7 @@ class Collection
     }
 
     /**
-     * Returns pairs block_id - title
+     * Returns pairs entity_id - title
      * @access public
      * @return array
      */
@@ -44,8 +47,7 @@ class Collection
      * @param bool $withAdmin
      * @return $this
      */
-    public function addStoreFilter($store, $withAdmin = true)
-    {
+    public function addStoreFilter($store, $withAdmin = true) {
         if ($store instanceof \Magento\Store\Model\Store) {
             $store = array($store->getId());
         }
@@ -88,8 +90,7 @@ class Collection
     }
 
     /**
-     * @add product filter
-     * @access public
+     * add product filter
      * @param $product
      * @return $this
      */

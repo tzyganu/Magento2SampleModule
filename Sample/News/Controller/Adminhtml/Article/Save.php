@@ -24,14 +24,14 @@ class Save
     protected $_jsHelper;
 
     /**
+     * @param \Magento\Backend\Helper\Js $jsHelper
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Backend\Helper\Js $jsHelper
      */
     public function __construct(
+        \Magento\Backend\Helper\Js $jsHelper,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Backend\Helper\Js $jsHelper
+        \Magento\Framework\Registry $coreRegistry
     ) {
         $this->_jsHelper = $jsHelper;
         parent::__construct($context, $coreRegistry);
@@ -43,6 +43,7 @@ class Save
     public function execute() {
         $data = $this->getRequest()->getPost('article');
         if ($data) {
+            /** @var \Sample\News\Model\Article $article */
             $article = $this->_objectManager->create('Sample\News\Model\Article');
             $id = $this->getRequest()->getParam('entity_id');
             if ($id) {

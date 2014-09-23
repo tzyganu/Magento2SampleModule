@@ -23,8 +23,7 @@ class SectionsJson extends \Sample\News\Controller\Adminhtml\Section
      *
      * @return void
      */
-    public function execute()
-    {
+    public function execute() {
         if ($this->getRequest()->getParam('expand_all')) {
             $this->_authSession->setIsSampleNewsSectionTreeWasExpanded(true);
         } else {

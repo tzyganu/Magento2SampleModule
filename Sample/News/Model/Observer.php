@@ -16,17 +16,28 @@
  */
 namespace Sample\News\Model;
 class Observer {
+    /**
+     * @var \Sample\News\Helper\Section
+     */
     protected $_sectionHelper;
+
+    /**
+     * @param \Sample\News\Helper\Section $sectionHelper
+     */
     public function __construct(
         \Sample\News\Helper\Section $sectionHelper
     ) {
         $this->_sectionHelper = $sectionHelper;
     }
+
+    /**
+     * @param $observer
+     * @return $this
+     */
     public function addLinksToTopMenu($observer) {
 
         $menu = $observer->getMenu();
         $tree = $menu->getTree();
-        //$action = Mage::app()->getFrontController()->getAction()->getFullActionName();
         $action = 'sample_news_section_index';
 
         $sectionNodeId = 'section';

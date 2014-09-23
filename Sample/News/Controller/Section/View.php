@@ -41,7 +41,6 @@ class View
 
     /**
      * view action
-     * @access public
      */
     public function execute() {
         $section = $this->_initSection();

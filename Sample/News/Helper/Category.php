@@ -20,18 +20,21 @@ class Category
     /**
      * @var null|\Sample\News\Model\ArticleFactory
      */
-    protected $_articleFactory = null;
-    protected $_sectionFactory = null;
+    protected $_articleFactory;
+    /**
+     * @var \Sample\News\Model\SectionFactory
+     */
+    protected $_sectionFactory;
 
     /**
-     * @access public
-     * @param \Magento\Framework\App\Helper\Context $context
      * @param \Sample\News\Model\ArticleFactory $articleFactory
+     * @param \Sample\News\Model\SectionFactory $sectionFactory
+     * @param \Magento\Framework\App\Helper\Context $context
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
         \Sample\News\Model\ArticleFactory $articleFactory,
-        \Sample\News\Model\SectionFactory $sectionFactory
+        \Sample\News\Model\SectionFactory $sectionFactory,
+        \Magento\Framework\App\Helper\Context $context
     ) {
         $this->_articleFactory = $articleFactory;
         $this->_sectionFactory = $sectionFactory;
@@ -65,6 +68,10 @@ class Category
         return $collection;
     }
 
+    /**
+     * @param \Magento\Catalog\Model\Category $category
+     * @return mixed
+     */
     public function getSelectedSections(\Magento\Catalog\Model\Category $category){
         if (!$category->hasSelectedSections()) {
             $sections = [];

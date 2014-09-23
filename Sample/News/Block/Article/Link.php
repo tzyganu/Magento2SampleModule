@@ -24,14 +24,13 @@ class Link
     protected $_articleHelper;
 
     /**
-     * @access public
-     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Sample\News\Helper\Article $articleHelper
+     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Sample\News\Helper\Article $articleHelper,
+        \Magento\Framework\View\Element\Template\Context $context,
         array $data = array()
     ) {
         $this->_articleHelper = $articleHelper;

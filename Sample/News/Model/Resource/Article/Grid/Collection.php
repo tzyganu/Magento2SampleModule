@@ -19,7 +19,6 @@ namespace Sample\News\Model\Resource\Article\Grid;
 class Collection
     extends \Sample\News\Model\Resource\Article\Collection {
     /**
-     * @access public
      * @return $this
      */
     protected function _afterLoad() {

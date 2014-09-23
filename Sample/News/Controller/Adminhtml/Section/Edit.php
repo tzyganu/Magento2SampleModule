@@ -26,10 +26,6 @@ class Edit extends \Sample\News\Controller\Adminhtml\Section {
         $parentId = (int)$this->getRequest()->getParam('parent');
         $sectionId = (int)$this->getRequest()->getParam('id');
 
-//        if (!$sectionId && !$parentId) {
-//            $this->getRequest()->setParam('id', (int)$this->_sectionHelper->getRootSectionId());
-//        }
-
         $section = $this->_initSection();
         if (!$section) {
             return;
@@ -38,7 +34,7 @@ class Edit extends \Sample\News\Controller\Adminhtml\Section {
         $this->_title->add($sectionId ? $section->getName() : __('Sections'));
 
         /**
-         * Check if we have data in session (if during category save was exception)
+         * Check if we have data in session (if during section save was exception)
          */
         $data = $this->_getSession()->getSampleNewsSectionData(true);
         if (isset($data['section'])) {

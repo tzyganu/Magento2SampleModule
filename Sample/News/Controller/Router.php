@@ -39,6 +39,9 @@ class Router
      * @var \Sample\News\Model\ArticleFactory
      */
     protected $_articleFactory;
+    /**
+     * @var \Sample\News\Model\ArticleFactory|\Sample\News\Model\SectionFactory
+     */
     protected $_sectionFactory;
 
     /**
@@ -69,7 +72,7 @@ class Router
      * @param \Magento\Framework\UrlInterface $url
      * @param \Magento\Framework\App\State $appState
      * @param \Sample\News\Model\ArticleFactory $articleFactory
-     * @param \Sample\News\Model\ArticleFactory $sectionFactory
+     * @param \Sample\News\Model\SectionFactory $sectionFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\App\ResponseInterface $response

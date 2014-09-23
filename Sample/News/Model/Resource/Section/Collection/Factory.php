@@ -25,8 +25,7 @@ class Factory {
     /**
      * @param \Magento\Framework\ObjectManager $objectManager
      */
-    public function __construct(\Magento\Framework\ObjectManager $objectManager)
-    {
+    public function __construct(\Magento\Framework\ObjectManager $objectManager) {
         $this->_objectManager = $objectManager;
     }
 
@@ -35,8 +34,7 @@ class Factory {
      *
      * @return \Sample\News\Model\Resource\Section\Collection
      */
-    public function create()
-    {
+    public function create() {
         return $this->_objectManager->create('Sample\News\Model\Resource\Section\Collection');
     }
 }

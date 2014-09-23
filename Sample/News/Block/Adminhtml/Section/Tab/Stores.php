@@ -31,10 +31,10 @@ class Stores
      * @param array $data
      */
     public function __construct(
+        \Magento\Store\Model\System\Store $systemStore,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Store\Model\System\Store $systemStore,
         array $data = array()
     ) {
         $this->_systemStore = $systemStore;
@@ -42,7 +42,6 @@ class Stores
     }
 
     /**
-     * @access protected
      * @return $this
      */
     protected function _prepareForm() {
@@ -50,7 +49,10 @@ class Stores
         $form   = $this->_formFactory->create();
         $form->setHtmlIdPrefix('section_');
         $form->setFieldNameSuffix('section');
-        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Stores'), 'class' => 'fieldset-wide'));
+        $fieldset = $form->addFieldset('base_fieldset', array(
+            'legend'=>__('Stores'),
+            'class' => 'fieldset-wide'
+        ));
         $field = $fieldset->addField('store_id', 'multiselect', array(
             'name'      => 'stores[]',
             'label'     => __('Store View'),
@@ -58,6 +60,7 @@ class Stores
             'required'  => true,
             'values'    => $this->_systemStore->getStoreValuesForForm(false, true),
         ));
+        /** @var \Magento\Backend\Block\Store\Switcher\Form\Renderer\Fieldset\Element $renderer */
         $renderer = $this->getLayout()
             ->createBlock('Magento\Backend\Block\Store\Switcher\Form\Renderer\Fieldset\Element');
         $field->setRenderer($renderer);

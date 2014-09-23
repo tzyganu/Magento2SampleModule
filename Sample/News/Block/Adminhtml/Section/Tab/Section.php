@@ -19,28 +19,20 @@ class Section
     extends \Magento\Backend\Block\Widget\Form\Generic {
 
     /**
-     * Init form
-     * @access public
-     * @return void
-     */
-    protected function _construct() {
-        parent::_construct();
-        $this->setId('section_form');
-        $this->setTitle(__('Section Information'));
-    }
-
-    /**
      * Prepare form
      * @access protected
      * @return $this
      */
-    protected function _prepareForm()
-    {
+    protected function _prepareForm() {
+        /** @var \Sample\News\Model\Section $section */
         $section = $this->_coreRegistry->registry('sample_news_section');
         $form   = $this->_formFactory->create();
         $form->setHtmlIdPrefix('section_');
         $form->setFieldNameSuffix('section');
-        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Section Information'), 'class' => 'fieldset-wide'));
+        $fieldset = $form->addFieldset('base_fieldset', array(
+            'legend'=>__('Section Information'),
+            'class' => 'fieldset-wide')
+        );
         if (!$section->getId()) {
             // path
             if ($this->getRequest()->getParam('parent')) {
@@ -103,8 +95,6 @@ class Section
             $section->setData('status', '1');
             $section->setData('in_rss', 1);
         }
-
-
         $sectionData = $this->_session->getSampleNewsSectionData(true);
         if ($sectionData) {
             $section->addData($sectionData);

@@ -21,5 +21,6 @@
         <block class="Sample\News\Block\Article\ViewArticle" template="Sample_News::article/view.phtml" />
         <block class="Sample\News\Block\Article\Catalog\Product" template="Sample_News::article/catalog/product.phtml" />
         <block class="Sample\News\Block\Article\Catalog\Category" template="Sample_News::article/catalog/category.phtml" />
+        <block class="Sample\News\Block\Article\ViewArticle\Section" template="Sample_News::article/view/section.phtml" />
     </referenceContainer>
 </page>

@@ -43,26 +43,25 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
 
 
     public function __construct(
+        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
+        \Magento\Framework\DB\Helper $resourceHelper,
+        \Magento\Backend\Model\Auth\Session $backendSession,
         \Magento\Backend\Block\Template\Context $context,
         \Sample\News\Model\Resource\Section\Tree $categoryTree,
         \Magento\Framework\Registry $registry,
         \Sample\News\Model\SectionFactory $sectionFactory,
-        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
-        \Magento\Framework\DB\Helper $resourceHelper,
-        \Magento\Backend\Model\Auth\Session $backendSession,
         array $data = array()
     ) {
         $this->_jsonEncoder = $jsonEncoder;
         $this->_resourceHelper = $resourceHelper;
         $this->_backendSession = $backendSession;
-        parent::__construct($context, $categoryTree, $registry, $sectionFactory, $data);
+        parent::__construct($categoryTree, $registry, $sectionFactory,$context, $data);
     }
 
     /**
      * @return void
      */
-    protected function _construct()
-    {
+    protected function _construct() {
         parent::_construct();
         $this->setUseAjax(0);
     }
@@ -70,10 +69,8 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     /**
      * @return $this
      */
-    protected function _prepareLayout()
-    {
+    protected function _prepareLayout() {
         $addUrl = $this->getUrl("*/*/add", array('_current' => true, 'id' => null, '_query' => false));
-
         $this->addChild(
             'add_child_section_button',
             'Magento\Backend\Block\Widget\Button',
@@ -101,14 +98,13 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     }
 
     /**
-     * Retrieve list of categories with name containing $namePart and their parents
-     *
+     * Retrieve list of sections with name containing $namePart and their parents
      * @param string $namePart
      * @return string
      */
     public function getSuggestedSectionsJson($namePart)
     {
-        $collection = $this->_sectionFactory->create()->getCollection();
+        $collection = $this->_sectionFactory->create()->getResourceCollection();
 
         $matchingNamesCollection = clone $collection;
         $escapedNamePart = $this->_resourceHelper->addLikeEscape(
@@ -134,6 +130,7 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
             )
         );
         foreach ($collection as $section) {
+            /** @var \Sample\News\Model\Section $section */
             foreach (array($section->getId(), $section->getParentId()) as $sectionId) {
                 if (!isset($sectionById[$sectionId])) {
                     $sectionById[$sectionId] = array('id' => $sectionId, 'children' => array());
@@ -150,32 +147,28 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     /**
      * @return string
      */
-    public function getAddRootButtonHtml()
-    {
+    public function getAddRootButtonHtml() {
         return $this->getChildHtml('add_root_section_button');
     }
 
     /**
      * @return string
      */
-    public function getAddSubButtonHtml()
-    {
+    public function getAddSubButtonHtml() {
         return $this->getChildHtml('add_child_section_button');
     }
 
     /**
      * @return string
      */
-    public function getExpandButtonHtml()
-    {
+    public function getExpandButtonHtml() {
         return $this->getChildHtml('expand_button');
     }
 
     /**
      * @return string
      */
-    public function getCollapseButtonHtml()
-    {
+    public function getCollapseButtonHtml() {
         return $this->getChildHtml('collapse_button');
     }
 
@@ -183,8 +176,7 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
      * @param bool|null $expanded
      * @return string
      */
-    public function getLoadTreeUrl($expanded = null)
-    {
+    public function getLoadTreeUrl($expanded = null) {
         $params = array('_current' => true, 'id' => null);
         if (is_null($expanded) && $this->_backendSession->getIsSampleNewsSectionTreeWasExpanded() || $expanded == true) {
             $params['expand_all'] = true;
@@ -195,8 +187,7 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     /**
      * @return string
      */
-    public function getNodesUrl()
-    {
+    public function getNodesUrl() {
         return $this->getUrl('sample_news/section/jsonTree');
     }
 
@@ -204,50 +195,45 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     /**
      * @return bool
      */
-    public function getIsWasExpanded()
-    {
+    public function getIsWasExpanded() {
         return $this->_backendSession->getIsSampleNewsSectionTreeWasExpanded();
     }
 
     /**
      * @return string
      */
-    public function getMoveUrl()
-    {
+    public function getMoveUrl() {
         return $this->getUrl('sample_news/section/move');
     }
 
     /**
-     * @param mixed|null $parenNodeCategory
+     * @param null $parentNodeSection
      * @return array
      */
-    public function getTree($parenNodeSection = null)
-    {
-        $rootArray = $this->_getNodeJson($this->getRoot($parenNodeSection));
+    public function getTree($parentNodeSection = null) {
+        $rootArray = $this->_getNodeJson($this->getRoot($parentNodeSection));
         $tree = isset($rootArray['children']) ? $rootArray['children'] : array();
         return $tree;
     }
 
     /**
-     * @param mixed|null $parenNodeCategory
+     * @param null $parentNodeSection
      * @return string
      */
-    public function getTreeJson($parentNodeSection = null)
-    {
+    public function getTreeJson($parentNodeSection = null) {
         $rootArray = $this->_getNodeJson($this->getRoot($parentNodeSection));
         $json = $this->_jsonEncoder->encode(isset($rootArray['children']) ? $rootArray['children'] : array());
         return $json;
     }
 
     /**
-     * Get JSON of array of categories, that are breadcrumbs for specified category path
+     * Get JSON of array of sections, that are breadcrumbs for specified section path
      *
      * @param string $path
      * @param string $javascriptVarName
      * @return string
      */
-    public function getBreadcrumbsJavascript($path, $javascriptVarName)
-    {
+    public function getBreadcrumbsJavascript($path, $javascriptVarName) {
         if (empty($path)) {
             return '';
         }
@@ -272,8 +258,7 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
      * @param int $level
      * @return string
      */
-    protected function _getNodeJson($node, $level = 0)
-    {
+    protected function _getNodeJson($node, $level = 0) {
         // create a node from data array
         if (is_array($node)) {
             $node = new Node($node, 'entity_id', new \Magento\Framework\Data\Tree());
@@ -314,13 +299,12 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     }
 
     /**
-     * Get category name
+     * Get section name
      *
      * @param \Magento\Framework\Object $node
      * @return string
      */
-    public function buildNodeName($node)
-    {
+    public function buildNodeName($node) {
         $result = $this->escapeHtml($node->getName());
         return $result;
     }
@@ -329,12 +313,9 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
      * @param Node|array $node
      * @return bool
      */
-    protected function _isSectionMoveable($node)
-    {
+    protected function _isSectionMoveable($node) {
         $options = new \Magento\Framework\Object(array('is_moveable' => true, 'section' => $node));
-
         $this->_eventManager->dispatch('adminhtml_sample_news_section_tree_is_moveable', array('options' => $options));
-
         return $options->getIsMoveable();
     }
 
@@ -342,25 +323,21 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
      * @param Node|array $node
      * @return bool
      */
-    protected function _isParentSelectedSection($node)
-    {
+    protected function _isParentSelectedSection($node) {
         if ($node && $this->getSection()) {
             $pathIds = $this->getSection()->getPathIds();
             if (in_array($node->getId(), $pathIds)) {
                 return true;
             }
         }
-
         return false;
     }
 
     /**
-     * Check if page loaded by outside link to category edit
-     *
+     * Check if page loaded by outside link to section edit
      * @return boolean
      */
-    public function isClearEdit()
-    {
+    public function isClearEdit() {
         return (bool)$this->getRequest()->getParam('clear');
     }
 
@@ -369,8 +346,7 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
      *
      * @return boolean
      */
-    public function canAddRootSection()
-    {
+    public function canAddRootSection() {
         $options = new \Magento\Framework\Object(array('is_allow' => true));
         $this->_eventManager->dispatch(
             'adminhtml_sample_news_section_tree_can_add_root_section',
@@ -381,18 +357,16 @@ class Tree extends \Sample\News\Block\Adminhtml\Section\AbstractSection
     }
 
     /**
-     * Check availability of adding sub category
+     * Check availability of adding chidle section
      *
      * @return boolean
      */
-    public function canAddChildSection()
-    {
+    public function canAddChildSection() {
         $options = new \Magento\Framework\Object(array('is_allow' => true));
         $this->_eventManager->dispatch(
             'adminhtml_sample_news_section_tree_can_add_child_section',
             array('section' => $this->getSection(), 'options' => $options)
         );
-
         return $options->getIsAllow();
     }
 }

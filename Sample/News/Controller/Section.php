@@ -11,16 +11,16 @@ class Section extends \Magento\Framework\App\Action\Action {
     protected $_sectionHelper;
 
     /**
-     * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Registry $coreRegistry
      * @param \Sample\News\Helper\Section $sectionHelper
+     * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Registry $coreRegistry,
-        \Sample\News\Helper\Section $sectionHelper
+        \Sample\News\Helper\Section $sectionHelper,
+        \Magento\Framework\App\Action\Context $context
     ) {
         $this->_storeManager = $storeManager;
         $this->_coreRegistry = $coreRegistry;

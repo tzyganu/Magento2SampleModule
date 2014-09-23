@@ -20,7 +20,6 @@ class Form
 
     /**
      * Prepare form
-     * @access protected
      * @return $this
      */
     protected function _prepareForm() {

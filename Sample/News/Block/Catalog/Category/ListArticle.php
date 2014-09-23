@@ -28,16 +28,15 @@ class ListArticle
     protected $_categoryHelper;
 
     /**
-     * @access public
+     * @param \Sample\News\Helper\Category $categoryHelper
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Sample\News\Helper\Category $categoryHelper
      * @param array $data
      */
     public function __construct(
+        \Sample\News\Helper\Category $categoryHelper,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\View\Element\Template\Context $context,
-        \Sample\News\Helper\Category $categoryHelper,
         array $data = []
     ) {
         $this->_categoryHelper = $categoryHelper;
@@ -46,7 +45,6 @@ class ListArticle
     }
 
     /**
-     * @access public
      * @return \Sample\News\Model\Resource\Article\Collection
      */
     public function getArticleCollection() {
@@ -58,7 +56,6 @@ class ListArticle
     }
 
     /**
-     * @access public
      * @return \Magento\Catalog\Model\Category
      */
     public function getCategory() {

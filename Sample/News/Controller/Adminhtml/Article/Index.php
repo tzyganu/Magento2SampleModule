@@ -25,7 +25,6 @@ class Index
      */
     public function execute() {
         $this->_title->add(__('Articles'));
-
         $this->_initAction();
         $this->_view->renderLayout();
     }

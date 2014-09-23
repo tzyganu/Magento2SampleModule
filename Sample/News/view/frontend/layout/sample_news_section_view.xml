@@ -34,5 +34,6 @@
         <block class="Sample\News\Block\Section\ViewSection\ChildSections" template="Sample_News::section/view/child_sections.phtml" />
         <block class="Sample\News\Block\Section\Catalog\Product" template="Sample_News::section/catalog/product.phtml" />
         <block class="Sample\News\Block\Section\Catalog\Category" template="Sample_News::section/catalog/category.phtml" />
+        <block class="Sample\News\Block\Section\ViewSection\Article" template="Sample_News::section/view/article.phtml" />
     </referenceContainer>
 </page>

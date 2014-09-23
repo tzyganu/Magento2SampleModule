@@ -19,7 +19,6 @@ namespace Sample\News\Block\Adminhtml\Article\Edit;
 class Tabs
     extends \Magento\Backend\Block\Widget\Tabs {
     /**
-     * @access protected
      * @return void
      */
     protected function _construct() {

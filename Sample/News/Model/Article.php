@@ -19,7 +19,13 @@ namespace Sample\News\Model;
 class Article
     extends \Magento\Framework\Model\AbstractModel
     implements \Magento\Framework\Object\IdentityInterface {
+    /**
+     * path to url prefix
+     */
     const XML_URL_PREFIX_PATH = 'sample_news/article/url_prefix';
+    /**
+     * path to url suffix
+     */
     const XML_URL_SUFFIX_PATH = 'sample_news/article/url_suffix';
     /**
      * cache tag
@@ -62,9 +68,17 @@ class Article
      */
     protected $_categoryCollection;
     /**
+     * @var
+     */
+    protected $_sectionCollection;
+    /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $_categoryFactory;
+    /**
+     * @var SectionFactory
+     */
+    protected $_sectionFactory;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
@@ -74,6 +88,7 @@ class Article
      * @param \Sample\News\Helper\Article $articleHelper
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
+     * @param SectionFactory $sectionFactory
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Filter\FilterManager $filter
@@ -87,6 +102,7 @@ class Article
         \Sample\News\Helper\Article $articleHelper,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        \Sample\News\Model\SectionFactory $sectionFactory,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Filter\FilterManager $filter,
@@ -98,6 +114,7 @@ class Article
     ) {
         $this->_productFactory = $productFactory;
         $this->_categoryFactory = $categoryFactory;
+        $this->_sectionFactory = $sectionFactory;
         $this->_articleHelper = $articleHelper;
         $this->_filter = $filter;
         $this->_urlBuilder = $urlBuilder;
@@ -105,7 +122,6 @@ class Article
         parent::__construct($context, $registry, $resource, $resourceCollection);
     }
     /**
-     * @access public
      * @return void
      */
     protected function _construct() {
@@ -114,7 +130,6 @@ class Article
 
     /**
      * Get identities
-     * @access public
      * @return array
      */
     public function getIdentities() {
@@ -122,7 +137,6 @@ class Article
     }
 
     /**
-     * @access public
      * @return string
      */
     public function getArticleUrl() {
@@ -141,7 +155,6 @@ class Article
     }
 
     /**
-     * @access public
      * @param $identifier
      * @param $storeId
      * @return mixed
@@ -151,7 +164,6 @@ class Article
     }
 
     /**
-     * @access public
      * @return array|mixed
      */
     public function getProductsPosition() {
@@ -167,7 +179,6 @@ class Article
     }
 
     /**
-     * @access public
      * @param string $attributes
      * @return object
      */
@@ -206,7 +217,23 @@ class Article
     }
 
     /**
-     * @access protected
+     * @return \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection
+     */
+    public function getSelectedSectionsCollection() {
+        if (is_null($this->_sectionCollection)) {
+            $collection = $this->_sectionFactory->create()->getResourceCollection();
+            $collection->getSelect()->join(
+                array('related_section' => $collection->getTable('sample_news_article_section')),
+                'related_section.section_id = main_table.entity_id',
+                array('position')
+            );
+            $collection->getSelect()->where('related_section.article_id = ?', $this->getId());
+            $this->_sectionCollection = $collection;
+        }
+        return $this->_sectionCollection;
+    }
+
+    /**
      * @return array
      */
     public function getCategoryIds() {
@@ -218,12 +245,23 @@ class Article
     }
 
     /**
-     * @access public
+     * @return array
+     */
+    public function getSectionIds() {
+        if (!$this->hasData('section_ids')) {
+            $ids = $this->_getResource()->getSectionIds($this);
+            $this->setData('section_ids', $ids);
+        }
+        return (array) $this->_getData('section_ids');
+    }
+
+    /**
      * @return array
      */
     public function getDefaultValues() {
         return array(
             'status' => 1,
+            'in_rss' => 1,
         );
     }
 

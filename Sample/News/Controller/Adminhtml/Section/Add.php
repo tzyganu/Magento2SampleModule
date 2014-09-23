@@ -23,8 +23,7 @@ class Add extends \Sample\News\Controller\Adminhtml\Section
      *
      * @return void
      */
-    public function execute()
-    {
+    public function execute() {
         $this->_objectManager->get('Magento\Backend\Model\Auth\Session')->unsSampleNewsSectionActiveTabId();
         $this->_forward('edit');
     }

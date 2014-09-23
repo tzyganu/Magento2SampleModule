@@ -28,6 +28,7 @@
     <referenceContainer name="content">
         <block class="Sample\News\Block\Adminhtml\Article\Edit" name="sample_news_article_edit"/>
         <block class="Magento\Catalog\Block\Adminhtml\Product\Edit\NewCategory" name="new-category" template="Magento_Catalog::catalog/product/edit/category/new/form.phtml"/>
+        <block class="Sample\News\Block\Adminhtml\Helper\NewSection" name="new-section" template="Sample_News::helper/section/new.phtml"/>
     </referenceContainer>
     <referenceContainer name="left">
         <block class="Sample\News\Block\Adminhtml\Article\Edit\Tabs" name="sample_news_article_tabs">
@@ -36,6 +37,7 @@
             <block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Stores" name="sample_news_edit_tab_article_stores"/>
             <block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Product" name="sample_news_edit_tab_article_product"/>
             <block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Category" name="sample_news_edit_tab_article_category"/>
+            <block class="Sample\News\Block\Adminhtml\Article\Edit\Tab\Section" name="sample_news_edit_tab_article_section"/>
             <action method="addTab">
                 <argument name="name" xsi:type="string">article_section</argument>
                 <argument name="block" xsi:type="string">sample_news_edit_tab_article</argument>
@@ -55,6 +57,10 @@
             <action method="addTab">
                 <argument name="name" xsi:type="string">categories</argument>
                 <argument name="block" xsi:type="string">sample_news_edit_tab_article_category</argument>
+            </action>
+            <action method="addTab">
+                <argument name="name" xsi:type="string">sections</argument>
+                <argument name="block" xsi:type="string">sample_news_edit_tab_article_section</argument>
             </action>
         </block>
     </referenceContainer>

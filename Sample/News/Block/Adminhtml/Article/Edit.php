@@ -25,13 +25,13 @@ class Edit
     protected $_coreRegistry = null;
 
     /**
-     * @param \Magento\Backend\Block\Widget\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Backend\Block\Widget\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Widget\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Backend\Block\Widget\Context $context,
         array $data = array()
     ) {
         $this->_coreRegistry = $registry;
@@ -39,7 +39,6 @@ class Edit
     }
 
     /**
-     * @access protected
      * @return void
      */
     protected function _construct() {
@@ -63,7 +62,6 @@ class Edit
 
     /**
      * Get edit form container header text
-     * @access public
      * @return string
      */
     public function getHeaderText() {

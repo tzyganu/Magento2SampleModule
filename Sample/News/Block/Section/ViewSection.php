@@ -24,14 +24,13 @@ class ViewSection
     protected $_coreRegistry = null;
 
     /**
-     * @access public
-     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
         $this->_coreRegistry = $registry;

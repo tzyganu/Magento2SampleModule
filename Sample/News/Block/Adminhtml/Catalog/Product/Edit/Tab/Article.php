@@ -31,32 +31,42 @@ class Article
      * @var \Magento\Framework\Registry|null
      */
     protected $_registry = null;
+    /**
+     * @var \Magento\Catalog\Controller\Adminhtml\Product\Builder
+     */
+    protected $_productBuilder;
+    /**
+     * @var \Magento\Catalog\Model\Product
+     */
+    protected $_product;
 
     /**
-     * @access public
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Sample\News\Model\ArticleFactory $articleFactory
      * @param \Sample\News\Helper\Product $productHelper
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Catalog\Controller\Adminhtml\Product\Builder $productBuilder
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
         \Sample\News\Model\ArticleFactory $articleFactory,
         \Sample\News\Helper\Product $productHelper,
         \Magento\Framework\Registry $registry,
+        \Magento\Catalog\Controller\Adminhtml\Product\Builder $productBuilder,
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Helper\Data $backendHelper,
         array $data = array()
     ) {
         $this->_articleFactory = $articleFactory;
         $this->_productHelper = $productHelper;
         $this->_registry = $registry;
+        $this->_productBuilder = $productBuilder;
         parent::__construct($context, $backendHelper, $data);
     }
 
     /**
-     * @access public
+     * set grid parameters
      */
     public function _construct() {
         parent::_construct();
@@ -71,7 +81,6 @@ class Article
 
     /**
      * prepare collection
-     * @access protected
      * @return $this
      */
     protected function _prepareCollection() {
@@ -88,13 +97,11 @@ class Article
             array('position')
         );
         $this->setCollection($collection);
-        parent::_prepareCollection();
-        return $this;
+        return parent::_prepareCollection();
     }
 
     /**
      * no mass action here
-     * @access protected
      * @return $this
      */
     protected function _prepareMassaction(){
@@ -103,7 +110,6 @@ class Article
 
     /**
      * prepare columns
-     * @access protected
      * @return $this
      */
     protected function _prepareColumns(){
@@ -141,7 +147,6 @@ class Article
 
     /**
      * get selected articles
-     * @access public
      * @return array
      */
     public function getSelectedArticles() {
@@ -158,7 +163,6 @@ class Article
 
     /**
      * get row url
-     * @access public
      * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $item
      * @return string
      */
@@ -168,7 +172,6 @@ class Article
 
     /**
      * get grid url
-     * @access public
      * @return string
      */
     public function getGridUrl(){
@@ -179,15 +182,22 @@ class Article
 
     /**
      * get current product
-     * @access public
      * @return \Magento\Catalog\Model\Product
      */
     public function getProduct(){
-        return $this->_registry->registry('current_product');
+        if (is_null($this->_product)) {
+            if ($this->_registry->registry('current_product')) {
+                $this->_product = $this->_registry->registry('current_product');
+            }
+            else {
+                $product = $this->_productBuilder->build($this->getRequest());
+                $this->_product = $product;
+            }
+        }
+        return $this->_product;
     }
 
     /**
-     * @access protected
      * @param \Magento\Backend\Block\Widget\Grid\Column $column
      * @return $this
      */
@@ -216,7 +226,7 @@ class Article
      * @return string
      */
     public function getTabLabel() {
-        return __('Associated Articles');
+        return __('Articles');
     }
 
     /**
@@ -246,6 +256,10 @@ class Article
     public function getTabUrl() {
         return $this->getUrl('sample_news/catalog_product/articles', array('_current' => true));
     }
+
+    /**
+     * @return string
+     */
     public function getTabClass() {
         return 'ajax only';
     }

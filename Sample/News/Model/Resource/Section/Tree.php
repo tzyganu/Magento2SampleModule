@@ -16,12 +16,21 @@
  */
 namespace Sample\News\Model\Resource\Section;
 class Tree extends \Magento\Framework\Data\Tree\Dbp {
+    /**
+     * id field
+     */
     const ID_FIELD = 'id';
-
+    /**
+     * path field
+     */
     const PATH_FIELD = 'path';
-
+    /**
+     * order field
+     */
     const ORDER_FIELD = 'order';
-
+    /**
+     * level field
+     */
     const LEVEL_FIELD = 'level';
 
     /**
@@ -40,7 +49,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
 
 
     /**
-     * Inactive categories ids
+     * Inactive sections ids
      *
      * @var array
      */
@@ -78,18 +87,18 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      * @var \Magento\Catalog\Model\Resource\Category
      */
     protected $_newsSection;
+    /**
+     * @var
+     */
     protected $_inactiveItems;
 
     /**
-     * Construct
-     *
-     * @param \Magento\Catalog\Model\Resource\Category $catalogCategory
+     * @param \Sample\News\Model\Resource\Section $newsSection
      * @param \Magento\Framework\App\CacheInterface $cache
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\App\Resource $resource
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param \Magento\Catalog\Model\Attribute\Config $attributeConfig
-     * @param \Magento\Catalog\Model\Resource\Category\Collection\Factory $collectionFactory
+     * @param Collection\Factory $collectionFactory
      */
     public function __construct(
         \Sample\News\Model\Resource\Section $newsSection,
@@ -124,8 +133,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      * @param integer $storeId
      * @return $this
      */
-    public function setStoreId($storeId)
-    {
+    public function setStoreId($storeId) {
         $this->_storeId = (int)$storeId;
         return $this;
     }
@@ -135,8 +143,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      *
      * @return integer
      */
-    public function getStoreId()
-    {
+    public function getStoreId() {
         if ($this->_storeId === null) {
             $this->_storeId = $this->_storeManager->getStore()->getId();
         }
@@ -144,8 +151,6 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Enter description here...
-     *
      * @param Collection $collection
      * @param boolean $sorted
      * @param array $exclude
@@ -153,7 +158,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      * @param boolean $onlyActive
      * @return $this
      */
-    public function addCollectionData(
+    public function addCollectionData (
         $collection = null,
         $sorted = false,
         $exclude = array(),
@@ -206,13 +211,12 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Add inactive categories ids
+     * Add inactive sections ids
      *
      * @param mixed $ids
      * @return $this
      */
-    public function addInactiveSectionIds($ids)
-    {
+    public function addInactiveSectionIds($ids) {
         if (!is_array($this->_inactiveSectionIds)) {
             $this->_initInactiveSectionIds();
         }
@@ -225,20 +229,18 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      *
      * @return $this
      */
-    protected function _initInactiveSectionIds()
-    {
+    protected function _initInactiveSectionIds() {
         $this->_inactiveSectionIds = array();
         $this->_eventManager->dispatch('sample_news_tree_init_inactive_section_ids', array('tree' => $this));
         return $this;
     }
 
     /**
-     * Retrieve inactive categories ids
+     * Retrieve inactive sections ids
      *
      * @return array
      */
-    public function getInactiveSectionIds()
-    {
+    public function getInactiveSectionIds() {
         if (!is_array($this->_inactiveSectionIds)) {
             $this->_initInactiveSectionIds();
         }
@@ -248,13 +250,12 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
 
 
     /**
-     * Check is category items active
+     * Check is section items active
      *
      * @param int $id
      * @return boolean
      */
-    protected function _getItemIsActive($id)
-    {
+    protected function _getItemIsActive($id) {
         if (!in_array($id, $this->_inactiveSectionIds)) {
             return true;
         }
@@ -262,13 +263,12 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Get categories collection
+     * Get sections collection
      *
      * @param boolean $sorted
      * @return Collection
      */
-    public function getCollection($sorted = false)
-    {
+    public function getCollection($sorted = false) {
         if (is_null($this->_collection)) {
             $this->_collection = $this->_getDefaultCollection($sorted);
         }
@@ -281,8 +281,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      * @param Collection|array $object
      * @return void
      */
-    protected function _clean($object)
-    {
+    protected function _clean($object) {
         if (is_array($object)) {
             foreach ($object as $obj) {
                 $this->_clean($obj);
@@ -292,13 +291,10 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Enter description here...
-     *
      * @param Collection $collection
      * @return $this
      */
-    public function setCollection($collection)
-    {
+    public function setCollection($collection) {
         if (!is_null($this->_collection)) {
             $this->_clean($this->_collection);
         }
@@ -307,13 +303,10 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Enter description here...
-     *
      * @param boolean $sorted
      * @return Collection
      */
-    protected function _getDefaultCollection($sorted = false)
-    {
+    protected function _getDefaultCollection($sorted = false) {
         $collection = $this->_collectionFactory->create();
 
         if ($sorted) {
@@ -329,18 +322,13 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Executing parents move method and cleaning cache after it
-     *
-     * @param mixed $category
-     * @param mixed $newParent
-     * @param mixed $prevNode
-     * @return void
+     * @param \Magento\Framework\Data\Tree\Node $section
+     * @param \Magento\Framework\Data\Tree\Node $newParent
+     * @param null $prevNode
      */
-    public function move($section, $newParent, $prevNode = null)
-    {
+    public function move($section, $newParent, $prevNode = null) {
         $this->_newsSection->move($section->getId(), $newParent->getId());
         parent::move($section, $newParent, $prevNode);
-
         $this->_afterMove();
     }
 
@@ -349,21 +337,19 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
      *
      * @return $this
      */
-    protected function _afterMove()
-    {
+    protected function _afterMove() {
         $this->_cache->clean(array(\Sample\News\Model\Section::CACHE_TAG));
         return $this;
     }
 
     /**
-     * Load whole category tree, that will include specified categories ids.
+     * Load whole section tree, that will include specified sections ids.
      *
      * @param array $ids
      * @param bool $addCollectionData
      * @return $this|bool
      */
-    public function loadByIds($ids, $addCollectionData = true)
-    {
+    public function loadByIds($ids, $addCollectionData = true) {
         $levelField = $this->_conn->quoteIdentifier('level');
         $pathField = $this->_conn->quoteIdentifier('path');
         // load first two levels, if no ids specified
@@ -421,15 +407,14 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
     /**
-     * Load array of category parents
+     * Load array of section parents
      *
      * @param string $path
      * @param bool $addCollectionData
      * @param bool $withRootNode
      * @return array
      */
-    public function loadBreadcrumbsArray($path, $addCollectionData = true, $withRootNode = false)
-    {
+    public function loadBreadcrumbsArray($path, $addCollectionData = true, $withRootNode = false) {
         $pathIds = explode('/', $path);
         if (!$withRootNode) {
             array_shift($pathIds);
@@ -453,21 +438,22 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp {
     }
 
 
-
-    protected function _createCollectionDataSelect($sorted = true)
-    {
+    /**
+     * @param bool $sorted
+     * @return \Magento\Framework\DB\Select
+     */
+    protected function _createCollectionDataSelect($sorted = true) {
         $select = $this->_getDefaultCollection($sorted ? $this->_orderField : false)->getSelect();
         return $select;
     }
 
     /**
-     * Get real existing category ids by specified ids
+     * Get real existing section ids by specified ids
      *
      * @param array $ids
      * @return array
      */
-    public function getExistingSectionIdsBySpecifiedIds($ids)
-    {
+    public function getExistingSectionIdsBySpecifiedIds($ids) {
         if (empty($ids)) {
             return array();
         }

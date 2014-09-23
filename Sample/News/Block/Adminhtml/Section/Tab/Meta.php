@@ -19,26 +19,19 @@ namespace Sample\News\Block\Adminhtml\Section\Tab;
 class Meta
     extends \Magento\Backend\Block\Widget\Form\Generic {
     /**
-     * Init form
-     * @access protected
-     * @return void
-     */
-    protected function _construct() {
-        parent::_construct();
-        $this->setId('section_form');
-    }
-
-    /**
      * Prepare form
-     * @access protected
      * @return Meta
      */
     protected function _prepareForm() {
+        /** @var \Sample\News\Model\Section $section */
         $section = $this->_coreRegistry->registry('sample_news_section');
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('section_');
         $form->setFieldNameSuffix('section');
-        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Meta Information'), 'class' => 'fieldset-wide'));
+        $fieldset = $form->addFieldset('base_fieldset', array(
+            'legend'=>__('Meta Information'),
+            'class' => 'fieldset-wide')
+        );
         $fieldset->addField('meta_title', 'text', array(
             'name'      => 'meta_title',
             'label'     => __('Meta Title'),
@@ -50,14 +43,14 @@ class Meta
             'label'     => __('Meta Keywords'),
             'title'     => __('Meta Keywords'),
             'required'  => false,
-            'rows'       => 5
+            'rows'      => 5
         ));
         $fieldset->addField('meta_description', 'textarea', array(
             'name'      => 'meta_description',
             'label'     => __('Meta Description'),
             'title'     => __('Meta Description'),
             'required'  => false,
-            'rows'       => 5
+            'rows'      => 5
         ));
         $form->setValues($section->getData());
         $this->setForm($form);

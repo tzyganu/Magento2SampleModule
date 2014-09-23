@@ -16,6 +16,9 @@
  */
 namespace Sample\News\Model\Resource\Section;
 class Collection extends \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection {
+    /**
+     * @var array
+     */
     protected $_joinedFields = array();
     /**
      * Event prefix
@@ -48,8 +51,7 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
      * @param array $sectionIds
      * @return $this
      */
-    public function addIdFilter($sectionIds)
-    {
+    public function addIdFilter($sectionIds) {
         if (is_array($sectionIds)) {
             if (empty($sectionIds)) {
                 $condition = '';
@@ -75,8 +77,7 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
      *
      * @return $this
      */
-    protected function _beforeLoad()
-    {
+    protected function _beforeLoad() {
         $this->_eventManager->dispatch($this->_eventPrefix . '_load_before', array($this->_eventObject => $this));
         return parent::_beforeLoad();
     }
@@ -97,19 +98,17 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
      * @param string $regexp
      * @return $this
      */
-    public function addPathFilter($regexp)
-    {
+    public function addPathFilter($regexp) {
         $this->addFieldToFilter('path', array('regexp' => $regexp));
         return $this;
     }
 
     /**
-     * Add active category filter
+     * Add active section filter
      *
      * @return $this
      */
-    public function addIsActiveFilter()
-    {
+    public function addIsActiveFilter() {
         $this->addFieldToFilter('status', 1);
         $this->_eventManager->dispatch(
             $this->_eventPrefix . '_add_status_filter',
@@ -125,8 +124,7 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
      * @param array|string $paths
      * @return $this
      */
-    public function addPathsFilter($paths)
-    {
+    public function addPathsFilter($paths) {
         if (!is_array($paths)) {
             $paths = array($paths);
         }
@@ -142,13 +140,12 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
     }
 
     /**
-     * Add category level filter
+     * Add section level filter
      *
      * @param int|string $level
      * @return $this
      */
-    public function addLevelFilter($level)
-    {
+    public function addLevelFilter($level) {
         $this->addFieldToFilter('level', array('lteq' => $level));
         return $this;
     }
@@ -158,8 +155,7 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
      *
      * @return $this
      */
-    public function addRootLevelFilter()
-    {
+    public function addRootLevelFilter() {
         $this->addFieldToFilter('path', array('neq' => '0'));
         $this->addLevelFilter(1);
         return $this;
@@ -171,19 +167,16 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
      * @param string $field
      * @return $this
      */
-    public function addOrderField($field)
-    {
+    public function addOrderField($field) {
         $this->setOrder($field, self::SORT_ORDER_ASC);
         return $this;
     }
     /**
-     * @access public
      * @param $store
      * @param bool $withAdmin
      * @return $this
      */
-    public function addStoreFilter($store, $withAdmin = true)
-    {
+    public function addStoreFilter($store, $withAdmin = true) {
         if ($store instanceof \Magento\Store\Model\Store) {
             $store = array($store->getId());
         }
@@ -196,6 +189,10 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
         $this->addFilter('store', array('in' => $store), 'public');
         return $this;
     }
+
+    /**
+     * before render filters
+     */
     protected function _renderFiltersBefore() {
         if ($this->getFilter('store')) {
             $this->getSelect()->join(
@@ -211,6 +208,11 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
         $countSelect->reset(\Zend_Db_Select::GROUP);
         return $countSelect;
     }
+
+    /**
+     * @param $category
+     * @return $this
+     */
     public function addCategoryFilter($category) {
         if ($category instanceof \Magento\Catalog\Model\Category){
             $category = $category->getId();
@@ -227,6 +229,11 @@ class Collection extends \Magento\Framework\Model\Resource\Db\Collection\Abstrac
         }
         return $this;
     }
+
+    /**
+     * @param $product
+     * @return $this
+     */
     public function addProductFilter($product) {
         if ($product instanceof \Magento\Catalog\Model\Product){
             $product = $product->getId();

@@ -31,18 +31,18 @@ class Rss extends \Magento\Rss\Block\AbstractBlock {
 
     /**
      * @param \Sample\News\Helper\Article $articleHelper
-     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory
-     * @param \Magento\Framework\App\Http\Context $httpContext
      * @param \Magento\Rss\Model\RssFactory $rssFactory
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Magento\Framework\App\Http\Context $httpContext
      * @param array $data
      */
     public function __construct(
         \Sample\News\Helper\Article $articleHelper,
-        \Magento\Framework\View\Element\Template\Context $context,
         \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory,
-        \Magento\Framework\App\Http\Context $httpContext,
         \Magento\Rss\Model\RssFactory $rssFactory,
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Framework\App\Http\Context $httpContext,
         array $data = array()
     ) {
         $this->_articleHelper = $articleHelper;
@@ -92,7 +92,6 @@ class Rss extends \Magento\Rss\Block\AbstractBlock {
         if (!$article->getAllowedInRss()) {
             return;
         }
-
         $description = '<table><tr>' .
             '<td><a href="' .
             $article->getArticleUrl() .

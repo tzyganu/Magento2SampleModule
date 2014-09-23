@@ -16,19 +16,34 @@
  */
 namespace Sample\News\Block\Adminhtml\Section;
 
-use Magento\Store\Model\Store;
 use Magento\Framework\Data\Tree\Node;
 
 class AbstractSection extends \Magento\Backend\Block\Template {
-    protected $_coreRegistry = null;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $_coreRegistry;
+    /**
+     * @var \Sample\News\Model\Resource\Section\Tree
+     */
     protected $_sectionTree;
+    /**
+     * @var \Sample\News\Model\SectionFactory
+     */
     protected $_sectionFactory;
 
+    /**
+     * @param \Sample\News\Model\Resource\Section\Tree $sectionTree
+     * @param \Magento\Framework\Registry $registry
+     * @param \Sample\News\Model\SectionFactory $sectionFactory
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param array $data
+     */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
         \Sample\News\Model\Resource\Section\Tree $sectionTree,
         \Magento\Framework\Registry $registry,
         \Sample\News\Model\SectionFactory $sectionFactory,
+        \Magento\Backend\Block\Template\Context $context,
         array $data = array()
     ) {
         $this->_sectionTree = $sectionTree;
@@ -37,15 +52,17 @@ class AbstractSection extends \Magento\Backend\Block\Template {
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return \Sample\News\Model\Section
+     */
     public function getSection() {
         return $this->_coreRegistry->registry('sample_news_section');
     }
 
     /**
-     * @return int|string|null
+     * @return int
      */
-    public function getSectionId()
-    {
+    public function getSectionId() {
         if ($this->getSection()) {
             return $this->getSection()->getId();
         }
@@ -55,16 +72,14 @@ class AbstractSection extends \Magento\Backend\Block\Template {
     /**
      * @return string
      */
-    public function getSectionName()
-    {
+    public function getSectionName() {
         return $this->getSection()->getName();
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSectionPath()
-    {
+    public function getSectionPath() {
         if ($this->getSection()) {
             return $this->getSection()->getPath();
         }
@@ -78,25 +93,19 @@ class AbstractSection extends \Magento\Backend\Block\Template {
      * @param int $recursionLevel
      * @return Node|array|null
      */
-    public function getRoot($parentNodeSection = null, $recursionLevel = 3)
-    {
+    public function getRoot($parentNodeSection = null, $recursionLevel = 3) {
         if (!is_null($parentNodeSection) && $parentNodeSection->getId()) {
             return $this->getNode($parentNodeSection, $recursionLevel);
         }
         $root = $this->_coreRegistry->registry('root');
         if (is_null($root)) {
             $rootId = \Sample\News\Helper\Section::ROOT_SECTION_ID;
-
             $tree = $this->_sectionTree->load(null, $recursionLevel);
-
             if ($this->getSection()) {
                 $tree->loadEnsuredNodes($this->getSection(), $tree->getNodeById($rootId));
             }
-
             $tree->addCollectionData($this->getSectionCollection());
-
             $root = $tree->getNodeById($rootId);
-
             if ($root && $rootId != \Sample\News\Helper\Section::ROOT_SECTION_ID) {
                 $root->setIsVisible(true);
             } elseif ($root && $root->getId() == \Sample\News\Helper\Section::ROOT_SECTION_ID) {
@@ -110,8 +119,7 @@ class AbstractSection extends \Magento\Backend\Block\Template {
     /**
      * @return \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection
      */
-    public function getSectionCollection()
-    {
+    public function getSectionCollection() {
         $collection = $this->getData('section_collection');
         if (is_null($collection)) {
             $collection = $this->_sectionFactory->create()->getCollection();
@@ -121,17 +129,10 @@ class AbstractSection extends \Magento\Backend\Block\Template {
     }
 
     /**
-     * Get and register categories root by specified categories IDs
-     *
-     * IDs can be arbitrary set of any categories ids.
-     * Tree with minimal required nodes (all parents and neighbours) will be built.
-     * If ids are empty, default tree with depth = 2 will be returned.
-     *
-     * @param array $ids
-     * @return mixed
+     * @param $ids
+     * @return Node|mixed
      */
-    public function getRootByIds($ids)
-    {
+    public function getRootByIds($ids) {
         $root = $this->_coreRegistry->registry('root');
         if (null === $root) {
             $ids = $this->_sectionTree->getExistingSectionIdsBySpecifiedIds($ids);
@@ -151,12 +152,11 @@ class AbstractSection extends \Magento\Backend\Block\Template {
     }
 
     /**
-     * @param mixed $parentNodeCategory
+     * @param $parentNodeSection
      * @param int $recursionLevel
      * @return Node
      */
-    public function getNode($parentNodeSection, $recursionLevel = 2)
-    {
+    public function getNode($parentNodeSection, $recursionLevel = 2) {
         $nodeId = $parentNodeSection->getId();
         $parentId = $parentNodeSection->getParentId();
 
@@ -178,8 +178,7 @@ class AbstractSection extends \Magento\Backend\Block\Template {
      * @param array $args
      * @return string
      */
-    public function getSaveUrl(array $args = array())
-    {
+    public function getSaveUrl(array $args = array()) {
         $params = array('_current' => true);
         $params = array_merge($params, $args);
         return $this->getUrl('sample_news/*/save', $params);
@@ -188,8 +187,7 @@ class AbstractSection extends \Magento\Backend\Block\Template {
     /**
      * @return string
      */
-    public function getEditUrl()
-    {
+    public function getEditUrl() {
         return $this->getUrl(
             'sample_news/section/edit',
             array('_current' => true, '_query' => false, 'id' => null, 'parent' => null)

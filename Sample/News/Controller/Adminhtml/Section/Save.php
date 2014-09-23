@@ -54,10 +54,6 @@ class Save extends \Sample\news\Controller\Adminhtml\Section {
                 $section->setPath($parentSection->getPath());
             }
 
-            if (isset($data['section_products']) && !$section->getProductsReadonly()) {
-                $products = json_decode($data['section_products'], true);
-                $section->setPostedProducts($products);
-            }
             $this->_eventManager->dispatch(
                 'sample_news_section_prepare_save',
                 array('section' => $section, 'request' => $this->getRequest())
@@ -74,11 +70,15 @@ class Save extends \Sample\news\Controller\Adminhtml\Section {
                     $products = json_decode($data['section_products'], true);
                     $section->setProductsData($products);
                 }
+                $articles = $this->getRequest()->getPost('section_articles', -1);
+                if ($articles != -1) {
+                    $articles = json_decode($data['section_articles'], true);
+                    $section->setArticlesData($articles);
+                }
                 $section->save();
                 $this->messageManager->addSuccess(__('Section was successfully saved.'));
                 $refreshTree = 'true';
             } catch (\Exception $e) {
-                echo $e->getMessage();exit;
                 $this->messageManager->addError($e->getMessage());
                 $this->_getSession()->setSampleNewsSectionData($data);
                 $refreshTree = 'false';

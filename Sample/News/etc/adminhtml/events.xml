@@ -19,11 +19,14 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
     <event name="catalog_product_save_after">
         <observer name="sample_news_article_product" instance="Sample\News\Model\Adminhtml\Article\Observer" method="saveProductData" />
+        <observer name="sample_news_section_product" instance="Sample\News\Model\Adminhtml\Section\Observer" method="saveProductData" />
     </event>
     <event name="adminhtml_catalog_category_tabs">
         <observer name="sample_news_article_category" instance="Sample\News\Model\Adminhtml\Article\Observer" method="addCategoryTab" />
+        <observer name="sample_news_section_category" instance="Sample\News\Model\Adminhtml\Section\Observer" method="addCategoryTab" />
     </event>
     <event name="catalog_category_save_after">
         <observer name="sample_news_article_category" instance="Sample\News\Model\Adminhtml\Article\Observer" method="saveCategoryData" />
+        <observer name="sample_news_section_category" instance="Sample\News\Model\Adminhtml\Section\Observer" method="saveCategoryData" />
     </event>
 </config>

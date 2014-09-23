@@ -42,19 +42,7 @@ class Article
     }
 
     /**
-     * Init form
-     * @access public
-     * @return void
-     */
-    protected function _construct() {
-        parent::_construct();
-        $this->setId('article_form');
-        $this->setTitle(__('Article Information'));
-    }
-
-    /**
      * Load Wysiwyg on demand and Prepare layout
-     * @accessprotected
      * @return void
      */
     protected function _prepareLayout() {
@@ -66,11 +54,10 @@ class Article
 
     /**
      * Prepare form
-     * @access protected
      * @return $this
      */
-    protected function _prepareForm()
-    {
+    protected function _prepareForm() {
+        /** @var \Sample\News\Model\Article $article */
         $article = $this->_coreRegistry->registry('sample_news_article');
         $form   = $this->_formFactory->create();
         $form->setHtmlIdPrefix('article_');
@@ -121,11 +108,6 @@ class Article
                 '0' => __('No'),
             ),
         ));
-        if (!$article->getId()) {
-            $article->setData('status', '1');
-            $article->setData('in_rss', 1);
-        }
-
         $fieldset->addField('content', 'editor', array(
             'name'      => 'content',
             'label'     => __('Content'),
@@ -144,17 +126,13 @@ class Article
                 $article->addData($article->getDefaultValues());
             }
         }
-        if (is_null($article->getCategoriesIds())) {
-            $article->setCategoriesIds($article->getCategoryIds());
-        }
-        $form->setValues($article->getData());
+        $form->addValues($article->getData());
         $this->setForm($form);
         return parent::_prepareForm();
     }
 
     /**
      * Prepare label for tab
-     * @access public
      * @return string
      */
     public function getTabLabel() {
@@ -163,7 +141,6 @@ class Article
 
     /**
      * Prepare title for tab
-     * @access public
      * @return string
      */
     public function getTabTitle() {
@@ -172,7 +149,6 @@ class Article
 
     /**
      * Can show tab in tabs
-     * @access public
      * @return boolean
      */
     public function canShowTab() {
@@ -181,7 +157,6 @@ class Article
 
     /**
      * Tab is hidden
-     * @access public
      * @return boolean
      */
     public function isHidden() {

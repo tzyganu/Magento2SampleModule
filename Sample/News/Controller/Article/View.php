@@ -18,8 +18,7 @@ namespace Sample\News\Controller\Article;
 class View
     extends \Sample\News\Controller\Article {
     /**
-     * $init the article
-     * access protected
+     * init the article
      * @return bool|\Sample\News\Model\Article
      */
     protected function _initArticle(){
@@ -38,7 +37,6 @@ class View
 
     /**
      * view action
-     * @access public
      */
     public function execute() {
         $article = $this->_initArticle();

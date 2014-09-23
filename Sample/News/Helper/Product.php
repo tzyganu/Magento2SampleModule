@@ -21,6 +21,9 @@ class Product
      * @var null|\Sample\News\Model\ArticleFactory
      */
     protected $_articleFactory = null;
+    /**
+     * @var null|\Sample\News\Model\SectionFactory
+     */
     protected $_sectionFactory = null;
 
     /**
@@ -29,9 +32,9 @@ class Product
      * @param \Sample\News\Model\SectionFactory $sectionFactory
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
         \Sample\News\Model\ArticleFactory $articleFactory,
-        \Sample\News\Model\SectionFactory $sectionFactory
+        \Sample\News\Model\SectionFactory $sectionFactory,
+        \Magento\Framework\App\Helper\Context $context
     ) {
         $this->_articleFactory = $articleFactory;
         $this->_sectionFactory = $sectionFactory;
@@ -64,6 +67,11 @@ class Product
             ->addProductFilter($product);
         return $collection;
     }
+
+    /**
+     * @param \Magento\Catalog\Model\Product $product
+     * @return mixed
+     */
     public function getSelectedSections(\Magento\Catalog\Model\Product $product){
         if (!$product->hasSelectedSections()) {
             $sections = [];

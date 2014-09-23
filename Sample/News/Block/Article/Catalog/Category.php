@@ -30,8 +30,8 @@ class Category
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Framework\View\Element\Template\Context $context,
         array $data = array()
     ) {
         $this->_coreRegistry = $registry;
@@ -42,7 +42,7 @@ class Category
      * @access public
      * @return \Sample\News\Model\Article
      */
-    public function getArticle(){
+    public function getArticle() {
         return $this->_coreRegistry->registry('current_article');
     }
 

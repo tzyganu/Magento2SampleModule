@@ -19,42 +19,18 @@ class Category
     extends \Magento\Backend\Block\Widget\Form\Generic
     implements \Magento\Backend\Block\Widget\Tab\TabInterface {
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param array $data
-     */
-    public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Data\FormFactory $formFactory,
-        array $data = array()
-    ) {
-        parent::__construct($context, $registry, $formFactory, $data);
-    }
-
-    /**
-     * Init form
-     * @access public
-     * @return void
-     */
-    protected function _construct() {
-        parent::_construct();
-        $this->setId('article_form');
-        $this->setTitle(__('Article Information'));
-    }
-    /**
      * Prepare form
-     * @access protected
      * @return $this
      */
-    protected function _prepareForm()
-    {
+    protected function _prepareForm() {
         $article = $this->_coreRegistry->registry('sample_news_article');
         $form   = $this->_formFactory->create();
         $form->setHtmlIdPrefix('article_');
         $form->setFieldNameSuffix('article');
-        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Categories'), 'class' => 'fieldset-wide'));
+        $fieldset = $form->addFieldset('base_fieldset', array(
+            'legend'=>__('Categories'),
+            'class' => 'fieldset-wide')
+        );
         $fieldset->addField('categories_ids', '\Sample\News\Block\Adminhtml\Helper\Category', array(
             'name'  => 'categories_ids',
             'label'     => __('Categories'),
@@ -72,16 +48,14 @@ class Category
 
     /**
      * Prepare label for tab
-     * @access public
      * @return string
      */
     public function getTabLabel() {
-        return __('Associated Categories');
+        return __('Categories');
     }
 
     /**
      * Prepare title for tab
-     * @access public
      * @return string
      */
     public function getTabTitle() {
@@ -90,7 +64,6 @@ class Category
 
     /**
      * Can show tab in tabs
-     * @access public
      * @return boolean
      */
     public function canShowTab() {
@@ -99,7 +72,6 @@ class Category
 
     /**
      * Tab is hidden
-     * @access public
      * @return boolean
      */
     public function isHidden() {

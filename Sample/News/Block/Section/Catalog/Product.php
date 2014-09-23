@@ -28,16 +28,15 @@ class Product
     protected $_productVisibility = null;
 
     /**
-     * @access public
-     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
+     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Catalog\Model\Product\Visibility $productVisibility,
+        \Magento\Framework\View\Element\Template\Context $context,
         array $data = array()
     ) {
         $this->_coreRegistry = $registry;
@@ -46,7 +45,6 @@ class Product
     }
 
     /**
-     * @access public
      * @return \Sample\News\Model\Section
      */
     public function getSection(){
@@ -54,7 +52,6 @@ class Product
     }
 
     /**
-     * @access public
      * @return \Magento\Catalog\Model\Resource\Product\Collection
      */
     public function getProductCollection() {

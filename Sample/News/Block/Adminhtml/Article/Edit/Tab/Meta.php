@@ -19,15 +19,6 @@ namespace Sample\News\Block\Adminhtml\Article\Edit\Tab;
 class Meta
     extends \Magento\Backend\Block\Widget\Form\Generic
     implements \Magento\Backend\Block\Widget\Tab\TabInterface {
-    /**
-     * Init form
-     * @access protected
-     * @return void
-     */
-    protected function _construct() {
-        parent::_construct();
-        $this->setId('article_form');
-    }
 
     /**
      * Prepare form
@@ -39,7 +30,10 @@ class Meta
         $form = $this->_formFactory->create();
         $form->setHtmlIdPrefix('article_');
         $form->setFieldNameSuffix('article');
-        $fieldset = $form->addFieldset('base_fieldset', array('legend'=>__('Meta Information'), 'class' => 'fieldset-wide'));
+        $fieldset = $form->addFieldset('base_fieldset', array(
+            'legend'=>__('Meta Information'),
+            'class' => 'fieldset-wide')
+        );
         $fieldset->addField('meta_title', 'text', array(
             'name'      => 'meta_title',
             'label'     => __('Meta Title'),
@@ -51,14 +45,14 @@ class Meta
             'label'     => __('Meta Keywords'),
             'title'     => __('Meta Keywords'),
             'required'  => false,
-            'rows'       => 5
+            'rows'      => 5
         ));
         $fieldset->addField('meta_description', 'textarea', array(
             'name'      => 'meta_description',
             'label'     => __('Meta Description'),
             'title'     => __('Meta Description'),
             'required'  => false,
-            'rows'       => 5
+            'rows'      => 5
         ));
         $form->setValues($article->getData());
         $this->setForm($form);

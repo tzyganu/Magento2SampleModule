@@ -42,6 +42,10 @@ class Article
      */
     protected $_articleCategoryTable;
     /**
+     * @var string
+     */
+    protected $_articleSectionTable;
+    /**
      * @var \Sample\News\Helper\Product
      */
     protected $_productHelper;
@@ -83,6 +87,7 @@ class Article
         $this->_categoryHelper = $categoryHelper;
         $this->_articleProductTable = $this->getTable('sample_news_article_product');
         $this->_articleCategoryTable = $this->getTable('sample_news_article_category');
+        $this->_articleSectionTable = $this->getTable('sample_news_article_section');
 
     }
 
@@ -115,6 +120,7 @@ class Article
         if ($object->isObjectNew() && !$object->hasCreationTime()) {
             $object->setCreationTime($this->_date->gmtDate());
         }
+        $object->setUpdateTime($this->_date->gmtDate());
         $urlKey = $object->getData('identifier');
         if ($urlKey == '') {
             $urlKey = $object->getTitle();
@@ -140,7 +146,6 @@ class Article
                 $object->setData('identifier', $urlKey);
             }
         }
-        $object->setUpdateTime($this->_date->gmtDate());
         return parent::_beforeSave($object);
     }
 
@@ -183,6 +188,7 @@ class Article
         }
         $this->_saveProductRelation($object);
         $this->_saveCategoryRelation($object);
+        $this->_saveSectionRelation($object);
         return parent::_afterSave($object);
     }
 
@@ -286,8 +292,7 @@ class Article
      * @param int $storeId
      * @return int
      */
-    public function checkIdentifier($identifier, $storeId)
-    {
+    public function checkIdentifier($identifier, $storeId) {
         $stores = array(\Magento\Store\Model\Store::DEFAULT_STORE_ID, $storeId);
         $select = $this->_getLoadByIdentifierSelect($identifier, $stores, 1);
         $select->reset(\Zend_Db_Select::COLUMNS)
@@ -299,7 +304,7 @@ class Article
     }
 
     /**
-     * Retrieves cms page title from DB by passed identifier.
+     * Retrieves article title from DB by passed identifier.
      *
      * @param string $identifier
      * @return string|false
@@ -320,7 +325,7 @@ class Article
     }
 
     /**
-     * Retrieves cms page title from DB by passed id.
+     * Retrieves article title from DB by passed id.
      *
      * @param string $id
      * @return string|false
@@ -378,7 +383,7 @@ class Article
     /**
      * Set store model
      *
-     * @param \Magento\Core\Model\Store $store
+     * @param \Magento\Store\Model\Store $store
      * @return $this
      */
     public function setStore($store) {
@@ -389,12 +394,16 @@ class Article
     /**
      * Retrieve store model
      *
-     * @return \Magento\Core\Model\Store
+     * @return \Magento\Store\Model\Store
      */
     public function getStore() {
         return $this->_storeManager->getStore($this->_store);
     }
 
+    /**
+     * @param $article
+     * @return $this
+     */
     protected function _saveProductRelation($article) {
         $article->setIsChangedProductList(false);
         $id = $article->getId();
@@ -450,6 +459,10 @@ class Article
         return $this;
     }
 
+    /**
+     * @param $article
+     * @return $this
+     */
     protected function _saveCategoryRelation($article){
         $article->setIsChangedCategoryList(false);
         $id = $article->getId();
@@ -495,6 +508,58 @@ class Article
         return $this;
     }
 
+    /**
+     * @param $article
+     * @return $this
+     */
+    protected function _saveSectionRelation($article){
+        $article->setIsChangedSectionList(false);
+        $id = $article->getId();
+        $sections = $article->getSectionsIds();
+
+        if ($sections === null) {
+            return $this;
+        }
+        $oldSectionIds = $article->getSectionIds();
+        $insert = array_diff_key($sections, $oldSectionIds);
+        $delete = array_diff_key($oldSectionIds, $sections);
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = array('section_id IN(?)' => $delete, 'article_id=?' => $id);
+            $adapter->delete($this->_articleSectionTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = array();
+            foreach ($insert as $categoryId) {
+                $data[] = array(
+                    'article_id' => (int)$id,
+                    'section_id' => (int)$categoryId,
+                    'position' => 1
+                );
+            }
+            $adapter->insertMultiple($this->_articleSectionTable, $data);
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $sectionIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->_eventManager->dispatch(
+                'sample_news_article_change_sections',
+                array('article' => $article, 'section_ids' => $sectionIds)
+            );
+        }
+
+        if (!empty($insert) /*|| !empty($update)*/ || !empty($delete)) {
+            $article->setIsChangedSectionList(true);
+            $sectionIds = array_keys($insert + $delete /* + $update*/);
+            $article->setAffectedSectionIds($categoryIds);
+        }
+        return $this;
+    }
+
+    /**
+     * @param $article
+     * @return array
+     */
     public function getProductsPosition($article) {
         $select = $this->_getWriteAdapter()->select()->from(
             $this->_articleProductTable,
@@ -550,7 +615,7 @@ class Article
                 $data[] = array(
                     'product_id' => (int)$id,
                     'article_id' => (int)$articleId,
-                    'position' => (int)$position
+                    'position' => (int)$position['position']
                 );
             }
             $adapter->insertMultiple($this->_articleProductTable, $data);
@@ -660,6 +725,22 @@ class Article
             'article_id = ?',
             (int)$article->getId()
         );
+        return $adapter->fetchCol($select);
+    }
+
+    /**
+     * @param $article
+     * @return array
+     */
+    public function getSectionIds($article) {
+        $adapter = $this->_getReadAdapter();
+        $select = $adapter->select()->from(
+            $this->_articleSectionTable,
+            'section_id'
+        )->where(
+                'article_id = ?',
+                (int)$article->getId()
+            );
         return $adapter->fetchCol($select);
     }
 }

@@ -24,11 +24,15 @@ class Article extends \Magento\Backend\App\Action {
     protected $_coreRegistry = null;
 
     /**
-     * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Backend\App\Action\Context $context
      */
-    public function __construct(\Magento\Backend\App\Action\Context $context, \Magento\Framework\Registry $coreRegistry)
-    {
+    public function __construct
+    (
+        \Magento\Framework\Registry $coreRegistry,
+        \Magento\Backend\App\Action\Context $context
+
+    ) {
         $this->_coreRegistry = $coreRegistry;
         parent::__construct($context);
     }
@@ -38,8 +42,7 @@ class Article extends \Magento\Backend\App\Action {
      *
      * @return $this
      */
-    protected function _initAction()
-    {
+    protected function _initAction() {
         // load layout, set active menu and breadcrumbs
         $this->_view->loadLayout();
         $this->_setActiveMenu(
@@ -59,10 +62,13 @@ class Article extends \Magento\Backend\App\Action {
      *
      * @return boolean
      */
-    protected function _isAllowed()
-    {
+    protected function _isAllowed() {
         return $this->_authorization->isAllowed('Sample_News::news_article');
     }
+
+    /**
+     * @return \Sample\News\Model\Article
+     */
     protected function _initArticle() {
         $articleId  = (int) $this->getRequest()->getParam('id');
         $article    = $this->_objectManager->create('Sample\News\Model\Article');

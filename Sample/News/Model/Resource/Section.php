@@ -42,6 +42,10 @@ class Section
      */
     protected $_sectionCategoryTable;
     /**
+     * @var string
+     */
+    protected $_sectionArticleTable;
+    /**
      * @var \Sample\News\Helper\Product
      */
     protected $_productHelper;
@@ -53,7 +57,9 @@ class Section
      * @var \Magento\Framework\Event\ManagerInterface
      */
     protected $_eventManager;
-
+    /**
+     * @var Section\CollectionFactory
+     */
     protected $_sectionCollectionFactory;
 
 
@@ -87,7 +93,7 @@ class Section
         $this->_sectionCollectionFactory = $sectionCollectionFactory;
         $this->_sectionProductTable = $this->getTable('sample_news_section_product');
         $this->_sectionCategoryTable = $this->getTable('sample_news_section_category');
-
+        $this->_sectionArticleTable = $this->getTable('sample_news_article_section');
     }
 
     /**
@@ -101,7 +107,6 @@ class Section
 
     /**
      * Process page data before deleting
-     * @access protected
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
      */
@@ -125,8 +130,11 @@ class Section
         return $this;
     }
 
-    public function deleteChildren(\Magento\Framework\Object $object)
-    {
+    /**
+     * @param \Magento\Framework\Object $object
+     * @return $this
+     */
+    public function deleteChildren(\Magento\Framework\Object $object) {
         $adapter = $this->_getWriteAdapter();
         $pathField = $adapter->quoteIdentifier('path');
 
@@ -217,7 +225,6 @@ class Section
 
     /**
      * Assign page to store views
-     * @access public
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
      */
@@ -258,8 +265,14 @@ class Section
         }
         $this->_saveProductRelation($object);
         $this->_saveCategoryRelation($object);
+        $this->_saveArticleRelation($object);
         return parent::_afterSave($object);
     }
+
+    /**
+     * @param $object
+     * @return $this
+     */
     protected function _savePath($object) {
         if ($object->getId()) {
             $this->_getWriteAdapter()->update(
@@ -314,7 +327,6 @@ class Section
     }
 
     /**
-     * @access protected
      * @param $identifier
      * @param $store
      * @param null $isActive
@@ -339,7 +351,6 @@ class Section
 
     /**
      * Check for unique of identifier of page to selected store(s).
-     * @access public
      * @param \Magento\Framework\Model\AbstractModel $object
      * @return bool
      */
@@ -364,15 +375,14 @@ class Section
     }
 
     /**
-     * Check if page identifier exist for specific store
+     * Check if section identifier exist for specific store
      * return page id if page exists
      *
      * @param string $identifier
      * @param int $storeId
      * @return int
      */
-    public function checkIdentifier($identifier, $storeId)
-    {
+    public function checkIdentifier($identifier, $storeId) {
         $stores = array(\Magento\Store\Model\Store::DEFAULT_STORE_ID, $storeId);
         $select = $this->_getLoadByIdentifierSelect($identifier, $stores, 1);
         $select->reset(\Zend_Db_Select::COLUMNS)
@@ -408,7 +418,7 @@ class Section
      * Retrieves section name from DB by passed id.
      *
      * @param string $id
-     * @return string|false
+     * @return string
      */
     public function getSectionPageNameById($id) {
         $adapter = $this->_getReadAdapter();
@@ -428,7 +438,7 @@ class Section
      * Retrieves section identifier from DB by passed id.
      *
      * @param string $id
-     * @return string|false
+     * @return string
      */
     public function getSectionIdentifierById($id) {
         $adapter = $this->_getReadAdapter();
@@ -463,7 +473,7 @@ class Section
     /**
      * Set store model
      *
-     * @param \Magento\Core\Model\Store $store
+     * @param \Magento\Store\Model\Store $store
      * @return $this
      */
     public function setStore($store) {
@@ -474,12 +484,16 @@ class Section
     /**
      * Retrieve store model
      *
-     * @return \Magento\Core\Model\Store
+     * @return \Magento\Store\Model\Store
      */
     public function getStore() {
         return $this->_storeManager->getStore($this->_store);
     }
 
+    /**
+     * @param $section
+     * @return $this
+     */
     protected function _saveProductRelation($section) {
         $section->setIsChangedProductList(false);
         $id = $section->getId();
@@ -535,6 +549,10 @@ class Section
         return $this;
     }
 
+    /**
+     * @param $section
+     * @return $this
+     */
     protected function _saveCategoryRelation($section){
         $section->setIsChangedCategoryList(false);
         $id = $section->getId();
@@ -580,6 +598,69 @@ class Section
         return $this;
     }
 
+    /**
+     * @param $section
+     * @return $this
+     */
+    protected function _saveArticleRelation($section) {
+        $section->setIsChangedArticleList(false);
+        $id = $section->getId();
+        $articles = $section->getArticlesData();
+
+        if ($articles === null) {
+            return $this;
+        }
+        $oldArticles = $section->getArticlesPosition();
+        $insert = array_diff_key($articles, $oldArticles);
+        $delete = array_diff_key($oldArticles, $articles);
+        $update = array_intersect_key($articles, $oldArticles);
+        $update = array_diff_assoc($update, $oldArticles);
+
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = array('article_id IN(?)' => array_keys($delete), 'section_id=?' => $id);
+            $adapter->delete($this->_sectionArticleTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = array();
+            foreach ($insert as $articleId => $position) {
+                $data[] = array(
+                    'section_id' => (int)$id,
+                    'article_id' => (int)$articleId,
+                    'position' => (int)$position
+                );
+            }
+            $adapter->insertMultiple($this->_sectionArticleTable, $data);
+        }
+
+        if (!empty($update)) {
+            foreach ($update as $articleId => $position) {
+                $where = array('section_id = ?' => (int)$id, 'article_id = ?' => (int)$articleId);
+                $bind = array('position' => (int)$position['position']);
+                $adapter->update($this->_sectionArticleTable, $bind, $where);
+            }
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $articleIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->_eventManager->dispatch(
+                'sample_news_section_change_articles',
+                array('section' => $section, 'article_ids' => $articleIds)
+            );
+        }
+
+        if (!empty($insert) || !empty($update) || !empty($delete)) {
+            $section->setIsChangedArticleList(true);
+            $articleIds = array_keys($insert + $delete + $update);
+            $section->setAffectedArticleIds($articleIds);
+        }
+        return $this;
+    }
+
+    /**
+     * @param $section
+     * @return array
+     */
     public function getProductsPosition($section) {
         $select = $this->_getWriteAdapter()->select()->from(
             $this->_sectionProductTable,
@@ -611,19 +692,20 @@ class Section
         foreach ($oldSectionObjects as $section) {
             $oldSections[$section->getId()] = array('position' => $section->getPosition());
         }
-        $insert = array_diff_key($sections, $oldSections);
-
-        $delete = array_diff_key($oldSections, $sections);
-        $update = array_intersect_key($sections, $oldSections);
-        $toUpdate = array();
-        foreach ($update as $productId => $values) {
-            if (isset($oldSections[$productId]) && $oldSections[$productId]['position'] != $values['position']) {
-                $toUpdate[$productId] = array();
-                $toUpdate[$productId]['position'] = $values['position'];
+        $insert = array();
+        foreach ($sections as $sectionId) {
+            if (!isset($oldSections[$sectionId])) {
+                $insert[] = $sectionId;
+            }
+        }
+        //$insert = array_diff_key($sections, $oldSections);
+        $delete = array();
+        foreach (array_keys($oldSections) as $sectionId) {
+            if (!in_array($sectionId, $sections)) {
+                $delete[] = $sectionId;
             }
         }
 
-        $update = $toUpdate;
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
             $condition = array('section_id IN(?)' => array_keys($delete), 'product_id=?' => $id);
@@ -631,24 +713,15 @@ class Section
         }
         if (!empty($insert)) {
             $data = array();
-            foreach ($insert as $sectionId => $position) {
+            foreach ($insert as $sectionId) {
                 $data[] = array(
                     'product_id' => (int)$id,
                     'section_id' => (int)$sectionId,
-                    'position' => (int)$position
+                    'position' => 1
                 );
             }
             $adapter->insertMultiple($this->_sectionProductTable, $data);
         }
-
-        if (!empty($update)) {
-            foreach ($update as $sectionId => $position) {
-                $where = array('product_id = ?' => (int)$id, 'section_id = ?' => (int)$sectionId);
-                $bind = array('position' => (int)$position['position']);
-                $adapter->update($this->_sectionProductTable, $bind, $where);
-            }
-        }
-
         if (!empty($insert) || !empty($delete)) {
             $sectionIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
             $this->_eventManager->dispatch(
@@ -657,12 +730,24 @@ class Section
             );
         }
 
-        if (!empty($insert) || !empty($update) || !empty($delete)) {
+        if (!empty($insert) || !empty($delete)) {
             $product->setIsChangedSectionList(true);
-            $sectionIds = array_keys($insert + $delete + $update);
+            $sectionIds = array_keys($insert + $delete);
             $product->setAffectedSectionIds($sectionIds);
         }
         return $this;
+    }
+
+    public function getArticlesPosition($section) {
+        $select = $this->_getWriteAdapter()->select()->from(
+            $this->_sectionArticleTable,
+            array('article_id', 'position')
+        )->where(
+                'section_id = :section_id'
+            );
+        $bind = array('section_id' => (int)$section->getId());
+
+        return $this->_getWriteAdapter()->fetchPairs($select, $bind);
     }
 
     /**
@@ -682,50 +767,49 @@ class Section
         }
         $oldSections = array();
         foreach ($oldSectionObjects as $section) {
-            $oldSections[$section->getId()] = $section->getPosition();
+            $oldSections[$section->getId()] = 1;
         }
-        $insert = array_diff_key($sections, $oldSections);
-        $delete = array_diff_key($oldSections, $sections);
-        $update = array_intersect_key($sections, $oldSections);
-        $update = array_diff_assoc($update, $oldSections);
-
+        $insert = array();
+        foreach ($sections as $sectionId) {
+            if (!isset($oldSections[$sectionId])) {
+                $insert[] = $sectionId;
+            }
+        }
+        $delete = array();
+        foreach (array_keys($oldSections) as $sectionId) {
+            if (!in_array($sectionId, $sections)) {
+                $delete[] = $sectionId;
+            }
+        }
 
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
-            $condition = array('section_id IN(?)' => array_keys($delete), 'category_id=?' => $id);
+            $condition = array('section_id IN(?)' => $delete, 'category_id=?' => $id);
             $adapter->delete($this->_sectionCategoryTable, $condition);
         }
         if (!empty($insert)) {
             $data = array();
-            foreach ($insert as $sectionId => $position) {
+            foreach ($insert as $sectionId) {
                 $data[] = array(
                     'category_id' => (int)$id,
                     'section_id' => (int)$sectionId,
-                    'position' => (int)$position
+                    'position' => 1
                 );
             }
             $adapter->insertMultiple($this->_sectionCategoryTable, $data);
         }
-
-        if (!empty($update)) {
-            foreach ($update as $sectionId => $position) {
-                $where = array('category_id = ?' => (int)$id, 'section_id = ?' => (int)$sectionId);
-                $bind = array('position' => (int)$position);
-                $adapter->update($this->_sectionCategoryTable, $bind, $where);
-            }
-        }
-
         if (!empty($insert) || !empty($delete)) {
-            $sectionIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            //TODO: check these values
+            $sectionIds = array_unique(array_merge($insert, $delete));
             $this->_eventManager->dispatch(
                 'sample_news_category_change_sections',
                 array('category' => $category, 'section_ids' => $sectionIds)
             );
         }
 
-        if (!empty($insert) || !empty($update) || !empty($delete)) {
+        if (!empty($insert) || !empty($delete)) {
             $category->setIsChangedSectionList(true);
-            $sectionIds = array_keys($insert + $delete + $update);
+            $sectionIds = array_keys($insert + $delete);
             $category->setAffectedSectionIds($sectionIds);
         }
         return $this;
@@ -747,8 +831,12 @@ class Section
         );
         return $adapter->fetchCol($select);
     }
-    protected function _getMaxPosition($path)
-    {
+
+    /**
+     * @param $path
+     * @return int|string
+     */
+    protected function _getMaxPosition($path) {
         $adapter = $this->getReadConnection();
         $positionField = $adapter->quoteIdentifier('position');
         $level = count(explode('/', $path));
@@ -768,8 +856,7 @@ class Section
         }
         return $position;
     }
-    public function isForbiddenToDelete($categoryId)
-    {
+    public function isForbiddenToDelete($categoryId) {
         return $categoryId == \Sample\News\Helper\Section::ROOT_SECTION_ID;
     }
 
@@ -842,16 +929,20 @@ class Section
         );
         $adapter->update($table, $data, array('entity_id = ?' => $section->getId()));
 
-        // Update category object to new data
+        // Update section object to new data
         $section->addData($data);
         $section->unsetData('path_ids');
 
         return $this;
     }
 
-
-    protected function _processPositions($section, $newParent, $afterSectionId)
-    {
+    /**
+     * @param $section
+     * @param $newParent
+     * @param $afterSectionId
+     * @return int
+     */
+    protected function _processPositions($section, $newParent, $afterSectionId) {
         $table = $this->getMainTable();
         $adapter = $this->_getWriteAdapter();
         $positionField = $adapter->quoteIdentifier('position');
@@ -880,8 +971,12 @@ class Section
 
         return $position;
     }
-    public function getChildrenCount($sectionId)
-    {
+
+    /**
+     * @param $sectionId
+     * @return string
+     */
+    public function getChildrenCount($sectionId) {
         $select = $this->_getReadAdapter()->select()->from(
             $this->getMainTable(),
             'children_count'
@@ -893,8 +988,11 @@ class Section
         return $this->_getReadAdapter()->fetchOne($select, $bind);
     }
 
-    public function getChildrenSections($section)
-    {
+    /**
+     * @param $section
+     * @return mixed
+     */
+    public function getChildrenSections($section) {
         $collection = $section->getCollection();
         $collection->addFieldToFilter('status', 1)
             ->addIdFilter($section->getChildren())->setOrder('position', \Magento\Framework\DB\Select::SQL_ASC)
@@ -903,8 +1001,12 @@ class Section
         return $collection;
     }
 
-    public function getChildren($section, $recursive = true)
-    {
+    /**
+     * @param $section
+     * @param bool $recursive
+     * @return array
+     */
+    public function getChildren($section, $recursive = true) {
         $adapter = $this->_getReadAdapter();
         $bind = array(
             'c_path' => $section->getPath() . '/%'
@@ -921,7 +1023,12 @@ class Section
         }
         return $adapter->fetchCol($select, $bind);
     }
-    public function getParentSections($section){
+
+    /**
+     * @param $section
+     * @return \Magento\Framework\Object[]
+     */
+    public function getParentSections($section) {
         $pathIds = array_reverse(explode('/', $section->getPath()));
         $sections = $this->_sectionCollectionFactory->create()
             ->addFieldToFilter('entity_id', array('in' => $pathIds))

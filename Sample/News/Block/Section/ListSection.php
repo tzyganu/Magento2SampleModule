@@ -27,17 +27,16 @@ class ListSection extends \Magento\Framework\View\Element\Template {
      */
     protected $_urlFactory;
 
-
     /**
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory
+     * @param \Sample\News\Model\Resource\Section\CollectionFactory $sectionCollectionFactory
      * @param \Magento\Framework\UrlFactory $urlFactory
+     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Sample\News\Model\Resource\Section\CollectionFactory $sectionCollectionFactory,
         \Magento\Framework\UrlFactory $urlFactory,
+        \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
         $this->_sectionCollectionFactory = $sectionCollectionFactory;
@@ -46,7 +45,7 @@ class ListSection extends \Magento\Framework\View\Element\Template {
     }
 
     /**
-     * @access protected
+     * load sections
      */
     protected  function _construct() {
         parent::_construct();
@@ -67,7 +66,6 @@ class ListSection extends \Magento\Framework\View\Element\Template {
     }
 
     /**
-     * @access protected
      * @return $this
      */
     protected function _prepareLayout() {
@@ -88,7 +86,6 @@ class ListSection extends \Magento\Framework\View\Element\Template {
     }
 
     /**
-     * @access public
      * @return string
      */
     public function getPagerHtml() {
@@ -101,9 +98,19 @@ class ListSection extends \Magento\Framework\View\Element\Template {
     public function getRssLink() {
         return $this->_urlBuilder->getUrl('sample_news/section/rss', array('store' => $this->_storeManager->getStore()->getId()));
     }
+
+    /**
+     * @return int
+     */
     public function getDisplayMode(){
         return $this->_scopeConfig->getValue('sample_news/section/tree', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
+
+    /**
+     * @param \Sample\News\Model\Section $section
+     * @param int $level
+     * @return string
+     */
     public function drawSection(\Sample\News\Model\Section $section, $level = 0){
         $html = '';
         $recursion = $this->getRecursion();
@@ -136,9 +143,7 @@ class ListSection extends \Magento\Framework\View\Element\Template {
     }
     /**
      * get recursion
-     * @access public
      * @return int
-     * {{qwertyuiop}}
      */
     public function getRecursion(){
         if (!$this->hasData('recursion')){

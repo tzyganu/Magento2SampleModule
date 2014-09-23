@@ -37,10 +37,18 @@ class Section
      * list url key path
      */
     const LIST_PATH = 'sample_news/section/list_url';
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
+
+    /**
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\App\Helper\Context $context
+     */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\App\Helper\Context $context
     ){
         $this->_scopeConfig = $scopeConfig;
         parent::__construct($context);
@@ -54,12 +62,20 @@ class Section
     public function getRootSectionId() {
         return self::ROOT_SECTION_ID;
     }
+
+    /**
+     * @return string
+     */
     public function getSectionsUrl() {
         if ($listKey = $this->_scopeConfig->getValue(self::LIST_PATH)) {
             return $this->_getUrl('', array('_direct' => $listKey));
         }
         return $this->_getUrl('sample_news/section/index');
     }
+
+    /**
+     * @return bool
+     */
     public function getUseBreadcrumbs() {
         return $this->_scopeConfig->isSetFlag(self::BREADCRUMBS_CONFIG_PATH);
     }

@@ -19,7 +19,13 @@ namespace Sample\News\Model;
 class Section
     extends \Magento\Framework\Model\AbstractModel
     implements \Magento\Framework\Object\IdentityInterface {
+    /**
+     * path to url prefix
+     */
     const XML_URL_PREFIX_PATH = 'sample_news/section/url_prefix';
+    /**
+     * path to url suffix
+     */
     const XML_URL_SUFFIX_PATH = 'sample_news/section/url_suffix';
     /**
      * cache tag
@@ -37,7 +43,13 @@ class Section
      * @var string
      */
     protected $_eventPrefix = 'sample_news_section';
+    /**
+     * @var null|Resource\Section\Tree
+     */
     protected $_treeModel = null;
+    /**
+     * @var Resource\Section\TreeFactory
+     */
     protected $_sectionTreeFactory;
     /**
      * @var \Sample\News\Helper\Section
@@ -47,6 +59,10 @@ class Section
      * @var \Magento\Catalog\Model\ProductFactory
      */
     protected $_productFactory;
+    /**
+     * @var ArticleFactory
+     */
+    protected $_articleFactory;
     /**
      * @var \Magento\Framework\Filter\FilterManager
      */
@@ -64,6 +80,10 @@ class Section
      */
     protected $_categoryCollection;
     /**
+     * @var
+     */
+    protected $_articleCollection;
+    /**
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $_sectionFactory;
@@ -79,6 +99,7 @@ class Section
         \Sample\News\Model\Resource\Section\TreeFactory $sectionTreeFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        \Sample\News\Model\ArticleFactory $articleFactory,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Filter\FilterManager $filter,
@@ -90,6 +111,7 @@ class Section
     ) {
         $this->_productFactory = $productFactory;
         $this->_categoryFactory = $categoryFactory;
+        $this->_articleFactory = $articleFactory;
         $this->_sectionFactory = $sectionFactory;
         $this->_treeModel = $sectionTreeResource;
         $this->_sectionTreeFactory = $sectionTreeFactory;
@@ -109,7 +131,6 @@ class Section
 
     /**
      * Get identities
-     * @access public
      * @return array
      */
     public function getIdentities() {
@@ -117,7 +138,6 @@ class Section
     }
 
     /**
-     * @access public
      * @return string
      */
     public function getSectionUrl() {
@@ -136,7 +156,6 @@ class Section
     }
 
     /**
-     * @access public
      * @param $identifier
      * @param $storeId
      * @return mixed
@@ -146,7 +165,6 @@ class Section
     }
 
     /**
-     * @access public
      * @return array|mixed
      */
     public function getProductsPosition() {
@@ -162,7 +180,6 @@ class Section
     }
 
     /**
-     * @access public
      * @param string $attributes
      * @return object
      */
@@ -179,6 +196,38 @@ class Section
             $this->_productCollection = $collection;
         }
         return $this->_productCollection;
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function getArticlesPosition() {
+        if (!$this->getId()) {
+            return array();
+        }
+        $array = $this->getData('articles_position');
+        if (is_null($array)) {
+            $array = $this->getResource()->getArticlesPosition($this);
+            $this->setData('articles_position', $array);
+        }
+        return $array;
+    }
+
+    /**
+     * @return \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection
+     */
+    public function getSelectedArticlesCollection() {
+        if (is_null($this->_articleCollection)) {
+            $collection = $this->_articleFactory->create()->getResourceCollection();
+            $collection->getSelect()->join(
+                array('related_article' => $collection->getTable('sample_news_article_section')),
+                'related_article.article_id = main_table.entity_id',
+                array('position')
+            );
+            $collection->getSelect()->where('related_article.section_id = ?', $this->getId());
+            $this->_articleCollection = $collection;
+        }
+        return $this->_articleCollection;
     }
 
     /**
@@ -201,7 +250,6 @@ class Section
     }
 
     /**
-     * @access protected
      * @return array
      */
     public function getCategoryIds() {
@@ -213,7 +261,6 @@ class Section
     }
 
     /**
-     * @access public
      * @return array
      */
     public function getDefaultValues() {
@@ -230,11 +277,18 @@ class Section
     public function formatUrlKey($string) {
         return $this->_filter->translitUrl($string);
     }
+
+    /**
+     * @return bool
+     */
     public function isDeleteable() {
         return $this->getId() && $this->getId() != \Sample\News\Helper\Section::ROOT_SECTION_ID;
     }
-    public function getPathIds()
-    {
+
+    /**
+     * @return array|mixed
+     */
+    public function getPathIds() {
         $ids = $this->getData('path_ids');
         if (is_null($ids)) {
             $ids = explode('/', $this->getPath());
@@ -242,13 +296,25 @@ class Section
         }
         return $ids;
     }
-    protected function _beforeDelete()
-    {
+
+    /**
+     * @return $this
+     * @throws \Magento\Framework\Model\Exception
+     */
+    protected function _beforeDelete() {
         if ($this->getResource()->isForbiddenToDelete($this->getId())) {
             throw new \Magento\Framework\Model\Exception("Can't delete root section.");
         }
         return parent::_beforeDelete();
     }
+
+    /**
+     * @param $parentId
+     * @param $afterSectionId
+     * @return $this
+     * @throws \Magento\Framework\Model\Exception
+     * @throws \Exception
+     */
     public function move($parentId, $afterSectionId) {
         /**
          * Validate new parent section id. (section model is used for backward
@@ -309,14 +375,24 @@ class Section
 
         return $this;
     }
-    public function getChildrenSections()
-    {
+
+    /**
+     * @return mixed
+     */
+    public function getChildrenSections() {
         return $this->getResource()->getChildrenSections($this);
     }
-    public function getChildren()
-    {
+
+    /**
+     * @return string
+     */
+    public function getChildren() {
         return implode(',', $this->getResource()->getChildren($this, false));
     }
+
+    /**
+     * @return bool
+     */
     public function getStatusPath() {
         $parents = $this->getParentSections();
         $rootId = $this->_sectionHelper->getRootSectionId();
@@ -331,8 +407,11 @@ class Section
         return $this->getStatus();
 
     }
+
+    /**
+     * @return mixed
+     */
     public function getParentSections(){
         return $this->getResource()->getParentSections($this);
     }
-
 }

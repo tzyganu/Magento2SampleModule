@@ -30,19 +30,19 @@ class Rss extends \Magento\Rss\Block\AbstractBlock {
     protected $_sectionCollectionFactory;
 
     /**
-     * @param \Sample\News\Helper\Article $articleHelper
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory
-     * @param \Magento\Framework\App\Http\Context $httpContext
+     * @param \Sample\News\Helper\Article $sectionHelper
      * @param \Magento\Rss\Model\RssFactory $rssFactory
+     * @param \Sample\News\Model\Resource\Section\CollectionFactory $sectionCollectionFactory
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Magento\Framework\App\Http\Context $httpContext
      * @param array $data
      */
     public function __construct(
         \Sample\News\Helper\Article $sectionHelper,
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Sample\News\Model\Resource\Section\CollectionFactory $sectionCollectionFactory,
-        \Magento\Framework\App\Http\Context $httpContext,
         \Magento\Rss\Model\RssFactory $rssFactory,
+        \Sample\News\Model\Resource\Section\CollectionFactory $sectionCollectionFactory,
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Framework\App\Http\Context $httpContext,
         array $data = array()
     ) {
         $this->_sectionHelper = $sectionHelper;

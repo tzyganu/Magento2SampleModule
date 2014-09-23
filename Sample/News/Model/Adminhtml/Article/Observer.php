@@ -19,26 +19,25 @@ class Observer {
     /**
      * @var \Magento\Framework\Registry|null
      */
-    protected $_coreRegistry    = null;
+    protected $_coreRegistry;
     /**
      * @var \Magento\Framework\UrlInterface|null
      */
-    protected $_urlBuilder      = null;
+    protected $_urlBuilder;
     /**
      * @var \Magento\Backend\Helper\Js|null
      */
-    protected $_jsHelper        = null;
+    protected $_jsHelper;
     /**
      * @var \Magento\Backend\App\Action\Context|null
      */
-    protected $_context         = null;
+    protected $_context;
     /**
-     * @var null|\Sample\News\Model\Resource\Article
+     * @var \Sample\News\Model\Resource\Article
      */
-    protected $_articleResource = null;
+    protected $_articleResource;
 
     /**
-     * @access public
      * @param \Magento\Framework\Registry $coreRegistry
      * @param \Magento\Framework\UrlInterface $urlBuilder
      * @param \Magento\Backend\Helper\Js $jsHelper
@@ -62,7 +61,6 @@ class Observer {
 
     /**
      * save product data
-     * @access public
      * @param $observer
      * @return $this
      */
@@ -77,7 +75,6 @@ class Observer {
     }
 
     /**
-     * @access public
      * @param $observer
      * @return $this
      */

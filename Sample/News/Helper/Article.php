@@ -48,8 +48,8 @@ class Article
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\App\Helper\Context $context
     ){
         $this->_scopeConfig = $scopeConfig;
         parent::__construct($context);
@@ -57,7 +57,6 @@ class Article
 
     /**
      * get article page url
-     * @access public
      * @return string
      */
     public function getArticlesUrl() {
@@ -68,7 +67,6 @@ class Article
     }
 
     /**
-     * @access public
      * @return bool
      */
     public function getUseBreadcrumbs() {
@@ -76,7 +74,6 @@ class Article
     }
 
     /**
-     * @access public
      * @return string
      */
     public function getListMetaTitle() {
@@ -84,7 +81,6 @@ class Article
     }
 
     /**
-     * @access public
      * @return mixed
      */
     public function getListMetaDescription() {
@@ -92,7 +88,6 @@ class Article
     }
 
     /**
-     * @access public
      * @return mixed
      */
     public function getListMetaKeywords() {

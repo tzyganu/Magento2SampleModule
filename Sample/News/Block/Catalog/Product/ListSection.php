@@ -28,16 +28,15 @@ class ListSection
     protected $_productHelper;
 
     /**
-     * @access public
+     * @param \Sample\News\Helper\Product $productHelper
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Sample\News\Helper\Product $productHelper
      * @param array $data
      */
     public function __construct(
+        \Sample\News\Helper\Product $productHelper,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\View\Element\Template\Context $context,
-        \Sample\News\Helper\Product $productHelper,
         array $data = []
     ) {
         $this->_productHelper = $productHelper;
@@ -46,7 +45,6 @@ class ListSection
     }
 
     /**
-     * @access public
      * @return \Sample\News\Model\Resource\Article\Collection
      */
     public function getSectionCollection() {

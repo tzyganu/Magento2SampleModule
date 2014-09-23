@@ -16,9 +16,6 @@
  */
 
 namespace Sample\News\Block\Adminhtml\Section\Edit;
-
-use Magento\Backend\Block\Template;
-
 class Form
     extends \Sample\News\Block\Adminhtml\Section\AbstractSection {
     /**
@@ -39,115 +36,72 @@ class Form
     protected $_jsonEncoder;
 
     /**
-     * @param Template\Context $context
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
-     * @param \Magento\Catalog\Model\Resource\Category\Tree $categoryTree
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Sample\News\Model\Resource\Section\Tree $sectionTree
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+     * @param \Sample\News\Model\SectionFactory $sectionFactory
      * @param array $data
      */
     public function __construct(
+        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
         \Magento\Backend\Block\Template\Context $context,
         \Sample\News\Model\Resource\Section\Tree $sectionTree,
         \Magento\Framework\Registry $registry,
         \Sample\News\Model\SectionFactory $sectionFactory,
-        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
         array $data = array()
     ) {
         $this->_jsonEncoder = $jsonEncoder;
-        parent::__construct($context, $sectionTree, $registry, $sectionFactory, $data);
+        parent::__construct($sectionTree, $registry, $sectionFactory, $context, $data);
     }
 
     /**
      * @return $this
      */
-    protected function _prepareLayout()
-    {
+    protected function _prepareLayout() {
         /** @var \Sample\News\Model\Section $section */
         $section = $this->getSection();
         $sectionId = (int)$section->getId();
-
-        $this->setChild(
-            'tabs',
-            $this->getLayout()->createBlock('Sample\News\Block\Adminhtml\Section\Tabs', 'tabs')
-        );
+        $this->setChild('tabs', $this->getLayout()->createBlock('Sample\News\Block\Adminhtml\Section\Tabs', 'tabs'));
 
         // Save button
-        $this->addButton(
-            'save',
-            array(
-                'id' => 'save',
-                'label' => __('Save Section'),
-                'onclick' => "sectionSubmit('" . $this->getSaveUrl() . "', true)",
-                'class' => 'save primary save-section'
-            )
-        );
+        $this->addButton('save', array(
+            'id' => 'save',
+            'label' => __('Save Section'),
+            'onclick' => "sectionSubmit('" . $this->getSaveUrl() . "', true)",
+            'class' => 'save primary save-section'
+        ));
 
         // Delete button
         if ($sectionId && $section->isDeleteable()) {
-            $this->addButton(
-                'delete',
-                array(
-                    'id' => 'delete',
-                    'label' => __('Delete Section'),
-                    'onclick' => "sectionDelete('" . $this->getUrl(
-                        'sample_news/*/delete',
-                        array('_current' => true)
-                    ) . "', true, {$sectionId})",
-                    'class' => 'delete'
-                )
-            );
+            $this->addButton('delete', array(
+                'id' => 'delete',
+                'label' => __('Delete Section'),
+                'onclick' => "sectionDelete('" . $this->getUrl(
+                    'sample_news/*/delete',
+                    array('_current' => true)
+                ) . "', true, {$sectionId})",
+                'class' => 'delete'
+            ));
         }
 
         // Reset button
         $resetPath = $sectionId ? 'sample_news/*/edit' : 'sample_news/*/add';
-        $this->addButton(
-            'reset',
-            array(
-                'id' => 'reset',
-                'label' => __('Reset'),
-                'onclick' => "sectionReset('" . $this->getUrl($resetPath, array('_current' => true)) . "',true)",
-                'class' => 'reset'
-            )
-        );
-
+        $this->addButton('reset', array(
+            'id' => 'reset',
+            'label' => __('Reset'),
+            'onclick' => "sectionReset('" . $this->getUrl($resetPath, array('_current' => true)) . "',true)",
+            'class' => 'reset'
+        ));
         return parent::_prepareLayout();
     }
 
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getDeleteButtonHtml()
-    {
-        return $this->getChildHtml('delete_button');
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getSaveButtonHtml()
-    {
-        return $this->getChildHtml('save_button');
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function getResetButtonHtml()
-    {
-        return $this->getChildHtml('reset_button');
-    }
 
     /**
      * Retrieve additional buttons html
-     *
      * @return string
      */
-    public function getAdditionalButtonsHtml()
-    {
+    public function getAdditionalButtonsHtml() {
         $html = '';
         foreach ($this->_additionalButtons as $childName) {
             $html .= $this->getChildHtml($childName);
@@ -162,8 +116,7 @@ class Form
      * @param array $config
      * @return $this
      */
-    public function addAdditionalButton($alias, $config)
-    {
+    public function addAdditionalButton($alias, $config) {
         if (isset($config['name'])) {
             $config['element_name'] = $config['name'];
         }
@@ -186,8 +139,7 @@ class Form
      * @param string $alias
      * @return $this
      */
-    public function removeAdditionalButton($alias)
-    {
+    public function removeAdditionalButton($alias) {
         if (isset($this->_additionalButtons[$alias])) {
             $this->unsetChild($this->_additionalButtons[$alias]);
             unset($this->_additionalButtons[$alias]);
@@ -199,16 +151,14 @@ class Form
     /**
      * @return string
      */
-    public function getTabsHtml()
-    {
+    public function getTabsHtml() {
         return $this->getChildHtml('tabs');
     }
 
     /**
      * @return string
      */
-    public function getHeader()
-    {
+    public function getHeader() {
         if ($this->getSectionId()) {
             return $this->getSectionName();
         } else {
@@ -225,8 +175,7 @@ class Form
      * @param array $args
      * @return string
      */
-    public function getDeleteUrl(array $args = array())
-    {
+    public function getDeleteUrl(array $args = array()) {
         $params = array('_current' => true);
         $params = array_merge($params, $args);
         return $this->getUrl('sample_news/*/delete', $params);
@@ -234,12 +183,10 @@ class Form
 
     /**
      * Return URL for refresh input element 'path' in form
-     *
      * @param array $args
      * @return string
      */
-    public function getRefreshPathUrl(array $args = array())
-    {
+    public function getRefreshPathUrl(array $args = array()) {
         $params = array('_current' => true);
         $params = array_merge($params, $args);
         return $this->getUrl('sample_news/*/refreshPath', $params);
@@ -248,8 +195,7 @@ class Form
     /**
      * @return bool
      */
-    public function isAjax()
-    {
+    public function isAjax() {
         return $this->_request->isXmlHttpRequest() || $this->_request->getParam('isAjax');
     }
 
@@ -260,8 +206,7 @@ class Form
      * @param array $data
      * @return $this
      */
-    protected function addButton($buttonId, array $data)
-    {
+    protected function addButton($buttonId, array $data) {
         $childBlockId = $buttonId . '_button';
         $button = $this->getButtonChildBlock($childBlockId);
         $button->setData($data);
@@ -276,8 +221,7 @@ class Form
     /**
      * @return bool
      */
-    protected function hasToolbarBlock()
-    {
+    protected function hasToolbarBlock() {
         return $this->getLayout()->isBlock('page.actions.toolbar');
     }
 
@@ -288,19 +232,31 @@ class Form
      * @param null|string $blockClassName
      * @return \Magento\Backend\Block\Widget
      */
-    protected function getButtonChildBlock($childId, $blockClassName = null)
-    {
+    protected function getButtonChildBlock($childId, $blockClassName = null) {
         if (null === $blockClassName) {
             $blockClassName = 'Magento\Backend\Block\Widget\Button';
         }
         return $this->getLayout()->createBlock($blockClassName, $this->getNameInLayout() . '-' . $childId);
     }
 
-    public function getProductsJson()
-    {
+    /**
+     * @return string
+     */
+    public function getProductsJson() {
         $products = $this->getSection()->getProductsPosition();
         if (!empty($products)) {
             return $this->_jsonEncoder->encode($products);
+        }
+        return '{}';
+    }
+
+    /**
+     * @return string
+     */
+    public function getArticlesJson() {
+        $articles = $this->getSection()->getArticlesPosition();
+        if (!empty($articles)) {
+            return $this->_jsonEncoder->encode($articles);
         }
         return '{}';
     }

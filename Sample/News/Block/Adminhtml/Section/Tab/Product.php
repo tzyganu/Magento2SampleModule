@@ -39,24 +39,23 @@ class Product
     protected $_coreRegistry;
 
     /**
-     * @access public
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Catalog\Model\Product\Type $type
      * @param \Magento\Catalog\Model\Product\Attribute\Source\Status $status
      * @param \Magento\Catalog\Model\Product\Visibility $visibility
      * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Catalog\Model\Product\Type $type,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $status,
         \Magento\Catalog\Model\Product\Visibility $visibility,
         \Magento\Framework\Registry $coreRegistry,
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Helper\Data $backendHelper,
         array $data = array()
     ) {
         $this->_productFactory = $productFactory;
@@ -69,7 +68,6 @@ class Product
 
     /**
      * Set grid params
-     * @access protected
      */
     public function _construct(){
         parent::_construct();
@@ -84,7 +82,6 @@ class Product
 
     /**
      * prepare the collection
-     * @access protected
      * @return $this
      */
     protected function _prepareCollection() {
@@ -105,12 +102,10 @@ class Product
             $constraint,
             'left');
         $this->setCollection($collection);
-        parent::_prepareCollection();
-        return $this;
+        return parent::_prepareCollection();
     }
 
     /**
-     * @access
      * @return $this
      */
     protected function _prepareMassaction(){
@@ -118,7 +113,6 @@ class Product
     }
 
     /**
-     * @access protected
      * @return $this
      */
     protected function _prepareColumns(){
@@ -141,6 +135,7 @@ class Product
             'align' => 'left',
             'index' => 'sku',
         ));
+        //TODO: add status
         $this->addColumn('position', array(
             'header'=> __('Position'),
             'name'  => 'position',
@@ -154,7 +149,6 @@ class Product
     }
     /**
      * Retrieve selected products
-     * @access protected
      * @return array
      */
     protected function _getSelectedProducts(){
@@ -167,7 +161,6 @@ class Product
     }
     /**
      * Retrieve selected products
-     * @access public
      * @return array
      */
     public function getSelectedProducts() {
@@ -183,28 +176,26 @@ class Product
     }
     /**
      * @access public
-     * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $item
+     * @param \Magento\Catalog\Model\Product $item
      * @return string
      */
-    public function getRowUrl($item){
+    public function getRowUrl($item) {
         return '#';
     }
     /**
      * get grid url
-     * @access public
      * @return string
      */
-    public function getGridUrl(){
+    public function getGridUrl() {
         return $this->getUrl('*/*/productsGrid', array(
             'id'=>$this->getSection()->getId()
         ));
     }
 
     /**
-     * @access public
-     * @return mixed
+     * @return \Sample\News\Model\Section
      */
-    public function getSection(){
+    public function getSection() {
         return $this->_coreRegistry->registry('sample_news_section');
     }
 
@@ -212,7 +203,7 @@ class Product
      * @param \Magento\Backend\Block\Widget\Grid\Column $column
      * @return $this
      */
-    protected function _addColumnFilterToCollection($column){
+    protected function _addColumnFilterToCollection($column) {
         if ($column->getId() == 'in_products') {
             $productIds = $this->_getSelectedProducts();
             if (empty($productIds)) {

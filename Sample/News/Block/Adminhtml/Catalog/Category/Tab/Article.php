@@ -32,20 +32,19 @@ class Article
     protected $_registry;
 
     /**
-     * @access public
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Sample\News\Model\ArticleFactory $articleFactory
      * @param \Sample\News\Helper\Category $categoryHelper
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
         \Sample\News\Model\ArticleFactory $articleFactory,
         \Sample\News\Helper\Category $categoryHelper,
         \Magento\Framework\Registry $registry,
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Helper\Data $backendHelper,
         array $data = array()
     ) {
         $this->_articleFactory = $articleFactory;
@@ -77,7 +76,6 @@ class Article
 
     /**
      * prepare collection
-     * @access protected
      * @return $this
      */
     protected function _prepareCollection() {
@@ -94,13 +92,11 @@ class Article
             array('position')
         );
         $this->setCollection($collection);
-        parent::_prepareCollection();
-        return $this;
+        return parent::_prepareCollection();
     }
 
     /**
      * prepare columns
-     * @access protected
      * @return $this
      */
     protected function _prepareColumns() {
@@ -137,7 +133,6 @@ class Article
 
     /**
      * get selected articles
-     * @access protected
      * @return array
      */
     protected function _getSelectedArticles(){
@@ -166,8 +161,7 @@ class Article
 
     /**
      * get row URL
-     * @access public
-     * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $item
+     * @param \Sample\News\Model\Article $item
      * @return string
      */
     public function getRowUrl($item){
@@ -176,7 +170,6 @@ class Article
 
     /**
      * get grid url
-     * @access public
      * @return string
      */
     public function getGridUrl(){
@@ -186,7 +179,6 @@ class Article
     }
 
     /**
-     * @access protected
      * @param \Magento\Backend\Block\Widget\Grid\Column $column
      * @return $this
      */

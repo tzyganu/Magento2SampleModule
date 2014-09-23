@@ -40,24 +40,23 @@ class Product
     protected $_coreRegistry;
 
     /**
-     * @access public
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Catalog\Model\Product\Type $type
      * @param \Magento\Catalog\Model\Product\Attribute\Source\Status $status
      * @param \Magento\Catalog\Model\Product\Visibility $visibility
      * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Backend\Helper\Data $backendHelper
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Catalog\Model\Product\Type $type,
         \Magento\Catalog\Model\Product\Attribute\Source\Status $status,
         \Magento\Catalog\Model\Product\Visibility $visibility,
         \Magento\Framework\Registry $coreRegistry,
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Helper\Data $backendHelper,
         array $data = array()
     ) {
         $this->_productFactory = $productFactory;
@@ -70,9 +69,8 @@ class Product
 
     /**
      * Set grid params
-     * @access protected
      */
-    public function _construct(){
+    public function _construct() {
         parent::_construct();
         $this->setId('product_grid');
         $this->setDefaultSort('position');
@@ -85,7 +83,6 @@ class Product
 
     /**
      * prepare the collection
-     * @access protected
      * @return $this
      */
     protected function _prepareCollection() {
@@ -111,7 +108,6 @@ class Product
     }
 
     /**
-     * @access
      * @return $this
      */
     protected function _prepareMassaction(){
@@ -119,7 +115,6 @@ class Product
     }
 
     /**
-     * @access protected
      * @return $this
      */
     protected function _prepareColumns(){
@@ -155,7 +150,6 @@ class Product
     }
     /**
      * Retrieve selected products
-     * @access protected
      * @return array
      */
     protected function _getSelectedProducts(){
@@ -168,7 +162,6 @@ class Product
     }
     /**
      * Retrieve selected products
-     * @access public
      * @return array
      */
     public function getSelectedProducts() {
@@ -183,7 +176,6 @@ class Product
         return $products;
     }
     /**
-     * @access public
      * @param \Magento\Catalog\Model\Product|\Magento\Framework\Object $item
      * @return string
      */
@@ -192,7 +184,6 @@ class Product
     }
     /**
      * get grid url
-     * @access public
      * @return string
      */
     public function getGridUrl(){
@@ -203,7 +194,7 @@ class Product
 
     /**
      * @access public
-     * @return mixed
+     * @return \Sample\News\Model\Article
      */
     public function getArticle(){
         return $this->_coreRegistry->registry('sample_news_article');
@@ -238,7 +229,7 @@ class Product
      * @return string
      */
     public function getTabLabel() {
-        return __('Associated Products');
+        return __('Products');
     }
 
     /**

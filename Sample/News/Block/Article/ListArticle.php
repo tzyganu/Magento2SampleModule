@@ -29,15 +29,15 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
 
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory
      * @param \Magento\Framework\UrlFactory $urlFactory
+     * @param \Magento\Framework\View\Element\Template\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Sample\News\Model\Resource\Article\CollectionFactory $articleCollectionFactory,
         \Magento\Framework\UrlFactory $urlFactory,
+        \Magento\Framework\View\Element\Template\Context $context,
         array $data = []
     ) {
         $this->_articleCollectionFactory = $articleCollectionFactory;
@@ -46,7 +46,7 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
     }
 
     /**
-     * @access protected
+     * load the articles
      */
     protected  function _construct() {
         parent::_construct();
@@ -67,7 +67,6 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
     }
 
     /**
-     * @access protected
      * @return $this
      */
     protected function _prepareLayout() {
@@ -85,7 +84,6 @@ class ListArticle extends \Magento\Framework\View\Element\Template {
     }
 
     /**
-     * @access public
      * @return string
      */
     public function getPagerHtml() {
