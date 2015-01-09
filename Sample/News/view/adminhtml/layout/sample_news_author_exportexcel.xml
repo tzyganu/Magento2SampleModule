@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <update handle="sample_news_author_grid_block"/>
+    <body>
+        <block class="Magento\Backend\Block\Widget\Grid\Container" name="sample_news_author.grid.container" template="Magento_Backend::widget/grid/container/empty.phtml"/>
+    </body>
+</page>

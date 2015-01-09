@@ -1,25 +1,10 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Sample_News extension
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the MIT License
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/mit-license.php
- *
- * @category       Sample
- * @package        Sample_News
- * @copyright      Copyright (c) 2014
- * @license        http://opensource.org/licenses/mit-license.php MIT License
- */
+{{License}}
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
     <menu>
         <add id="Sample_News::news" title="News" module="Sample_News" sortOrder="65" resource="Sample_News::news"/>
-        <add id="Sample_News::news_article" title="Articles" module="Sample_News" sortOrder="10" action="sample_news/article" resource="Sample_News::article" parent="Sample_News::news" />
-        <add id="Sample_News::news_section" title="Sections" module="Sample_News" sortOrder="20" action="sample_news/section" resource="Sample_News::section" parent="Sample_News::news" />
+        <add id="Sample_News::author" title="Authors" module="Sample_News" sortOrder="10" action="sample_news/author" resource="Sample_News::author" parent="Sample_News::news" />
     </menu>
 </config>

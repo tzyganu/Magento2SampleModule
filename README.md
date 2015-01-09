@@ -1,12 +1,22 @@
 Magento 2.0 Sample Module
 ====================
 
-Last tested on alpha94.
+Last tested on beta2.
 
 
 <img src="http://i.imgur.com/Ma6v2gs.jpg" alt="Magento 2 Sample Module" />
 
-The purpose of this repository is to hold a sample CRUD module for Magento 2.0.  
+What I got so far:
+----------
+
+This extension contains the admin section for a single entity (Author) store view related.  
+The frontend and other types of entities listed in **the purpose** will follow.  
+Don't put many hopes in this. Based on the comments on the magento 2 repo the grid system will be changed...A LOT.  
+
+The purpose 
+----------
+
+....of this repository is to hold a sample CRUD module for Magento 2.0.  
 This module should contain the following: 
 
  * 4 Entities. 
@@ -43,4 +53,14 @@ This module should contain the following:
 After this is complete (or almost) it will become the base source for the Ultimate Module Creator 2.0 which will be a version for Magento 2.0 of the <a href="https://github.com/tzyganu/UMC1.9">Ultimate Module Creator for Magento 1.7+</a>. 
 
 Any other ideas and pieces of code are welcomed even encouraged.
+
+Install
+-----
+
+To install this module copy the code from this repo to `app/code` folder of your Magento 2 instance,  
+If you do this after installing Magento 2 you will have to edit `app/etc/config.php` and add this line in the  `$modules` array at the end:
+
+    'Sample_News' => 1, 
+	
+then run from the console `php setup/index.php update`.
  

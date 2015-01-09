@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <update handle="editor"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Sample\News\Block\Adminhtml\Author\Edit" name="sample_news_author_edit"/>
+        </referenceContainer>
+        <referenceContainer name="left">
+            <block class="Sample\News\Block\Adminhtml\Author\Edit\Tabs" name="sample_news_author_tabs">
+                <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Author" name="sample_news_author_edit_tab_author"/>
+                <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Meta" name="sample_news_author_edit_tab_author_meta"/>
+                <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Stores" name="sample_news_author_edit_tab_author_stores"/>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">author</argument>
+                    <argument name="block" xsi:type="string">sample_news_author_edit_tab_author</argument>
+                </action>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">meta</argument>
+                    <argument name="block" xsi:type="string">sample_news_author_edit_tab_author_meta</argument>
+                </action>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">stores</argument>
+                    <argument name="block" xsi:type="string">sample_news_author_edit_tab_author_stores</argument>
+                </action>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
