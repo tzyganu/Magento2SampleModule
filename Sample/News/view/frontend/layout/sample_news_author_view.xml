@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-right" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="content">
+            <block class="Sample\News\Block\Author\ViewAuthor" name="sample_news.author.view" template="Sample_News::author/view.phtml" />
+        </referenceBlock>
+    </body>
+</page>

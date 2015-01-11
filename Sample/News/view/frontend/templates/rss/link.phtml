@@ -1,0 +1,4 @@
+<?php /** @var \Sample\News\Block\Author\ListAuthor\Rss $this */?>
+<?php if($this->isRssEnabled()): ?>
+    <a href="<?php echo $this->getRssLink() ?>" class="action link rss"><span><?php echo __('Subscribe to RSS Feed') ?></span></a>
+<?php endif; ?>

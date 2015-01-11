@@ -9,7 +9,7 @@ Last tested on beta2.
 What I got so far:
 ----------
 
-This extension contains the admin section for a single entity (Author) store view related.  
+This extension contains the admin and frontend sections for a single entity (Author) store view related.  
 The frontend and other types of entities listed in **the purpose** will follow.  
 Don't put many hopes in this. Based on the comments on the magento 2 repo the grid system will be changed...A LOT.  
 

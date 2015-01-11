@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
+    <event name="page_block_html_topmenu_gethtml_before">
+        <observer name="sample_news_observer" instance="Sample\News\Model\Observer" method="addLinksToTopMenu" />
+    </event>
+</config>

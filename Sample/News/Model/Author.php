@@ -8,6 +8,7 @@ use \Magento\Framework\Model\Context;
 use \Magento\Framework\Registry;
 use \Magento\Framework\Model\Resource\AbstractResource;
 use \Magento\Framework\Data\Collection\Db;
+use Sample\News\Model\Author\Url;
 
 /**
  * @method string getName()
@@ -23,6 +24,13 @@ use \Magento\Framework\Data\Collection\Db;
  * @method Author setResumee(\string $resumee)
  * @method string getResumee()
  * @method Resource\Author _getResource()
+ * @method string getUrlKey()
+ * @method int getIsActive()
+ * @method string getBiography()
+ * @method string getDob()
+ * @method string getMetaTitle()
+ * @method string getMetaDescription()
+ * @method string getMetaKeywords()
  */
 class Author extends AbstractModel implements IdentityInterface
 {
@@ -39,6 +47,8 @@ class Author extends AbstractModel implements IdentityInterface
      */
     const STATUS_DISABLED = 0;
 
+
+    protected $urlModel;
     /**
      * cache tag
      *
@@ -68,9 +78,8 @@ class Author extends AbstractModel implements IdentityInterface
     protected $filter;
 
     /**
-     * constructor
-     *
      * @param FilterManager $filter
+     * @param Url $urlModel
      * @param Context $context
      * @param Registry $registry
      * @param AbstractResource $resource
@@ -79,6 +88,7 @@ class Author extends AbstractModel implements IdentityInterface
      */
     public function __construct(
         FilterManager $filter,
+        Url $urlModel,
         Context $context,
         Registry $registry,
         AbstractResource $resource = null,
@@ -86,6 +96,7 @@ class Author extends AbstractModel implements IdentityInterface
         array $data = []
     ) {
         $this->filter = $filter;
+        $this->urlModel = $urlModel;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -155,5 +166,21 @@ class Author extends AbstractModel implements IdentityInterface
     public function formatUrlKey($string)
     {
         return $this->filter->translitUrl($string);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuthorUrl()
+    {
+        return $this->urlModel->getAuthorUrl($this);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return (bool)$this->getIsActive();
     }
 }

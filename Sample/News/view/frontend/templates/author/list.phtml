@@ -1,0 +1,18 @@
+<?php /** @var Sample\News\Block\Author\ListAuthor $this */ ?>
+<?php $_authors = $this->getAuthors(); ?>
+<div class="authors">
+    <?php if ($_authors->getSize() > 0) :?>
+        <div class="sample-news-authors-toolbar toolbar top"><?php echo $this->getPagerHtml(); ?></div>
+        <div class="sample-news-authors-list-container">
+            <?php foreach ($_authors as $_author) : ?>
+                <?php /** @var Sample\News\Model\Author $_author */ ?>
+                <div class="sample-news-author-list-item">
+                    <a href="<?php echo $_author->getAuthorUrl();?>"><?php echo $_author->getName();?></a>
+                </div>
+            <?php endforeach;?>
+        </div>
+        <div class="sample-news-authors-toolbar toolbar bottom"><?php echo $this->getPagerHtml(); ?></div>
+    <?php else : ?>
+        <?php echo __('There are no authors at this moment');?>
+    <?php endif;?>
+</div>
