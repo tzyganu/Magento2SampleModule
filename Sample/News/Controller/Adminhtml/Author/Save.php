@@ -1,7 +1,8 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use Sample\News\Controller\Adminhtml\Author;
+use \Magento\Framework\Registry;
+use \Sample\News\Controller\Adminhtml\Author;
 use \Magento\Framework\Stdlib\DateTime\Filter\Date;
 use \Sample\News\Model\AuthorFactory;
 use \Magento\Backend\Model\Session;
@@ -11,6 +12,7 @@ use \Magento\Framework\Model\Exception as FrameworkException;
 use \Sample\News\Model\Author\Image as ImageModel;
 use \Sample\News\Model\Author\File as FileModel;
 use \Sample\News\Model\Upload;
+use \Magento\Backend\Helper\Js as JsHelper;
 
 class Save extends Author
 {
@@ -55,34 +57,43 @@ class Save extends Author
      */
     protected $uploadModel;
 
+    /**
+     * @var \Magento\Backend\Helper\Js
+     */
+    protected $jsHelper;
+
 
     /**
-     * @param AuthorFactory $authorFactory
+     * @param JsHelper $jsHelper
      * @param Session $backendSession
      * @param Date $dateFilter
      * @param ImageModel $imageModel
      * @param FileModel $fileModel
      * @param Upload $uploadModel
-     * @param Context $context
+     * @param Registry $registry
+     * @param AuthorFactory $authorFactory
      * @param RedirectFactory $resultRedirectFactory
+     * @param Context $context
      */
     public function __construct(
-        AuthorFactory $authorFactory,
+        JsHelper $jsHelper,
         Session $backendSession,
         Date $dateFilter,
         ImageModel $imageModel,
         FileModel $fileModel,
         Upload $uploadModel,
-        Context $context,
-        RedirectFactory $resultRedirectFactory
+        Registry $registry,
+        AuthorFactory $authorFactory,
+        RedirectFactory $resultRedirectFactory,
+        Context $context
     ) {
-        $this->authorFactory = $authorFactory;
+        $this->jsHelper = $jsHelper;
         $this->backendSession = $backendSession;
         $this->dateFilter = $dateFilter;
         $this->imageModel = $imageModel;
         $this->fileModel = $fileModel;
         $this->uploadModel = $uploadModel;
-        parent::__construct($context, $resultRedirectFactory);
+        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);
     }
 
     /**
@@ -96,17 +107,16 @@ class Save extends Author
         $resultRedirect = $this->resultRedirectFactory->create();
         if ($data) {
             $data = $this->filterData($data);
-            $author = $this->authorFactory->create();
-
-            $id = $this->getRequest()->getParam('author_id');
-            if ($id) {
-                $author->load($id);
-            }
+            $author = $this->initAuthor();
             $author->setData($data);
             $avatar = $this->uploadModel->uploadFileAndGetName('avatar', $this->imageModel->getBaseDir(), $data);
             $author->setAvatar($avatar);
-            $resumee = $this->uploadModel->uploadFileAndGetName('resumee', $this->fileModel->getBaseDir(), $data);
-            $author->setResumee($resumee);
+            $resume = $this->uploadModel->uploadFileAndGetName('resume', $this->fileModel->getBaseDir(), $data);
+            $author->setResume($resume);
+            $products = $this->getRequest()->getPost('products', -1);
+            if ($products != -1) {
+                $author->setProductsData($this->jsHelper->decodeGridSerializedInput($products));
+            }
             $this->_eventManager->dispatch(
                 'sample_news_author_prepare_save',
                 [
@@ -161,8 +171,8 @@ class Save extends Author
     public function filterData($data)
     {
         $inputFilter = new \Zend_Filter_Input(
-            array('dob' => $this->dateFilter),
-            array(),
+            ['dob' => $this->dateFilter],
+            [],
             $data
         );
         $data = $inputFilter->getUnescaped();

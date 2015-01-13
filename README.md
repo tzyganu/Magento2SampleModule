@@ -1,16 +1,21 @@
 Magento 2.0 Sample Module
 ====================
 
-Last tested on beta2.
+Last tested on beta3.
 
 
-<img src="http://i.imgur.com/Ma6v2gs.jpg" alt="Magento 2 Sample Module" />
+![Magento 2 Sample Module](http://i.imgur.com/Ma6v2gs.jpg)
 
 What I got so far:
 ----------
 
-This extension contains the admin and frontend sections for a single entity (Author) store view related.  
-The frontend and other types of entities listed in **the purpose** will follow.  
+ - One custom entity Author. flat and related to store views
+ - Backend section for the entity mentioned above
+ - Frontend list and view for the entity mentioned above
+ - Backend relation (many to many) to catalog products. on the edit form there is a tab called 'Products' similar to related products. On the product edit page there is a tab called Authors. Frontend listing of the related products will follow
+
+
+The other types of entities and features listed in **the purpose** will follow.  
 Don't put many hopes in this. Based on the comments on the magento 2 repo the grid system will be changed...A LOT.  
 
 The purpose 
@@ -36,7 +41,7 @@ This module should contain the following:
   * Text
   * Textarea (with and without WYSIWYG editor)
   * Date
-  * Boolean
+  * Yes/No
   * Dropdown (with different source models)
   * Multi-select (with different source models)
   * File
@@ -50,7 +55,7 @@ This module should contain the following:
  * Each entity must support customer comments.
  * Each EAV entity must have a section for managing attributes (similar to product attribtues).
  
-After this is complete (or almost) it will become the base source for the Ultimate Module Creator 2.0 which will be a version for Magento 2.0 of the <a href="https://github.com/tzyganu/UMC1.9">Ultimate Module Creator for Magento 1.7+</a>. 
+After this is complete (or almost) it will become the base source for the Ultimate Module Creator 2.0 which will be a version for Magento 2.0 of the [Ultimate Module Creator for Magento 1.7](https://github.com/tzyganu/UMC1.9). 
 
 Any other ideas and pieces of code are welcomed even encouraged.
 

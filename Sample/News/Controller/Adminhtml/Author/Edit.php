@@ -12,19 +12,6 @@ use \Magento\Framework\View\Result\PageFactory;
 class Edit extends AuthorController
 {
     /**
-     * Core registry
-     *
-     * @var Registry
-     */
-    protected $coreRegistry;
-
-    /**
-     * author factory
-     *
-     * @var AuthorFactory
-     */
-    protected $authorFactory;
-    /**
      * backend session
      *
      * @var BackendSession
@@ -54,11 +41,9 @@ class Edit extends AuthorController
         Context $context,
         RedirectFactory $resultRedirectFactory
     ) {
-        $this->coreRegistry = $registry;
-        $this->authorFactory = $authorFactory;
         $this->backendSession = $backendSession;
         $this->resultPageFactory = $resultPageFactory;
-        parent::__construct($context, $resultRedirectFactory);
+        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);
     }
 
     /**
@@ -73,13 +58,13 @@ class Edit extends AuthorController
 
     public function execute()
     {
+        $id = $this->getRequest()->getParam('author_id');
+        /** @var \Sample\News\Model\Author $author */
+        $author = $this->initAuthor();
         /** @var \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Sample_News::author');
         $resultPage->getConfig()->getTitle()->set((__('Authors')));
-        $id = $this->getRequest()->getParam('author_id');
-        /** @var \Sample\News\Model\Author $author */
-        $author = $this->authorFactory->create();
         if ($id) {
             $author->load($id);
             if (!$author->getId()) {
@@ -101,7 +86,6 @@ class Edit extends AuthorController
         if (!empty($data)) {
             $author->setData($data);
         }
-        $this->coreRegistry->register('sample_news_author', $author);
         return $resultPage;
     }
 }

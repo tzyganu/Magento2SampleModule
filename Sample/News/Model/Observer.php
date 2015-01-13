@@ -30,12 +30,12 @@ class Observer
         $tree = $menu->getTree();
 
         $authorNodeId = 'authors';
-        $data = array(
+        $data = [
             'name' => __('Authors'),
             'id' => $authorNodeId,
             'url' => $this->authorUrl->getListUrl(),
             'is_active' => ('sample_news_author_index' == $this->request->getFullActionName())
-        );
+        ];
         $authorsNode = new Node($data, 'id', $tree, $menu);
         $menu->addChild($authorsNode);
         return $this;

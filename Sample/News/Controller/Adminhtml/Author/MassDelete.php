@@ -9,25 +9,6 @@ use \Magento\Framework\Model\Exception as FrameworkException;
 
 class MassDelete extends Author
 {
-    protected $authorFactory;
-
-    /**
-     * constructor
-     *
-     * @param AuthorFactory $authorFactory
-     * @param Context $context
-     * @param RedirectFactory $resultRedirectFactory
-     */
-    public function __construct(
-        AuthorFactory $authorFactory,
-        Context $context,
-        RedirectFactory $resultRedirectFactory
-    )
-    {
-        $this->authorFactory = $authorFactory;
-        parent::__construct($context, $resultRedirectFactory);
-    }
-
     /**
      * execute action
      *
@@ -42,6 +23,7 @@ class MassDelete extends Author
         } else {
             try {
                 foreach ($authorIds as $reviewId) {
+                    /** @var \Sample\News\Model\Author $author */
                     $author = $this->authorFactory->create()->load($reviewId);
                     $author->delete();
                 }

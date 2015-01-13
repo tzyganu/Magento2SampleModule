@@ -9,6 +9,7 @@ use \Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use \Magento\Framework\Event\ManagerInterface;
 use \Magento\Framework\Model\Resource\Db\AbstractDb;
 use \Magento\Store\Model\Store;
+use \Magento\Catalog\Model\Product;
 
 class Collection extends AbstractCollection
 {
@@ -32,6 +33,11 @@ class Collection extends AbstractCollection
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
+
+    /**
+     * @var array
+     */
+    protected $_joinedFields = [];
 
     /**
      * constructor
@@ -156,5 +162,26 @@ class Collection extends AbstractCollection
         $countSelect = parent::getSelectCountSql();
         $countSelect->reset(\Zend_Db_Select::GROUP);
         return $countSelect;
+    }
+
+    /**
+     * @param $product
+     * @return $this
+     */
+    public function addProductFilter($product)
+    {
+        if ($product instanceof Product){
+            $product = $product->getId();
+        }
+        if (!isset($this->_joinedFields['product'])){
+            $this->getSelect()->join(
+                ['related_product' => $this->getTable('sample_news_author_product')],
+                'related_product.author_id = main_table.author_id',
+                ['position']
+            );
+            $this->getSelect()->where('related_product.product_id = ?', $product);
+            $this->_joinedFields['product'] = true;
+        }
+        return $this;
     }
 }

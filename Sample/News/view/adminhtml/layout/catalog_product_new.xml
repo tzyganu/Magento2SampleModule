@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="product_tabs">
+            <block class="Sample\News\Block\Adminhtml\Catalog\Product\Edit\Tab\Author" name="sample_news.author" />
+            <action method="addTab">
+                <argument name="name" xsi:type="string">sample_news_author</argument>
+                <argument name="block" xsi:type="string">sample_news.author</argument>
+            </action>
+        </referenceBlock>
+    </body>
+</page>

@@ -8,7 +8,10 @@ use \Magento\Store\Model\StoreManagerInterface;
 use \Magento\Framework\Stdlib\DateTime as LibDateTime;
 use \Magento\Framework\Model\AbstractModel;
 use \Magento\Store\Model\Store;
-
+use \Sample\News\Model\Author as AuthorModel;
+use \Magento\Framework\Event\ManagerInterface;
+use \Magento\Catalog\Model\Product;
+use \Sample\News\Model\Author\Product as AuthorProduct;
 
 class Author extends AbstractDb
 {
@@ -37,23 +40,40 @@ class Author extends AbstractDb
     protected $dateTime;
 
     /**
-     * constructor
-     *
-     * @param \Magento\Framework\App\Resource $resource
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @var string
+     */
+    protected $authorProductTable;
+
+    /**
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $eventManager;
+
+    protected $authorProduct;
+
+    /**
+     * @param Resource $resource
+     * @param DateTime $date
+     * @param StoreManagerInterface $storeManager
+     * @param LibDateTime $dateTime
+     * @param ManagerInterface $eventManager
+     * @param AuthorProduct $authorProduct
      */
     public function __construct(
         Resource $resource,
         DateTime $date,
         StoreManagerInterface $storeManager,
-        LibDateTime $dateTime
+        LibDateTime $dateTime,
+        ManagerInterface $eventManager,
+        AuthorProduct $authorProduct
     ) {
         parent::__construct($resource);
         $this->date = $date;
         $this->storeManager = $storeManager;
         $this->dateTime = $dateTime;
+        $this->eventManager = $eventManager;
+        $this->authorProduct = $authorProduct;
+        $this->authorProductTable = $this->getTable('sample_news_author_product');
     }
 
     /**
@@ -129,32 +149,8 @@ class Author extends AbstractDb
      */
     protected function _afterSave(AbstractModel $object)
     {
-        $oldStores = $this->lookupStoreIds($object->getId());
-        $newStores = (array)$object->getStores();
-        if (empty($newStores)) {
-            $newStores = (array)$object->getStoreId();
-        }
-        $table = $this->getTable('sample_news_author_store');
-        $insert = array_diff($newStores, $oldStores);
-        $delete = array_diff($oldStores, $newStores);
-
-        if ($delete) {
-            $where = [
-                'author_id = ?' => (int)$object->getId(),
-                'store_id IN (?)' => $delete
-            ];
-            $this->_getWriteAdapter()->delete($table, $where);
-        }
-        if ($insert) {
-            $data = [];
-            foreach ($insert as $storeId) {
-                $data[] = [
-                    'author_id' => (int)$object->getId(),
-                    'store_id' => (int)$storeId
-                ];
-            }
-            $this->_getWriteAdapter()->insertMultiple($table, $data);
-        }
+        $this->saveStoreRelation($object);
+        $this->saveProductRelation($object);
         return parent::_afterSave($object);
     }
 
@@ -213,13 +209,13 @@ class Author extends AbstractDb
                 $this->getMainTable() . '.author_id = sample_news_author_store.author_id',
                 []
             )//TODO: check if is_active filter is needed
-            ->where('is_active = ?', 1)
-            ->where(
-                'sample_news_author_store.store_id IN (?)',
-                $storeIds
-            )
-            ->order('sample_news_author_store.store_id DESC')
-            ->limit(1);
+                ->where('is_active = ?', 1)
+                ->where(
+                    'sample_news_author_store.store_id IN (?)',
+                    $storeIds
+                )
+                ->order('sample_news_author_store.store_id DESC')
+                ->limit(1);
         }
         return $select;
     }
@@ -341,10 +337,10 @@ class Author extends AbstractDb
             $this->getTable('sample_news_author_store'),
             'store_id'
         )
-        ->where(
-            'author_id = ?',
-            (int)$authorId
-        );
+            ->where(
+                'author_id = ?',
+                (int)$authorId
+            );
         return $adapter->fetchCol($select);
     }
 
@@ -391,5 +387,187 @@ class Author extends AbstractDb
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param AuthorModel $author
+     * @return array
+     */
+    public function getProductsPosition(AuthorModel $author)
+    {
+        $select = $this->_getWriteAdapter()->select()->from(
+            $this->authorProductTable,
+            ['product_id', 'position']
+        )
+        ->where(
+            'author_id = :author_id'
+        );
+        $bind = ['author_id' => (int)$author->getId()];
+        return $this->_getWriteAdapter()->fetchPairs($select, $bind);
+    }
+
+    /**
+     * @param AuthorModel $author
+     * @return $this
+     */
+    protected function saveStoreRelation(AuthorModel $author)
+    {
+        $oldStores = $this->lookupStoreIds($author->getId());
+        $newStores = (array)$author->getStores();
+        if (empty($newStores)) {
+            $newStores = (array)$author->getStoreId();
+        }
+        $table = $this->getTable('sample_news_author_store');
+        $insert = array_diff($newStores, $oldStores);
+        $delete = array_diff($oldStores, $newStores);
+
+        if ($delete) {
+            $where = [
+                'author_id = ?' => (int)$author->getId(),
+                'store_id IN (?)' => $delete
+            ];
+            $this->_getWriteAdapter()->delete($table, $where);
+        }
+        if ($insert) {
+            $data = [];
+            foreach ($insert as $storeId) {
+                $data[] = [
+                    'author_id' => (int)$author->getId(),
+                    'store_id' => (int)$storeId
+                ];
+            }
+            $this->_getWriteAdapter()->insertMultiple($table, $data);
+        }
+        return $this;
+    }
+
+    /**
+     * @param AuthorModel $author
+     * @return $this
+     */
+    protected function saveProductRelation(AuthorModel $author)
+    {
+        $author->setIsChangedProductList(false);
+        $id = $author->getId();
+        $products = $author->getProductsData();
+
+        if ($products === null) {
+            return $this;
+        }
+        $oldProducts = $author->getProductsPosition();
+        $insert = array_diff_key($products, $oldProducts);
+        $delete = array_diff_key($oldProducts, $products);
+        $update = array_intersect_key($products, $oldProducts);
+        $update = array_diff_assoc($update, $oldProducts);
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = ['product_id IN(?)' => array_keys($delete), 'author_id=?' => $id];
+            $adapter->delete($this->authorProductTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = [];
+            foreach ($insert as $productId => $position) {
+                $data[] = [
+                    'author_id' => (int)$id,
+                    'product_id' => (int)$productId,
+                    'position' => (int)$position
+                ];
+            }
+            $adapter->insertMultiple($this->authorProductTable, $data);
+        }
+
+        if (!empty($update)) {
+            foreach ($update as $productId => $position) {
+                $where = ['author_id = ?' => (int)$id, 'product_id = ?' => (int)$productId];
+                $bind = ['position' => (int)$position['position']];
+                $adapter->update($this->authorProductTable, $bind, $where);
+            }
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $productIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->eventManager->dispatch(
+                'sample_news_author_change_products',
+                ['author' => $author, 'product_ids' => $productIds]
+            );
+        }
+
+        if (!empty($insert) || !empty($update) || !empty($delete)) {
+            $author->setIsChangedProductList(true);
+            $productIds = array_keys($insert + $delete + $update);
+            $author->setAffectedProductIds($productIds);
+        }
+        return $this;
+    }
+
+    public function saveAuthorProductRelation(Product $product, $authors)
+    {
+        $product->setIsChangedAuthorList(false);
+        $id = $product->getId();
+        if ($authors === null) {
+            return $this;
+        }
+        $oldAuthorObjects = $this->authorProduct->getSelectedAuthors($product);
+        if (!is_array($oldAuthorObjects)) {
+            $oldAuthorObjects = [];
+        }
+        $oldAuthors = [];
+        foreach ($oldAuthorObjects as $author) {
+            /** @var \Sample\News\Model\Author $author */
+            $oldAuthors[$author->getId()] = ['position' => $author->getPosition()];
+        }
+        $insert = array_diff_key($authors, $oldAuthors);
+
+        $delete = array_diff_key($oldAuthors, $authors);
+
+        $update = array_intersect_key($authors, $oldAuthors);
+        $toUpdate = [];
+        foreach ($update as $productId => $values) {
+            if (isset($oldAuthors[$productId]) && $oldAuthors[$productId]['position'] != $values['position']) {
+                $toUpdate[$productId] = [];
+                $toUpdate[$productId]['position'] = $values['position'];
+            }
+        }
+
+        $update = $toUpdate;
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = ['author_id IN(?)' => array_keys($delete), 'product_id=?' => $id];
+            $adapter->delete($this->authorProductTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = [];
+            foreach ($insert as $authorId => $position) {
+                $data[] = [
+                    'product_id' => (int)$id,
+                    'author_id' => (int)$authorId,
+                    'position' => (int)$position['position']
+                ];
+            }
+            $adapter->insertMultiple($this->authorProductTable, $data);
+        }
+
+        if (!empty($update)) {
+            foreach ($update as $authorId => $position) {
+                $where = ['product_id = ?' => (int)$id, 'author_id = ?' => (int)$authorId];
+                $bind = ['position' => (int)$position['position']];
+                $adapter->update($this->authorProductTable, $bind, $where);
+            }
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $authorIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->eventManager->dispatch(
+                'sample_news_product_change_authors',
+                ['product' => $product, 'author_ids' => $authorIds]
+            );
+        }
+
+        if (!empty($insert) || !empty($update) || !empty($delete)) {
+            $product->setIsChangedAuthorList(true);
+            $authorIds = array_keys($insert + $delete + $update);
+            $product->setAffectedAuthorIds($authorIds);
+        }
+        return $this;
     }
 }

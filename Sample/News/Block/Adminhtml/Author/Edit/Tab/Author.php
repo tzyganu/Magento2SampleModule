@@ -201,10 +201,10 @@ class Author extends GenericForm implements TabInterface
             ]
         );
         $fieldset->addField(
-            'resumee',
+            'resume',
             'file',
             [
-                'name'        => 'resumee',
+                'name'        => 'resume',
                 'label'       => __('Resume'),
                 'title'       => __('Resume'),
             ]

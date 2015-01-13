@@ -39,7 +39,7 @@ if (!$this->tableExists('sample_news_author')) {
             'dob',
             \Magento\Framework\DB\Ddl\Table::TYPE_DATE,
             null,
-            [].
+            [],
             'Author Birth date'
         )
         ->addColumn(
@@ -64,11 +64,11 @@ if (!$this->tableExists('sample_news_author')) {
             'Author Avatar'
         )
         ->addColumn(
-            'resumee',
+            'resume',
             \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             255,
             [],
-            'Author Resumee'
+            'Author Resume'
         )
         ->addColumn(
             'country',
@@ -182,7 +182,84 @@ if (!$this->tableExists('sample_news_author_store')) {
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
             \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         )
-        ->setComment('Author To Store Linkage Table');
+        ->setComment('Author To Store Link Table');
     $this->getConnection()->createTable($table);
 }
+
+if (!$this->tableExists('sample_news_author_product')) {
+    $table = $this->getConnection()
+        ->newTable($this->getTable('sample_news_author_product'))
+        ->addColumn(
+            'author_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'unsigned' => true,
+                'nullable' => false,
+                'primary'   => true,
+            ],
+            'Author ID'
+        )
+        ->addColumn(
+            'product_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'unsigned' => true,
+                'nullable' => false,
+                'primary'   => true,
+            ],
+            'Product ID'
+        )
+        ->addColumn(
+            'position',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'nullable' => false,
+                'default' => '0'
+            ],
+            'Position'
+        )
+        ->addIndex(
+            $this->getIdxName('sample_news_author_product', ['product_id']),
+            ['product_id']
+        )
+        ->addForeignKey(
+            $this->getFkName('sample_news_author_product', 'author_id', 'sample_news_author', 'author_id'),
+            'author_id',
+            $this->getTable('sample_news_author'),
+            'author_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        )
+        ->addForeignKey(
+            $this->getFkName('sample_news_author_product', 'product_id', 'catalog_product_entity', 'entity_id'),
+            'product_id',
+            $this->getTable('catalog_product_entity'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        )
+        ->addIndex(
+            $this->getIdxName(
+                'sample_news_author_product',
+                [
+                    'author_id',
+                    'product_id'
+                ],
+                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+            ),
+            [
+                'author_id',
+                'product_id'
+            ],
+            [
+                'type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+            ]
+        )
+        ->setComment('Author To product Link Table');
+    $this->getConnection()->createTable($table);
+}
+
 

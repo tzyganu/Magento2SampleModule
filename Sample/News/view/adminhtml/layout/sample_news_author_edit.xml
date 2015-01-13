@@ -10,6 +10,7 @@
                 <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Author" name="sample_news_author_edit_tab_author"/>
                 <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Meta" name="sample_news_author_edit_tab_author_meta"/>
                 <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Stores" name="sample_news_author_edit_tab_author_stores"/>
+                <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Product" name="sample_news_author_edit_tab_author_product"/>
                 <action method="addTab">
                     <argument name="name" xsi:type="string">author</argument>
                     <argument name="block" xsi:type="string">sample_news_author_edit_tab_author</argument>
@@ -21,6 +22,10 @@
                 <action method="addTab">
                     <argument name="name" xsi:type="string">stores</argument>
                     <argument name="block" xsi:type="string">sample_news_author_edit_tab_author_stores</argument>
+                </action>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">product</argument>
+                    <argument name="block" xsi:type="string">sample_news_author_edit_tab_author_product</argument>
                 </action>
             </block>
         </referenceContainer>

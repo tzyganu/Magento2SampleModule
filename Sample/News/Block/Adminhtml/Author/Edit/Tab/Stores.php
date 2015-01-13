@@ -29,7 +29,7 @@ class Stores extends GenericForm implements TabInterface
         Context $context,
         Registry $registry,
         FormFactory $formFactory,
-        array $data = array()
+        array $data = []
     ) {
         $this->systemStore = $systemStore;
         parent::__construct($context, $registry, $formFactory, $data);

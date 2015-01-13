@@ -21,9 +21,10 @@ use Sample\News\Model\Author\Url;
  * @method Author setStoreId(\int $storeId)
  * @method Author setAvatar(\string $avatar)
  * @method string getAvatar()
- * @method Author setResumee(\string $resumee)
- * @method string getResumee()
+ * @method Author setResume(\string $resumee)
+ * @method string getResume()
  * @method Resource\Author _getResource()
+ * @method Resource\Author getResource()
  * @method string getUrlKey()
  * @method int getIsActive()
  * @method string getBiography()
@@ -31,6 +32,11 @@ use Sample\News\Model\Author\Url;
  * @method string getMetaTitle()
  * @method string getMetaDescription()
  * @method string getMetaKeywords()
+ * @method Author setProductsData(array $products)
+ * @method Author setIsChangedProductList(\bool $changed)
+ * @method array|null getProductsData()
+ * @method Author setAffectedProductIds(array $productIds)
+ * @method int getPosition()
  */
 class Author extends AbstractModel implements IdentityInterface
 {
@@ -183,4 +189,21 @@ class Author extends AbstractModel implements IdentityInterface
     {
         return (bool)$this->getIsActive();
     }
+
+    /**
+     * @return array|mixed
+     */
+    public function getProductsPosition()
+    {
+        if (!$this->getId()) {
+            return array();
+        }
+        $array = $this->getData('products_position');
+        if (is_null($array)) {
+            $array = $this->getResource()->getProductsPosition($this);
+            $this->setData('products_position', $array);
+        }
+        return $array;
+    }
+
 }
