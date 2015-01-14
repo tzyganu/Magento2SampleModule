@@ -28,6 +28,10 @@ class View extends Action
         $this->coreRegistry = $coreRegistry;
         parent::__construct($context);
     }
+
+    /**
+     * @return \Magento\Framework\Controller\Result\Forward|\Magento\Framework\View\Result\Page
+     */
     public function execute()
     {
         $authorId = (int) $this->getRequest()->getParam('id');
@@ -43,7 +47,8 @@ class View extends Action
         $this->coreRegistry->register('current_author', $author);
 
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->getConfig()->getTitle()->set($author->getMetaTitle());
+        $title = ($author->getMetaTitle()) ?: $author->getName();
+        $resultPage->getConfig()->getTitle()->set($title);
         $resultPage->getConfig()->setDescription($author->getMetaDescription());
         $resultPage->getConfig()->setKeywords($author->getMetaKeywords());
 

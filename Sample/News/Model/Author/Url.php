@@ -32,9 +32,10 @@ class Url
      */
     public function getAuthorUrl(Author $author)
     {
-        if ($urlKey = $author->getUrlKey()) {
-            return $this->urlBuilder->getUrl('', ['_direct'=>$urlKey]);
-        }
+        //TODO fix router to match the url key
+//        if ($urlKey = $author->getUrlKey()) {
+//            return $this->urlBuilder->getUrl('', ['_direct'=>$urlKey]);
+//        }
         return $this->urlBuilder->getUrl('sample_news/author/view', ['id' => $author->getId()]);
     }
 }

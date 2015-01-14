@@ -12,7 +12,8 @@ What I got so far:
  - One custom entity Author. flat and related to store views
  - Backend section for the entity mentioned above
  - Frontend list and view for the entity mentioned above
- - Backend relation (many to many) to catalog products. on the edit form there is a tab called 'Products' similar to related products. On the product edit page there is a tab called Authors. Frontend listing of the related products will follow
+ - Backend relation (many to many) to catalog products. on the edit form there is a tab called 'Products' similar to related products. On the product edit page there is a tab called Authors. 
+ - List on Author view page on frontend the related products paginated and with a sorting options.
 
 
 The other types of entities and features listed in **the purpose** will follow.  

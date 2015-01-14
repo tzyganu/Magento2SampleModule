@@ -457,8 +457,16 @@ class Author extends AbstractDb
         $oldProducts = $author->getProductsPosition();
         $insert = array_diff_key($products, $oldProducts);
         $delete = array_diff_key($oldProducts, $products);
+        //TODO: make update code prettier.
         $update = array_intersect_key($products, $oldProducts);
-        $update = array_diff_assoc($update, $oldProducts);
+        $_update = array();
+        foreach ($update as $key=>$settings) {
+            if (isset($oldProducts[$key]) && $oldProducts[$key] != $settings['position']) {
+                $_update[$key] = $settings;
+            }
+        }
+        $update = $_update;
+        //$update = array_diff_assoc($update, $oldProducts);
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
             $condition = ['product_id IN(?)' => array_keys($delete), 'author_id=?' => $id];
@@ -500,6 +508,11 @@ class Author extends AbstractDb
         return $this;
     }
 
+    /**
+     * @param Product $product
+     * @param $authors
+     * @return $this
+     */
     public function saveAuthorProductRelation(Product $product, $authors)
     {
         $product->setIsChangedAuthorList(false);

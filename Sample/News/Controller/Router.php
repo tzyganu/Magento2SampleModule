@@ -122,7 +122,7 @@ class Router implements RouterInterface
         $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
         $request->setDispatched(true);
         return $this->actionFactory->create(
-            'Magento\Framework\App\Action\Forward',
+            'Sample\News\Controller\Author\View',
             ['request' => $request]
         );
     }

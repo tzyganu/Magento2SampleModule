@@ -28,13 +28,14 @@ class Observer
         /** @var \Magento\Framework\Data\Tree\Node $menu */
         $menu = $observer->getMenu();
         $tree = $menu->getTree();
-
+        $fullAction = $this->request->getFullActionName();
+        $selectedActions = ['sample_news_author_index', 'sample_news_author_view'];
         $authorNodeId = 'authors';
         $data = [
-            'name' => __('Authors'),
-            'id' => $authorNodeId,
-            'url' => $this->authorUrl->getListUrl(),
-            'is_active' => ('sample_news_author_index' == $this->request->getFullActionName())
+            'name'      => __('Authors'),
+            'id'        => $authorNodeId,
+            'url'       => $this->authorUrl->getListUrl(),
+            'is_active' => in_array($fullAction, $selectedActions)
         ];
         $authorsNode = new Node($data, 'id', $tree, $menu);
         $menu->addChild($authorsNode);
