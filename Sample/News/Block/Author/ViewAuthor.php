@@ -1,9 +1,9 @@
 <?php
 namespace Sample\News\Block\Author;
 
-use \Magento\Framework\View\Element\Template;
-use \Magento\Framework\View\Element\Template\Context;
-use \Magento\Framework\Registry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\Registry;
 
 class ViewAuthor extends Template
 {
@@ -21,7 +21,8 @@ class ViewAuthor extends Template
         Context $context,
         Registry $registry,
         array $data = []
-    ) {
+    )
+    {
         $this->coreRegistry = $registry;
         parent::__construct($context, $data);
     }

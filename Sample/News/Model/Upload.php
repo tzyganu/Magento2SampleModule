@@ -1,9 +1,9 @@
 <?php
 namespace Sample\News\Model;
 
-use \Magento\Core\Model\File\UploaderFactory;
-use \Magento\Framework\Model\Exception as FrameworkException;
-use \Magento\Framework\File\Uploader;
+use Magento\Core\Model\File\UploaderFactory;
+use Magento\Framework\Model\Exception as FrameworkException;
+use Magento\Framework\File\Uploader;
 
 class Upload
 {

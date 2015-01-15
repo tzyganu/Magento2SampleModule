@@ -1,7 +1,7 @@
 <?php
 namespace Sample\News\Block\Adminhtml;
 
-use \Magento\Backend\Block\Widget\Grid\Container;
+use Magento\Backend\Block\Widget\Grid\Container;
 
 class Author extends Container
 {

@@ -1,13 +1,13 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use \Sample\News\Controller\Adminhtml\Author as AuthorController;
-use \Magento\Framework\Registry;
-use \Sample\News\Model\AuthorFactory;
-use \Magento\Backend\Model\Session as BackendSession;
-use \Magento\Backend\App\Action\Context;
-use \Magento\Backend\Model\View\Result\RedirectFactory;
-use \Magento\Framework\View\Result\PageFactory;
+use Sample\News\Controller\Adminhtml\Author as AuthorController;
+use Magento\Framework\Registry;
+use Sample\News\Model\AuthorFactory;
+use Magento\Backend\Model\Session as BackendSession;
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\RedirectFactory;
+use Magento\Framework\View\Result\PageFactory;
 
 class Edit extends AuthorController
 {
@@ -40,7 +40,8 @@ class Edit extends AuthorController
         PageFactory $resultPageFactory,
         Context $context,
         RedirectFactory $resultRedirectFactory
-    ) {
+    )
+    {
         $this->backendSession = $backendSession;
         $this->resultPageFactory = $resultPageFactory;
         parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);

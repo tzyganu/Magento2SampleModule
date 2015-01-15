@@ -12,13 +12,15 @@ use Magento\Catalog\Model\Product\Visibility;
 class Product extends ListProduct
 {
     /**
-     * @var \Magento\Framework\Registry|null
+     * @var \Magento\Framework\Registry
      */
-    protected $coreRegistry = null;
+    protected $coreRegistry;
     /**
-     * @var \Magento\Catalog\Model\Product\Visibility|null
+     * @var \Magento\Catalog\Model\Product\Visibility
      */
-    protected $productVisibility = null;
+    protected $productVisibility;
+
+    protected $productCollection;
 
     /**
      * @param Visibility $productVisibility
@@ -37,7 +39,8 @@ class Product extends ListProduct
         Resolver $layerResolver,
         CategoryRepositoryInterface $categoryRepository,
         array $data = []
-    ) {
+    )
+    {
         $this->productVisibility = $productVisibility;
         $this->coreRegistry = $coreRegistry;
         parent::__construct($context, $postDataHelper, $layerResolver, $categoryRepository);
@@ -47,24 +50,28 @@ class Product extends ListProduct
      * @access public
      * @return \Sample\News\Model\Author
      */
-    public function getAuthor(){
+    public function getAuthor()
+    {
         return $this->coreRegistry->registry('current_author');
     }
 
     /**
      * @return \Magento\Eav\Model\Entity\Collection\AbstractCollection
      */
-    protected function _getProductCollection() {
-        //todo: cache collection in member var
-        $collection = $this->getAuthor()->getSelectedProductsCollection()
-            ->setStore($this->_storeManager->getStore())
-            ->addMinimalPrice()
-            ->addFinalPrice()
-            ->addTaxPercents()
-            ->addStoreFilter()
-            ->addUrlRewrite()
-            ->setVisibility($this->productVisibility->getVisibleInCatalogIds());
-        $collection->getSelect()->order('position');
-        return $collection;
+    protected function _getProductCollection()
+    {
+        if (is_null($this->productCollection)) {
+            $collection = $this->getAuthor()->getSelectedProductsCollection()
+                ->setStore($this->_storeManager->getStore())
+                ->addMinimalPrice()
+                ->addFinalPrice()
+                ->addTaxPercents()
+                ->addStoreFilter()
+                ->addUrlRewrite()
+                ->setVisibility($this->productVisibility->getVisibleInCatalogIds());
+            $collection->getSelect()->order('position');
+            $this->productCollection = $collection;
+        }
+        return $this->productCollection;
     }
 }

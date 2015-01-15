@@ -1,18 +1,18 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use \Magento\Framework\Registry;
-use \Sample\News\Controller\Adminhtml\Author;
-use \Magento\Framework\Stdlib\DateTime\Filter\Date;
-use \Sample\News\Model\AuthorFactory;
-use \Magento\Backend\Model\Session;
-use \Magento\Backend\App\Action\Context;
-use \Magento\Backend\Model\View\Result\RedirectFactory;
-use \Magento\Framework\Model\Exception as FrameworkException;
-use \Sample\News\Model\Author\Image as ImageModel;
-use \Sample\News\Model\Author\File as FileModel;
-use \Sample\News\Model\Upload;
-use \Magento\Backend\Helper\Js as JsHelper;
+use Magento\Framework\Registry;
+use Sample\News\Controller\Adminhtml\Author;
+use Magento\Framework\Stdlib\DateTime\Filter\Date;
+use Sample\News\Model\AuthorFactory;
+use Magento\Backend\Model\Session;
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\RedirectFactory;
+use Magento\Framework\Model\Exception as FrameworkException;
+use Sample\News\Model\Author\Image as ImageModel;
+use Sample\News\Model\Author\File as FileModel;
+use Sample\News\Model\Upload;
+use Magento\Backend\Helper\Js as JsHelper;
 
 class Save extends Author
 {
@@ -86,7 +86,8 @@ class Save extends Author
         AuthorFactory $authorFactory,
         RedirectFactory $resultRedirectFactory,
         Context $context
-    ) {
+    )
+    {
         $this->jsHelper = $jsHelper;
         $this->backendSession = $backendSession;
         $this->dateFilter = $dateFilter;
@@ -183,6 +184,4 @@ class Save extends Author
         }
         return $data;
     }
-
-
 }

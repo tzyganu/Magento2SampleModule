@@ -1,10 +1,10 @@
 <?php
 namespace Sample\News\Model;
 
-use \Sample\News\Model\Author\Url as AuthorUrl;
-use \Magento\Framework\Event\Observer as EventObserver;
-use \Magento\Framework\Data\Tree\Node;
-use \Magento\Framework\App\Request\Http;
+use Sample\News\Model\Author\Url as AuthorUrl;
+use Magento\Framework\Event\Observer as EventObserver;
+use Magento\Framework\Data\Tree\Node;
+use Magento\Framework\App\Request\Http;
 
 class Observer
 {
@@ -14,7 +14,8 @@ class Observer
     public function __construct(
         Http $request,
         AuthorUrl $authorUrl
-    ) {
+    )
+    {
         $this->request = $request;
         $this->authorUrl = $authorUrl;
     }

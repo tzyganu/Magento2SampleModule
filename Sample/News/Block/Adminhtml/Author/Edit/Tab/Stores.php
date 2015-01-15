@@ -1,12 +1,12 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Edit\Tab;
 
-use \Magento\Backend\Block\Widget\Form\Generic as GenericForm;
-use \Magento\Backend\Block\Widget\Tab\TabInterface;
-use \Magento\Store\Model\System\Store;
-use \Magento\Backend\Block\Template\Context;
-use \Magento\Framework\Registry;
-use \Magento\Framework\Data\FormFactory;
+use Magento\Backend\Block\Widget\Form\Generic as GenericForm;
+use Magento\Backend\Block\Widget\Tab\TabInterface;
+use Magento\Store\Model\System\Store;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\Data\FormFactory;
 
 class Stores extends GenericForm implements TabInterface
 {
@@ -30,7 +30,8 @@ class Stores extends GenericForm implements TabInterface
         Registry $registry,
         FormFactory $formFactory,
         array $data = []
-    ) {
+    )
+    {
         $this->systemStore = $systemStore;
         parent::__construct($context, $registry, $formFactory, $data);
     }

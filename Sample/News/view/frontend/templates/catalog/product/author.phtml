@@ -1,0 +1,17 @@
+<?php /** @var \Sample\News\Block\Catalog\Product\ListAuthor $this */?>
+<?php $_authors = $this->getAuthorCollection();?>
+<?php if ($_authors && $_authors->count() > 0) :?>
+    <div class="block-content content">
+        <h2><?php echo __('Authors')?></h2>
+        <?php /** @var \Sample\News\Model\Author $_author */?>
+        <div><?php echo $this->getPagerHtml();?></div>
+        <div style="clear:both"></div>
+        <?php foreach ($_authors as $_author) : ?>
+            <div class="item">
+                <a href="<?php echo $_author->getAuthorUrl();?>"><?php echo $_author->getName();?></a>
+            </div>
+        <?php endforeach; ?>
+        <div><?php echo $this->getPagerHtml();?></div>
+        <div style="clear:both"></div>
+    </div>
+<?php endif;?>

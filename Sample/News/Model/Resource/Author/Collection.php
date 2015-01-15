@@ -1,15 +1,15 @@
 <?php
 namespace Sample\News\Model\Resource\Author;
 
-use \Magento\Framework\Model\Resource\Db\Collection\AbstractCollection;
-use \Magento\Store\Model\StoreManagerInterface;
-use \Magento\Core\Model\EntityFactory;
-use \Psr\Log\LoggerInterface;
-use \Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
-use \Magento\Framework\Event\ManagerInterface;
-use \Magento\Framework\Model\Resource\Db\AbstractDb;
-use \Magento\Store\Model\Store;
-use \Magento\Catalog\Model\Product;
+use Magento\Framework\Model\Resource\Db\Collection\AbstractCollection;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Core\Model\EntityFactory;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Model\Resource\Db\AbstractDb;
+use Magento\Store\Model\Store;
+use Magento\Catalog\Model\Product;
 
 class Collection extends AbstractCollection
 {
@@ -58,7 +58,8 @@ class Collection extends AbstractCollection
         StoreManagerInterface $storeManager,
         $connection = null,
         AbstractDb $resource = null
-    ) {
+    )
+    {
         parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
         $this->storeManager = $storeManager;
     }
@@ -86,12 +87,12 @@ class Collection extends AbstractCollection
         $connection = $this->getConnection();
         if (count($items)) {
             $select = $connection->select()->from(
-                    ['author_store' => $this->getTable('sample_news_author_store')]
-                )
-                ->where(
-                    'author_store.author_id IN (?)',
-                    $items
-                );
+                ['author_store' => $this->getTable('sample_news_author_store')]
+            )
+            ->where(
+                'author_store.author_id IN (?)',
+                $items
+            );
 
             if ($result = $connection->fetchPairs($select)) {
                 foreach ($this as $item) {
@@ -170,10 +171,10 @@ class Collection extends AbstractCollection
      */
     public function addProductFilter($product)
     {
-        if ($product instanceof Product){
+        if ($product instanceof Product) {
             $product = $product->getId();
         }
-        if (!isset($this->_joinedFields['product'])){
+        if (!isset($this->_joinedFields['product'])) {
             $this->getSelect()->join(
                 ['related_product' => $this->getTable('sample_news_author_product')],
                 'related_product.author_id = main_table.author_id',

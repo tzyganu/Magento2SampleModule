@@ -14,6 +14,7 @@ What I got so far:
  - Frontend list and view for the entity mentioned above
  - Backend relation (many to many) to catalog products. on the edit form there is a tab called 'Products' similar to related products. On the product edit page there is a tab called Authors. 
  - List on Author view page on frontend the related products paginated and with a sorting options.
+ - List related authors on product view page. There is a problem with the pagination due to a Magento2 bug [#970](https://github.com/magento/magento2/issues/970)
 
 
 The other types of entities and features listed in **the purpose** will follow.  
@@ -54,7 +55,7 @@ This module should contain the following:
  * Would be nice to have unit tests for every class in the code - but that's low priority.
  * Each entity type must have widgets for frontend (link, short view).
  * Each entity must support customer comments.
- * Each EAV entity must have a section for managing attributes (similar to product attribtues).
+ * Each EAV entity must have a section for managing attributes (similar to product attributes).
  
 After this is complete (or almost) it will become the base source for the Ultimate Module Creator 2.0 which will be a version for Magento 2.0 of the [Ultimate Module Creator for Magento 1.7](https://github.com/tzyganu/UMC1.9). 
 

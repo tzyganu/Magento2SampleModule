@@ -1,7 +1,7 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use \Sample\News\Controller\Adminhtml\Author;
+use Sample\News\Controller\Adminhtml\Author;
 
 class Delete extends Author
 {

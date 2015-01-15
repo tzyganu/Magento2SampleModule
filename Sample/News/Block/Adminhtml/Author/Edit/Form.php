@@ -1,7 +1,7 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Edit;
 
-use \Magento\Backend\Block\Widget\Form\Generic as GenericForm;
+use Magento\Backend\Block\Widget\Form\Generic as GenericForm;
 
 class Form extends GenericForm
 {

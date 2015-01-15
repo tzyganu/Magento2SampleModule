@@ -1,8 +1,8 @@
 <?php
 namespace Sample\News\Model\Source;
 
-use \Magento\Framework\Option\ArrayInterface;
-use \Magento\Directory\Model\Resource\Country\CollectionFactory as CountryCollectionFactory;
+use Magento\Framework\Option\ArrayInterface;
+use Magento\Directory\Model\Resource\Country\CollectionFactory as CountryCollectionFactory;
 
 class Country implements ArrayInterface
 {
@@ -20,9 +20,8 @@ class Country implements ArrayInterface
      *
      * @param CountryCollectionFactory $countryCollectionFactory
      */
-    public function __construct(
-        CountryCollectionFactory $countryCollectionFactory
-    ) {
+    public function __construct(CountryCollectionFactory $countryCollectionFactory)
+    {
         $this->countryCollectionFactory = $countryCollectionFactory;
     }
 

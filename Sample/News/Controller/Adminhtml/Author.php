@@ -1,11 +1,11 @@
 <?php
 namespace Sample\News\Controller\Adminhtml;
 
-use \Magento\Backend\App\Action;
-use \Magento\Backend\App\Action\Context;
-use \Magento\Backend\Model\View\Result\RedirectFactory;
-use \Sample\News\Model\AuthorFactory;
-use \Magento\Framework\Registry;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\RedirectFactory;
+use Sample\News\Model\AuthorFactory;
+use Magento\Framework\Registry;
 
 class Author extends Action
 {
@@ -40,7 +40,8 @@ class Author extends Action
         RedirectFactory $resultRedirectFactory,
         Context $context
 
-    ) {
+    )
+    {
         $this->coreRegistry = $registry;
         $this->authorFactory = $authorFactory;
         $this->resultRedirectFactory = $resultRedirectFactory;
@@ -50,7 +51,8 @@ class Author extends Action
     /**
      * @return \Sample\News\Model\Author
      */
-    protected function initAuthor() {
+    protected function initAuthor()
+    {
         $authorId  = (int) $this->getRequest()->getParam('author_id');
         /** @var \Sample\News\Model\Author $author */
         $author    = $this->authorFactory->create();

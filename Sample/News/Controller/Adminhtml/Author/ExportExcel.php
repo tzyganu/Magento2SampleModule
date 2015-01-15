@@ -1,12 +1,12 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use \Magento\Backend\App\Action;
+use Magento\Backend\App\Action;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
-use \Magento\Backend\App\Action\Context;
-use \Magento\Framework\App\Response\Http\FileFactory;
-use \Magento\Framework\View\Result\PageFactory;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Response\Http\FileFactory;
+use Magento\Framework\View\Result\PageFactory;
 
 //TODO: make a common ancestor for all exports
 class ExportExcel extends Action
@@ -30,7 +30,8 @@ class ExportExcel extends Action
         FileFactory $fileFactory,
         PageFactory $resultPageFactory,
         Context $context
-    ) {
+    )
+    {
         $this->fileFactory = $fileFactory;
         $this->resultPageFactory = $resultPageFactory;
         parent::__construct($context);

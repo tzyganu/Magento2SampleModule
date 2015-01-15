@@ -1,8 +1,8 @@
 <?php
 namespace Sample\News\Model\Author;
 
-use \Sample\News\Model\Resource\Author\CollectionFactory;
-use \Magento\Catalog\Model\Product as ProductModel;
+use Sample\News\Model\Resource\Author\CollectionFactory;
+use Magento\Catalog\Model\Product as ProductModel;
 
 class Product
 {
@@ -11,9 +11,11 @@ class Product
      */
     protected $authorCollectionFactory;
 
-    public function __construct(
-        CollectionFactory $authorCollectionFactory
-    ) {
+    /**
+     * @param CollectionFactory $authorCollectionFactory
+     */
+    public function __construct(CollectionFactory $authorCollectionFactory)
+    {
         $this->authorCollectionFactory = $authorCollectionFactory;
     }
 

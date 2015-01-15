@@ -1,12 +1,12 @@
 <?php
 namespace Sample\News\Controller\Author;
 
-use \Magento\Framework\App\Action\Action;
-use \Magento\Framework\App\Action\Context;
-use \Sample\News\Model\AuthorFactory;
-use \Magento\Framework\Controller\Result\ForwardFactory;
-use \Magento\Framework\View\Result\PageFactory;
-use \Magento\Framework\Registry;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Sample\News\Model\AuthorFactory;
+use Magento\Framework\Controller\Result\ForwardFactory;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Registry;
 
 class View extends Action
 {

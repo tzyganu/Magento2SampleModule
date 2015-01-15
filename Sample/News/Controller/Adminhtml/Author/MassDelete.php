@@ -1,11 +1,11 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use \Sample\News\Controller\Adminhtml\Author;
-use \Sample\News\Model\AuthorFactory;
-use \Magento\Backend\App\Action\Context;
-use \Magento\Backend\Model\View\Result\RedirectFactory;
-use \Magento\Framework\Model\Exception as FrameworkException;
+use Sample\News\Controller\Adminhtml\Author;
+use Sample\News\Model\AuthorFactory;
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\RedirectFactory;
+use Magento\Framework\Model\Exception as FrameworkException;
 
 class MassDelete extends Author
 {

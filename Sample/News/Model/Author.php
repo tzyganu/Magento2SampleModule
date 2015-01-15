@@ -1,13 +1,13 @@
 <?php
 namespace Sample\News\Model;
 
-use \Magento\Framework\Model\AbstractModel;
-use \Magento\Framework\Object\IdentityInterface;
-use \Magento\Framework\Filter\FilterManager;
-use \Magento\Framework\Model\Context;
-use \Magento\Framework\Registry;
-use \Magento\Framework\Model\Resource\AbstractResource;
-use \Magento\Framework\Data\Collection\Db;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Object\IdentityInterface;
+use Magento\Framework\Filter\FilterManager;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\Model\Resource\AbstractResource;
+use Magento\Framework\Data\Collection\Db;
 use Sample\News\Model\Author\Url;
 use Magento\Catalog\Model\Resource\Product\CollectionFactory as ProductCollectionFactory;
 
@@ -88,6 +88,7 @@ class Author extends AbstractModel implements IdentityInterface
     protected $productCollection;
 
     /**
+     * @param ProductCollectionFactory $productCollectionFactory
      * @param FilterManager $filter
      * @param Url $urlModel
      * @param Context $context
@@ -105,7 +106,8 @@ class Author extends AbstractModel implements IdentityInterface
         AbstractResource $resource = null,
         Db $resourceCollection = null,
         array $data = []
-    ) {
+    )
+    {
         $this->productCollectionFactory = $productCollectionFactory;
         $this->filter = $filter;
         $this->urlModel = $urlModel;
@@ -212,25 +214,23 @@ class Author extends AbstractModel implements IdentityInterface
         return $array;
     }
 
+    /**
+     * @param string $attributes
+     * @return \Magento\Catalog\Model\Resource\Product\Collection
+     */
     public function getSelectedProductsCollection($attributes = '*')
     {
         if (is_null($this->productCollection)) {
             $collection = $this->productCollectionFactory->create();
             $collection->addAttributeToSelect($attributes);
-//            $collection->joinTable(
-//                'sample_news_author_product',
-//                'product_id=entity_id',
-//                ['position'],
-//                null,
-//                'left'
-//            );
-//            $collection->getSelect()->where('sample_news_author_product.author_id = ?', $this->getId());
-            $collection->joinField('position',
+            $collection->joinField(
+                'position',
                 'sample_news_author_product',
                 'position',
                 'product_id=entity_id',
                 '{{table}}.author_id='.$this->getId(),
-                'inner');
+                'inner'
+            );
             $this->productCollection = $collection;
         }
         return $this->productCollection;

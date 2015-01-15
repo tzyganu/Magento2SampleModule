@@ -10,7 +10,8 @@ class Rss extends ListAuthor
      *
      * @return $this
      */
-    protected function _prepareLayout() {
+    protected function _prepareLayout()
+    {
         return $this;
     }
 }

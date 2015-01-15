@@ -1,11 +1,12 @@
 <?php
 namespace Sample\News\Model\Adminhtml\Author;
 
-use \Magento\Framework\Registry;
-use \Magento\Framework\UrlInterface;
-use \Magento\Backend\Helper\Js as JsHelper;
-use \Magento\Backend\App\Action\Context;
-use \Sample\News\Model\Resource\Author;
+use Magento\Framework\Registry;
+use Magento\Framework\UrlInterface;
+use Magento\Backend\Helper\Js as JsHelper;
+use Magento\Backend\App\Action\Context;
+use Sample\News\Model\Resource\Author;
+use Magento\Framework\Event\Observer as EventObserver;
 
 class Observer
 {
@@ -43,7 +44,8 @@ class Observer
         JsHelper $jsHelper,
         Context $context,
         Author $authorResource
-    ) {
+    )
+    {
         $this->coreRegistry   = $coreRegistry;
         $this->urlBuilder     = $urlBuilder;
         $this->jsHelper       = $jsHelper;
@@ -57,7 +59,7 @@ class Observer
      * @param $observer
      * @return $this
      */
-    public function saveProductData($observer)
+    public function saveProductData(EventObserver $observer)
     {
         $post = $this->context->getRequest()->getPost('authors', -1);
         if ($post != '-1') {

@@ -1,8 +1,8 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Edit\Tab;
 
-use \Magento\Backend\Block\Widget\Form\Generic as GenericForm;
-use \Magento\Backend\Block\Widget\Tab\TabInterface;
+use Magento\Backend\Block\Widget\Form\Generic as GenericForm;
+use Magento\Backend\Block\Widget\Tab\TabInterface;
 
 class Meta extends GenericForm implements TabInterface
 {
@@ -11,7 +11,8 @@ class Meta extends GenericForm implements TabInterface
      *
      * @return $this
      */
-    protected function _prepareForm() {
+    protected function _prepareForm()
+    {
         /** @var \Sample\News\Model\Author $author */
         $author = $this->_coreRegistry->registry('sample_news_author');
         $form = $this->_formFactory->create();

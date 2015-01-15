@@ -1,12 +1,12 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Helper;
 
-use \Magento\Framework\Data\Form\Element\File as FileField;
-use \Magento\Framework\Data\Form\Element\Factory as ElementFactory;
-use \Magento\Framework\Data\Form\Element\CollectionFactory as ElementCollectionFactory;
-use \Magento\Framework\Escaper;
-use \Sample\News\Model\Author\File as AuthorFile;
-use \Magento\Framework\UrlInterface;
+use Magento\Framework\Data\Form\Element\File as FileField;
+use Magento\Framework\Data\Form\Element\Factory as ElementFactory;
+use Magento\Framework\Data\Form\Element\CollectionFactory as ElementCollectionFactory;
+use Magento\Framework\Escaper;
+use Sample\News\Model\Author\File as AuthorFile;
+use Magento\Framework\UrlInterface;
 
 /**
  * @method string getValue()
@@ -22,7 +22,8 @@ class File extends FileField
         ElementCollectionFactory $factoryCollection,
         Escaper $escaper,
         $data = []
-    ) {
+    )
+    {
         $this->fileModel = $fileModel;
         parent::__construct($factoryElement, $factoryCollection, $escaper, $data);
         $this->setType('file');

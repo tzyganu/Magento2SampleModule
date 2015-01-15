@@ -1,12 +1,12 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Helper;
 
-use \Magento\Framework\Data\Form\Element\Image as ImageField;
-use \Magento\Framework\Data\Form\Element\Factory as ElementFactory;
-use \Magento\Framework\Data\Form\Element\CollectionFactory as ElementCollectionFactory;
-use \Magento\Framework\Escaper;
-use \Sample\News\Model\Author\Image as AuthorImage;
-use \Magento\Framework\UrlInterface;
+use Magento\Framework\Data\Form\Element\Image as ImageField;
+use Magento\Framework\Data\Form\Element\Factory as ElementFactory;
+use Magento\Framework\Data\Form\Element\CollectionFactory as ElementCollectionFactory;
+use Magento\Framework\Escaper;
+use Sample\News\Model\Author\Image as AuthorImage;
+use Magento\Framework\UrlInterface;
 
 /**
  * @method string getValue()
@@ -35,7 +35,8 @@ class Image extends ImageField
         Escaper $escaper,
         UrlInterface $urlBuilder,
         $data = []
-    ) {
+    )
+    {
         $this->imageModel = $imageModel;
         parent::__construct($factoryElement, $factoryCollection, $escaper, $urlBuilder, $data);
     }

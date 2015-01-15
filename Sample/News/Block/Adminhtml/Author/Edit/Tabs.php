@@ -1,7 +1,7 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Edit;
 
-use \Magento\Backend\Block\Widget\Tabs as WidgetTabs;
+use Magento\Backend\Block\Widget\Tabs as WidgetTabs;
 
 /**
  * @method Tabs setTitle(\string $title)

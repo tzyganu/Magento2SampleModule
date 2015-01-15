@@ -1,9 +1,9 @@
 <?php
 namespace Sample\News\Model\Author;
 
-use \Magento\Framework\UrlInterface;
-use \Magento\Framework\Filesystem;
-use \Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\UrlInterface;
+use Magento\Framework\Filesystem;
+use Magento\Framework\App\Filesystem\DirectoryList;
 
 class Image
 {

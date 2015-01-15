@@ -1,8 +1,8 @@
 <?php
 namespace Sample\News\Model\Author\Source;
 
-use \Magento\Framework\Option\ArrayInterface;
-use \Sample\News\Model\Author;
+use Magento\Framework\Option\ArrayInterface;
+use Sample\News\Model\Author;
 
 class IsActive implements ArrayInterface
 {

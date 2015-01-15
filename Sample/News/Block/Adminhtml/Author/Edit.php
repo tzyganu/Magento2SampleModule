@@ -1,9 +1,9 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author;
 
-use \Magento\Backend\Block\Widget\Form\Container as FormContainer;
-use \Magento\Backend\Block\Widget\Context;
-use \Magento\Framework\Registry;
+use Magento\Backend\Block\Widget\Form\Container as FormContainer;
+use Magento\Backend\Block\Widget\Context;
+use Magento\Framework\Registry;
 
 class Edit extends FormContainer
 {
@@ -25,7 +25,8 @@ class Edit extends FormContainer
         Context $context,
         Registry $registry,
         array $data = []
-    ) {
+    )
+    {
         $this->coreRegistry = $registry;
         parent::__construct($context, $data);
     }

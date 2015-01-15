@@ -1,16 +1,16 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Author\Edit\Tab;
 
-use \Magento\Backend\Block\Widget\Form\Generic as GenericForm;
-use \Magento\Backend\Block\Widget\Tab\TabInterface;
-use \Magento\Backend\Block\Template\Context;
-use \Magento\Framework\Registry;
-use \Magento\Framework\Data\FormFactory;
-use \Magento\Cms\Model\Wysiwyg\Config as WysiwygConfig;
-use \Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use \Sample\News\Model\Author\Source\Award;
-use \Sample\News\Model\Author\Source\IsActive;
-use \Sample\News\Model\Author\Source\Type;
+use Magento\Backend\Block\Widget\Form\Generic as GenericForm;
+use Magento\Backend\Block\Widget\Tab\TabInterface;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\Data\FormFactory;
+use Magento\Cms\Model\Wysiwyg\Config as WysiwygConfig;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Sample\News\Model\Author\Source\Award;
+use Sample\News\Model\Author\Source\IsActive;
+use Sample\News\Model\Author\Source\Type;
 use Sample\News\Model\Source\Country;
 
 class Author extends GenericForm implements TabInterface
@@ -54,7 +54,8 @@ class Author extends GenericForm implements TabInterface
         Registry $registry,
         FormFactory $formFactory,
         array $data = []
-    ) {
+    )
+    {
         $this->wysiwygConfig = $wysiwygConfig;
         $this->countryOptions = $countryOptions;
         $this->awardOptions = $awardOptions;
@@ -123,7 +124,8 @@ class Author extends GenericForm implements TabInterface
             );
             $author->setStoreId($this->_storeManager->getStore(true)->getId());
         }
-        $fieldset->addField('is_active',
+        $fieldset->addField(
+            'is_active',
             'select',
             [
                 'label'     => __('Is Active'),
@@ -222,8 +224,7 @@ class Author extends GenericForm implements TabInterface
         $authorData = $this->_session->getData('sample_news_author_data', true);
         if ($authorData) {
             $author->addData($authorData);
-        }
-        else {
+        } else {
             if (!$author->getId()) {
                 $author->addData($author->getDefaultValues());
             }

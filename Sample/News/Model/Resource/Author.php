@@ -1,17 +1,17 @@
 <?php
 namespace Sample\News\Model\Resource;
 
-use \Magento\Framework\Model\Resource\Db\AbstractDb;
-use \Magento\Framework\App\Resource;
-use \Magento\Framework\Stdlib\DateTime\DateTime;
-use \Magento\Store\Model\StoreManagerInterface;
-use \Magento\Framework\Stdlib\DateTime as LibDateTime;
-use \Magento\Framework\Model\AbstractModel;
-use \Magento\Store\Model\Store;
-use \Sample\News\Model\Author as AuthorModel;
-use \Magento\Framework\Event\ManagerInterface;
-use \Magento\Catalog\Model\Product;
-use \Sample\News\Model\Author\Product as AuthorProduct;
+use Magento\Framework\Model\Resource\Db\AbstractDb;
+use Magento\Framework\App\Resource;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\Stdlib\DateTime as LibDateTime;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Store\Model\Store;
+use Sample\News\Model\Author as AuthorModel;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Catalog\Model\Product;
+use Sample\News\Model\Author\Product as AuthorProduct;
 
 class Author extends AbstractDb
 {
@@ -66,7 +66,8 @@ class Author extends AbstractDb
         LibDateTime $dateTime,
         ManagerInterface $eventManager,
         AuthorProduct $authorProduct
-    ) {
+    )
+    {
         parent::__construct($resource);
         $this->date = $date;
         $this->storeManager = $storeManager;
@@ -128,7 +129,7 @@ class Author extends AbstractDb
             } else {
                 $parts = explode('-', $urlKey);
                 $last = $parts[count($parts) - 1];
-                if (!is_numeric($last)){
+                if (!is_numeric($last)) {
                     $urlKey = $urlKey.'-1';
                 } else {
                     $suffix = '-'.($last + 1);

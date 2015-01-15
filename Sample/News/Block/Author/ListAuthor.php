@@ -1,11 +1,11 @@
 <?php
 namespace Sample\News\Block\Author;
 
-use \Magento\Framework\View\Element\Template;
-use \Magento\Store\Model\ScopeInterface;
-use \Magento\Framework\View\Element\Template\Context;
-use \Magento\Framework\UrlFactory;
-use \Sample\News\Model\Resource\Author\CollectionFactory as AuthorCollectionFactory;
+use Magento\Framework\View\Element\Template;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\UrlFactory;
+use Sample\News\Model\Resource\Author\CollectionFactory as AuthorCollectionFactory;
 
 /**
  * @method \Sample\News\Model\Resource\Author\Collection getAuthors()
@@ -29,7 +29,8 @@ class ListAuthor extends Template
         UrlFactory $urlFactory,
         Context $context,
         array $data = []
-    ) {
+    )
+    {
         $this->authorCollectionFactory = $authorCollectionFactory;
         $this->urlFactory = $urlFactory;
         parent::__construct($context, $data);
@@ -38,13 +39,14 @@ class ListAuthor extends Template
     /**
      * load the authors
      */
-    protected  function _construct() {
+    protected  function _construct()
+    {
         parent::_construct();
         /** @var \Sample\News\Model\Resource\Author\Collection $authors */
         $authors = $this->authorCollectionFactory->create()->addFieldToSelect('*')
             ->addFieldToFilter('is_active', 1)
             ->addStoreFilter($this->_storeManager->getStore()->getId())
-            ->setOrder('name','ASC');
+            ->setOrder('name', 'ASC');
         $this->setAuthors($authors);
     }
 

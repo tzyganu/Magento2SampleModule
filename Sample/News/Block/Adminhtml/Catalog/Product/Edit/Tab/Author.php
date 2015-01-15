@@ -1,14 +1,14 @@
 <?php
 namespace Sample\News\Block\Adminhtml\Catalog\Product\Edit\Tab;
 
-use \Magento\Backend\Block\Widget\Grid\Extended as ExtendedGrid;
-use \Magento\Backend\Block\Widget\Tab\TabInterface;
-use \Magento\Framework\Registry;
-use \Sample\News\Model\Resource\Author\CollectionFactory as AuthorCollectionFactory;
-use \Sample\News\Model\Author\Product as AuthorProduct;
-use \Magento\Catalog\Controller\Adminhtml\Product\Builder as ProductBuilder;
-use \Magento\Backend\Block\Template\Context;
-use \Magento\Backend\Helper\Data as BackendHelper;
+use Magento\Backend\Block\Widget\Grid\Extended as ExtendedGrid;
+use Magento\Backend\Block\Widget\Tab\TabInterface;
+use Magento\Framework\Registry;
+use Sample\News\Model\Resource\Author\CollectionFactory as AuthorCollectionFactory;
+use Sample\News\Model\Author\Product as AuthorProduct;
+use Magento\Catalog\Controller\Adminhtml\Product\Builder as ProductBuilder;
+use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Helper\Data as BackendHelper;
 
 /**
  * @method Author setUseAjax(\bool $useAjax)
@@ -55,7 +55,8 @@ class Author extends ExtendedGrid implements TabInterface
         Context $context,
         BackendHelper $backendHelper,
         array $data = []
-    ) {
+    )
+    {
         $this->authorCollectionFactory = $authorCollectionFactory;
         $this->authorProduct = $authorProduct;
         $this->registry = $registry;
@@ -85,9 +86,9 @@ class Author extends ExtendedGrid implements TabInterface
     protected function _prepareCollection()
     {
         $collection = $this->authorCollectionFactory->create();
-        if ($this->getProduct()->getId()){
+        if ($this->getProduct()->getId()) {
             $constraint = 'related.product_id='.$this->getProduct()->getId();
-        } else{
+        } else {
             $constraint = 'related.product_id=0';
         }
         $collection->getSelect()->joinLeft(
@@ -169,7 +170,7 @@ class Author extends ExtendedGrid implements TabInterface
     {
         $authors = [];
         $selected = $this->authorProduct->getSelectedAuthors($this->getProduct());
-        if (!is_array($selected)){
+        if (!is_array($selected)) {
             $selected = [];
         }
         foreach ($selected as $author) {
@@ -207,7 +208,8 @@ class Author extends ExtendedGrid implements TabInterface
      * get current product
      * @return \Magento\Catalog\Model\Product
      */
-    public function getProduct(){
+    public function getProduct()
+    {
         if (is_null($this->_product)) {
             if ($this->registry->registry('current_product')) {
                 $this->_product = $this->registry->registry('current_product');
@@ -233,7 +235,7 @@ class Author extends ExtendedGrid implements TabInterface
             if ($column->getFilter()->getValue()) {
                 $this->getCollection()->addFieldToFilter('author_id', ['in'=>$authorIds]);
             } else {
-                if($authorIds) {
+                if ($authorIds) {
                     $this->getCollection()->addFieldToFilter('author_id', ['nin'=>$authorIds]);
                 }
             }

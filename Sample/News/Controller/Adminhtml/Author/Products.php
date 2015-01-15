@@ -1,12 +1,12 @@
 <?php
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use \Sample\News\Controller\Adminhtml\Author;
-use \Magento\Framework\Registry;
-use \Sample\News\Model\AuthorFactory;
-use \Magento\Backend\App\Action\Context;
-use \Magento\Backend\Model\View\Result\RedirectFactory;
-use \Magento\Framework\View\Result\LayoutFactory;
+use Sample\News\Controller\Adminhtml\Author;
+use Magento\Framework\Registry;
+use Sample\News\Model\AuthorFactory;
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\RedirectFactory;
+use Magento\Framework\View\Result\LayoutFactory;
 
 class Products extends Author
 {
@@ -29,7 +29,8 @@ class Products extends Author
         AuthorFactory $authorFactory,
         Context $context,
         RedirectFactory $resultRedirectFactory
-    ) {
+    )
+    {
         $this->resultLayoutFactory = $resultLayoutFactory;
         parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);
     }
