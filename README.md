@@ -15,6 +15,7 @@ What I got so far:
  - Backend relation (many to many) to catalog products. on the edit form there is a tab called 'Products' similar to related products. On the product edit page there is a tab called Authors. 
  - List on Author view page on frontend the related products paginated and with a sorting options.
  - List related authors on product view page. There is a problem with the pagination due to a Magento2 bug [#970](https://github.com/magento/magento2/issues/970)
+ - Rss feeds for author list.
 
 
 The other types of entities and features listed in **the purpose** will follow.  
