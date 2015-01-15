@@ -16,6 +16,7 @@ What I got so far:
  - List on Author view page on frontend the related products paginated and with a sorting options.
  - List related authors on product view page. There is a problem with the pagination due to a Magento2 bug [#970](https://github.com/magento/magento2/issues/970)
  - Rss feeds for author list.
+ - Breadcrumbs support for list and view pages.
 
 
 The other types of entities and features listed in **the purpose** will follow.  

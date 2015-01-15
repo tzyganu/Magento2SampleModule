@@ -12,9 +12,17 @@ class Index extends Action
 {
     const META_DESCRIPTION_CONFIG_PATH = 'sample_news/author/meta_description';
     const META_KEYWORDS_CONFIG_PATH = 'sample_news/author/meta_keywords';
+    const BREADCRUMBS_CONFIG_PATH = 'sample_news/author/breadcrumbs';
+
+    /**
+     * @var \Sample\News\Model\Author\Rss
+     */
     protected $rss;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $scopeConfig;
-    protected $storeManager;
 
     /**
      * @param Context $context
@@ -48,6 +56,25 @@ class Index extends Action
         $resultPage->getConfig()->setKeywords(
             $this->scopeConfig->getValue(self::META_KEYWORDS_CONFIG_PATH, ScopeInterface::SCOPE_STORE)
         );
+        if ($this->scopeConfig->isSetFlag(self::BREADCRUMBS_CONFIG_PATH, ScopeInterface::SCOPE_STORE)) {
+            /** @var \Magento\Theme\Block\Html\Breadcrumbs $breadcrumbsBlock */
+            $breadcrumbsBlock = $resultPage->getLayout()->getBlock('breadcrumbs');
+            if ($breadcrumbsBlock) {
+                $breadcrumbsBlock->addCrumb(
+                    'home',
+                    [
+                        'label'    => __('Home'),
+                        'link'     => $this->_url->getUrl('')
+                    ]
+                );
+                $breadcrumbsBlock->addCrumb(
+                    'authors',
+                    [
+                        'label'    => __('Authors'),
+                    ]
+                );
+            }
+        }
         return $resultPage;
     }
 }
