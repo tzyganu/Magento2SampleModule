@@ -5,7 +5,7 @@
             <block class="Sample\News\Block\Author\ListAuthor" template="Sample_News::author/list.phtml" />
         </referenceContainer>
         <referenceBlock name="page.main.title">
-            <block class="Sample\News\Block\Author\ListAuthor\Rss" name="author.rss.link" template="Sample_News::rss/link.phtml"/>
+            <block class="Sample\News\Block\Author\ListAuthor\Rss\Link" name="author.rss.link" template="Sample_News::rss/link.phtml"/>
         </referenceBlock>
     </body>
 

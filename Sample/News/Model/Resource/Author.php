@@ -467,7 +467,6 @@ class Author extends AbstractDb
             }
         }
         $update = $_update;
-        //$update = array_diff_assoc($update, $oldProducts);
         $adapter = $this->_getWriteAdapter();
         if (!empty($delete)) {
             $condition = ['product_id IN(?)' => array_keys($delete), 'author_id=?' => $id];

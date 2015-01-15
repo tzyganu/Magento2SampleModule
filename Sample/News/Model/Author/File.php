@@ -52,7 +52,6 @@ class File
      *
      * @return string
      */
-    //TODO: handle read and write cases
     public function getBaseDir()
     {
         return $this->fileSystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath($this->subDir.'/file');

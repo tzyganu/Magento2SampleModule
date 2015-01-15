@@ -66,16 +66,11 @@ class ListAuthor extends Template
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
-        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager', 'sample_news.author.list.pager')
-            ->setCollection($this->getAuthors());
+        /** @var \Magento\Theme\Block\Html\Pager $pager */
+        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager', 'sample_news.author.list.pager');
+        $pager->setCollection($this->getAuthors());
         $this->setChild('pager', $pager);
         $this->getAuthors()->load();
-        //TODO : move this to controller
-//        $headBlock = $this->getLayout()->getBlock('head');
-//        if ($this->isRssEnabled()) {
-//            $title = __('Authors RSS Feed');
-//            $headBlock->addRss($title, $this->getRssLink());
-//        }
         return $this;
     }
 

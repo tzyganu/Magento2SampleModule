@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Core/etc/config.xsd">
+    <default>
+        <sample_news>
+            <author>
+                <breadcrumbs>1</breadcrumbs>
+                <meta_title>Authors</meta_title>
+                <meta_description>Authors Description Here</meta_description>
+                <meta_keywords>Authors Keywords Here</meta_keywords>
+                <list_url>authors.html</list_url>
+                <url_prefix>author</url_prefix>
+                <url_suffix>html</url_suffix>
+                <rss>1</rss>
+                <rss_cache>600</rss_cache>
+            </author>
+        </sample_news>
+    </default>
+</config>

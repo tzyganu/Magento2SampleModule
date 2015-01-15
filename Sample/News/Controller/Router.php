@@ -12,6 +12,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Url;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 
 class Router implements RouterInterface
 {
@@ -55,6 +57,11 @@ class Router implements RouterInterface
      * @var \Magento\Framework\App\ResponseInterface
      */
     protected $response;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
     /**
      * @var bool
      */
@@ -68,6 +75,7 @@ class Router implements RouterInterface
      * @param AuthorFactory $authorFactory
      * @param StoreManagerInterface $storeManager
      * @param ResponseInterface $response
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         ActionFactory $actionFactory,
@@ -76,7 +84,8 @@ class Router implements RouterInterface
         State $appState,
         AuthorFactory $authorFactory,
         StoreManagerInterface $storeManager,
-        ResponseInterface $response
+        ResponseInterface $response,
+        ScopeConfigInterface $scopeConfig
     )
     {
         $this->actionFactory = $actionFactory;
@@ -86,6 +95,7 @@ class Router implements RouterInterface
         $this->authorFactory = $authorFactory;
         $this->storeManager = $storeManager;
         $this->response = $response;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -116,22 +126,74 @@ class Router implements RouterInterface
             if (!$condition->getContinue()) {
                 return null;
             }
-            $author = $this->authorFactory->create();
-            $id = $author->checkUrlKey($urlKey, $this->storeManager->getStore()->getId());
-            if (!$id) {
-                return null;
+            $entities = [
+                'author' => [
+                    'prefix'        => $this->scopeConfig->getValue(
+                        'sample_news/author/url_prefix',
+                        ScopeInterface::SCOPE_STORES
+                    ),
+                    'suffix'        => $this->scopeConfig->getValue(
+                        'sample_news/author/url_suffix',
+                        ScopeInterface::SCOPE_STORES
+                    ),
+                    'list_key'      => $this->scopeConfig->getValue(
+                        'sample_news/author/list_url',
+                        ScopeInterface::SCOPE_STORES
+                    ),
+                    'list_action'   => 'index',
+                    'factory'       => $this->authorFactory,
+                    'controller'    => 'author',
+                    'action'        => 'view',
+                    'param'         => 'id',
+                ]
+            ];
+
+            foreach ($entities as $entity => $settings) {
+                if ($settings['list_key']) {
+                    if ($urlKey == $settings['list_key']) {
+                        $request->setModuleName('sample_news')
+                            ->setControllerName($settings['controller'])
+                            ->setActionName($settings['list_action']);
+                        $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
+                        $this->dispatched = true;
+                        return $this->actionFactory->create(
+                            'Magento\Framework\App\Action\Forward',
+                            ['request' => $request]
+                        );
+                    }
+                }
+                if ($settings['prefix']) {
+                    $parts = explode('/', $urlKey);
+                    if ($parts[0] != $settings['prefix'] || count($parts) != 2) {
+                        continue;
+                    }
+                    $urlKey = $parts[1];
+                }
+                if ($settings['suffix']) {
+                    $suffix = substr($urlKey, -strlen($settings['suffix']) - 1);
+                    if ($suffix != '.'.$settings['suffix']) {
+                        continue;
+                    }
+                    $urlKey = substr($urlKey, 0, -strlen($settings['suffix']) - 1);
+                }
+                /** @var \Sample\News\Model\Author $instance */
+                $instance = $settings['factory']->create();
+                $id = $instance->checkUrlKey($urlKey, $this->storeManager->getStore()->getId());
+                if (!$id) {
+                    return null;
+                }
+                $request->setModuleName('sample_news')
+                    ->setControllerName('author')
+                    ->setActionName('view')
+                    ->setParam('id', $id);
+                $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
+                $request->setDispatched(true);
+                $this->dispatched = true;
+                return $this->actionFactory->create(
+                    'Magento\Framework\App\Action\Forward',
+                    ['request' => $request]
+                );
             }
-            $request->setModuleName('sample_news')
-                ->setControllerName('author')
-                ->setActionName('view')
-                ->setParam('id', $id);
-            $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
-            $request->setDispatched(true);
-            $this->dispatched = true;
-            return $this->actionFactory->create(
-                'Magento\Framework\App\Action\Forward',
-                ['request' => $request]
-            );
         }
         return null;
     }
