@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Magento_Catalog::catalog/category-selector.css"/>
+    </head>
     <update handle="editor"/>
     <body>
         <referenceContainer name="content">
             <block class="Sample\News\Block\Adminhtml\Author\Edit" name="sample_news_author_edit"/>
+            <block class="Magento\Catalog\Block\Adminhtml\Product\Edit\NewCategory" name="new-category" template="Magento_Catalog::catalog/product/edit/category/new/form.phtml"/>
         </referenceContainer>
         <referenceContainer name="left">
             <block class="Sample\News\Block\Adminhtml\Author\Edit\Tabs" name="sample_news_author_tabs">
@@ -11,6 +15,7 @@
                 <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Meta" name="sample_news_author_edit_tab_author_meta"/>
                 <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Stores" name="sample_news_author_edit_tab_author_stores"/>
                 <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Product" name="sample_news_author_edit_tab_author_product"/>
+                <block class="Sample\News\Block\Adminhtml\Author\Edit\Tab\Category" name="sample_news_author_edit_tab_author_category"/>
                 <action method="addTab">
                     <argument name="name" xsi:type="string">author</argument>
                     <argument name="block" xsi:type="string">sample_news_author_edit_tab_author</argument>
@@ -26,6 +31,10 @@
                 <action method="addTab">
                     <argument name="name" xsi:type="string">product</argument>
                     <argument name="block" xsi:type="string">sample_news_author_edit_tab_author_product</argument>
+                </action>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">categories</argument>
+                    <argument name="block" xsi:type="string">sample_news_author_edit_tab_author_category</argument>
                 </action>
             </block>
         </referenceContainer>

@@ -262,4 +262,78 @@ if (!$this->tableExists('sample_news_author_product')) {
     $this->getConnection()->createTable($table);
 }
 
-
+if (!$this->tableExists('sample_news_author_category')) {
+    $table = $this->getConnection()
+        ->newTable($this->getTable('sample_news_author_category'))
+        ->addColumn(
+            'author_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'unsigned' => true,
+                'nullable' => false,
+                'primary'   => true,
+            ],
+            'Author ID'
+        )
+        ->addColumn(
+            'category_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'unsigned' => true,
+                'nullable' => false,
+                'primary'   => true,
+            ],
+            'Category ID'
+        )
+        ->addColumn(
+            'position',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'nullable' => false,
+                'default' => '0'
+            ],
+            'Position'
+        )
+        ->addIndex(
+            $this->getIdxName('sample_news_author_category', ['category_id']),
+            ['category_id']
+        )
+        ->addForeignKey(
+            $this->getFkName('sample_news_author_category', 'author_id', 'sample_news_author', 'author_id'),
+            'author_id',
+            $this->getTable('sample_news_author'),
+            'author_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        )
+        ->addForeignKey(
+            $this->getFkName('sample_news_author_category', 'category_id', 'catalog_category_entity', 'entity_id'),
+            'category_id',
+            $this->getTable('catalog_category_entity'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        )
+        ->addIndex(
+            $this->getIdxName(
+                'sample_news_author_category',
+                [
+                    'author_id',
+                    'category_id'
+                ],
+                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+            ),
+            [
+                'author_id',
+                'category_id'
+            ],
+            [
+                'type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+            ]
+        )
+        ->setComment('Author To category Link Table');
+    $this->getConnection()->createTable($table);
+}

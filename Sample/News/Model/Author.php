@@ -38,6 +38,10 @@ use Magento\Catalog\Model\Resource\Product\CollectionFactory as ProductCollectio
  * @method array|null getProductsData()
  * @method Author setAffectedProductIds(array $productIds)
  * @method int getPosition()
+ * @method array getCategoriesIds()
+ * @method Author setCategoriesIds(array $categoryIds)
+ * @method Author setIsChangedCategoryList(\bool $changed)
+ * @method Author setAffectedCategoryIds(array $categoryIds)
  */
 class Author extends AbstractModel implements IdentityInterface
 {
@@ -236,5 +240,15 @@ class Author extends AbstractModel implements IdentityInterface
         return $this->productCollection;
     }
 
-
+    /**
+     * @return array
+     */
+    public function getCategoryIds()
+    {
+        if (!$this->hasData('category_ids')) {
+            $ids = $this->_getResource()->getCategoryIds($this);
+            $this->setData('category_ids', $ids);
+        }
+        return (array) $this->_getData('category_ids');
+    }
 }

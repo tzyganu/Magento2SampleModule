@@ -45,10 +45,18 @@ class Author extends AbstractDb
     protected $authorProductTable;
 
     /**
+     * @var string
+     */
+    protected $authorCategoryTable;
+
+    /**
      * @var \Magento\Framework\Event\ManagerInterface
      */
     protected $eventManager;
 
+    /**
+     * @var \Sample\News\Model\Author\Product
+     */
     protected $authorProduct;
 
     /**
@@ -75,6 +83,8 @@ class Author extends AbstractDb
         $this->eventManager = $eventManager;
         $this->authorProduct = $authorProduct;
         $this->authorProductTable = $this->getTable('sample_news_author_product');
+        $this->authorCategoryTable = $this->getTable('sample_news_author_category');
+
     }
 
     /**
@@ -152,6 +162,7 @@ class Author extends AbstractDb
     {
         $this->saveStoreRelation($object);
         $this->saveProductRelation($object);
+        $this->saveCategoryRelation($object);
         return parent::_afterSave($object);
     }
 
@@ -583,4 +594,70 @@ class Author extends AbstractDb
         }
         return $this;
     }
+
+    protected function saveCategoryRelation(AuthorModel $author)
+    {
+        $author->setIsChangedCategoryList(false);
+        $id = $author->getId();
+        $categories = $author->getCategoriesIds();
+
+        if ($categories === null) {
+            return $this;
+        }
+        $oldCategoryIds = $author->getCategoryIds();
+        $insert = array_diff_key($categories, $oldCategoryIds);
+        $delete = array_diff_key($oldCategoryIds, $categories);
+
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = array('category_id IN(?)' => $delete, 'author_id=?' => $id);
+            $adapter->delete($this->authorCategoryTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = array();
+            foreach ($insert as $categoryId) {
+                $data[] = array(
+                    'author_id' => (int)$id,
+                    'category_id' => (int)$categoryId,
+                    'position' => 1
+                );
+            }
+            $adapter->insertMultiple($this->authorCategoryTable, $data);
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $categoryIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->eventManager->dispatch(
+                'sample_news_author_change_categories',
+                array('author' => $author, 'category_ids' => $categoryIds)
+            );
+        }
+
+        if (!empty($insert) /*|| !empty($update)*/ || !empty($delete)) {
+            $author->setIsChangedCategoryList(true);
+            $categoryIds = array_keys($insert + $delete /* + $update*/);
+            $author->setAffectedCategoryIds($categoryIds);
+        }
+        return $this;
+    }
+
+    /**
+     * @param AuthorModel $author
+     * 
+     * @return array
+     */
+    public function getCategoryIds(AuthorModel $author)
+    {
+        $adapter = $this->_getReadAdapter();
+        $select = $adapter->select()->from(
+            $this->authorCategoryTable,
+            'category_id'
+        )
+        ->where(
+            'author_id = ?',
+            (int)$author->getId()
+        );
+        return $adapter->fetchCol($select);
+    }
+
 }

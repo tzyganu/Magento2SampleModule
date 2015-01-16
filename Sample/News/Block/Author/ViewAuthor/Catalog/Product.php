@@ -9,6 +9,9 @@ use Magento\Catalog\Model\Layer\Resolver;
 use Magento\Framework\Registry;
 use Magento\Catalog\Model\Product\Visibility;
 
+/**
+ * @method Product setTitle(\string $title)
+ */
 class Product extends ListProduct
 {
     /**
@@ -44,6 +47,7 @@ class Product extends ListProduct
         $this->productVisibility = $productVisibility;
         $this->coreRegistry = $coreRegistry;
         parent::__construct($context, $postDataHelper, $layerResolver, $categoryRepository);
+        $this->setTabTitle();
     }
 
     /**
@@ -73,5 +77,25 @@ class Product extends ListProduct
             $this->productCollection = $collection;
         }
         return $this->productCollection;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setTabTitle()
+    {
+        $title = $this->getCollectionSize()
+            ? __('Products %1', '<span class="counter">' . $this->getCollectionSize() . '</span>')
+            : __('Products');
+        $this->setTitle($title);
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCollectionSize()
+    {
+        return $this->_getProductCollection()->getSize();
     }
 }
