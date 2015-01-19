@@ -1,0 +1,73 @@
+<?php /** @var \Sample\News\Block\Adminhtml\Catalog\Category\Tab\Author $this */?>
+<?php echo $this->getChildHtml() ?>
+<div class="no-display">
+    <input type="hidden" name="category_sample_news_authors" id="in_category_sample_news_authors" value=""/>
+</div>
+<?php if(($block = $this->getLayout()->getBlock('category.sample_news.author.grid')) && ($_gridJsObject = $block->getJsObjectName())): ?>
+    <script type="text/javascript">
+        require([
+            "mage/adminhtml/grid"
+        ], function(){
+            var categorySampleNewsAuthors = $H(<?php echo json_encode($block->getSelectedAuthors()) ?>);
+            $('in_category_sample_news_authors').value = Object.toJSON(categorySampleNewsAuthors);
+
+            function registerCategorySampleNewsAuthor(grid, element, checked){
+                if(checked){
+                    if(element.positionElement){
+                        element.positionElement.disabled = false;
+                        categorySampleNewsAuthors.set(element.value, element.positionElement.value);
+                    }
+                }
+                else{
+                    if(element.positionElement){
+                        element.positionElement.disabled = true;
+                    }
+                    categorySampleNewsAuthors.unset(element.value);
+                }
+                $('in_category_sample_news_authors').value = Object.toJSON(categorySampleNewsAuthors);
+                grid.reloadParams = {'category_sample_news_authors[]':categorySampleNewsAuthors.keys()};
+            }
+            function categorySampleNewsAuthorRowClick(grid, event){
+
+                var trElement = Event.findElement(event, 'tr');
+                var isInput   = Event.element(event).tagName == 'INPUT';
+                if(trElement){
+                    var checkbox = Element.getElementsBySelector(trElement, 'input');
+                    if(checkbox[0]){
+                        var checked = isInput ? checkbox[0].checked : !checkbox[0].checked;
+                        <?php echo $_gridJsObject ?>.setCheckboxChecked(checkbox[0], checked);
+                    }
+                }
+            }
+            function sampleNewsAuthorPositionChange(event){
+                var element = Event.element(event);
+                if(element && element.checkboxElement && element.checkboxElement.checked){
+                    categorySampleNewsAuthors.set(element.checkboxElement.value, element.value);
+                    $('in_category_sample_news_authors').value = Object.toJSON(categorySampleNewsAuthors);
+                }
+            }
+
+            var tabIndex = 1000;
+            function categorySampleNewsAuthorRowInit(grid, row){
+                var checkbox = $(row).getElementsByClassName('checkbox')[0];
+                var position = $(row).getElementsByClassName('input-text')[0];
+                if(checkbox && position){
+                    checkbox.positionElement = position;
+                    position.checkboxElement = checkbox;
+                    position.disabled = !checkbox.checked;
+                    position.tabIndex = tabIndex++;
+                    Event.observe(position,'keyup',sampleNewsAuthorPositionChange);
+                }
+            }
+
+
+            <?php echo $_gridJsObject ?>.rowClickCallback = categorySampleNewsAuthorRowClick;
+            <?php echo $_gridJsObject ?>.initRowCallback = categorySampleNewsAuthorRowInit;
+            <?php echo $_gridJsObject ?>.checkboxCheckCallback = registerCategorySampleNewsAuthor;
+            <?php echo $_gridJsObject ?>.rows.each(function(row){
+                categorySampleNewsAuthorRowInit(<?php echo $_gridJsObject ?>, row)
+            });
+        });
+
+    </script>
+<?php endif;?>

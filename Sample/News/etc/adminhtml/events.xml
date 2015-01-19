@@ -3,4 +3,10 @@
     <event name="catalog_product_save_after">
         <observer name="sample_news_author_product" instance="Sample\News\Model\Adminhtml\Author\Observer" method="saveProductData" />
     </event>
+    <event name="adminhtml_catalog_category_tabs">
+        <observer name="sample_news_author_category" instance="Sample\News\Model\Adminhtml\Author\Observer" method="addCategoryTab" />
+    </event>
+    <event name="catalog_category_save_after">
+        <observer name="sample_news_author_category" instance="Sample\News\Model\Adminhtml\Author\Observer" method="saveCategoryData" />
+    </event>
 </config>

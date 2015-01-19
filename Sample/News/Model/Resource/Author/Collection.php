@@ -10,6 +10,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\Resource\Db\AbstractDb;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Category;
 
 class Collection extends AbstractCollection
 {
@@ -185,4 +186,27 @@ class Collection extends AbstractCollection
         }
         return $this;
     }
+
+    /**
+     * @param $category
+     * @return $this
+     */
+    public function addCategoryFilter($category)
+    {
+        if ($category instanceof Category){
+            $category = $category->getId();
+        }
+        if (!isset($this->_joinedFields['category'])) {
+            $this->getSelect()->join(
+                ['related_category' => $this->getTable('sample_news_author_category')],
+                'related_category.author_id = main_table.author_id',
+                ['position']
+            );
+
+            $this->getSelect()->where('related_category.category_id = ?', $category);
+            $this->_joinedFields['category'] = true;
+        }
+        return $this;
+    }
+
 }

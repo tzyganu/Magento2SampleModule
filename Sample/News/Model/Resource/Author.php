@@ -12,6 +12,7 @@ use Sample\News\Model\Author as AuthorModel;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Catalog\Model\Product;
 use Sample\News\Model\Author\Product as AuthorProduct;
+use Sample\News\Model\Author\Category as AuthorCategory;
 
 class Author extends AbstractDb
 {
@@ -66,6 +67,7 @@ class Author extends AbstractDb
      * @param LibDateTime $dateTime
      * @param ManagerInterface $eventManager
      * @param AuthorProduct $authorProduct
+     * @param AuthorCategory $authorCategory
      */
     public function __construct(
         Resource $resource,
@@ -73,7 +75,8 @@ class Author extends AbstractDb
         StoreManagerInterface $storeManager,
         LibDateTime $dateTime,
         ManagerInterface $eventManager,
-        AuthorProduct $authorProduct
+        AuthorProduct $authorProduct,
+        AuthorCategory $authorCategory
     )
     {
         parent::__construct($resource);
@@ -82,6 +85,7 @@ class Author extends AbstractDb
         $this->dateTime = $dateTime;
         $this->eventManager = $eventManager;
         $this->authorProduct = $authorProduct;
+        $this->authorCategory = $authorCategory;
         $this->authorProductTable = $this->getTable('sample_news_author_product');
         $this->authorCategoryTable = $this->getTable('sample_news_author_category');
 
@@ -643,7 +647,7 @@ class Author extends AbstractDb
 
     /**
      * @param AuthorModel $author
-     * 
+     *
      * @return array
      */
     public function getCategoryIds(AuthorModel $author)
@@ -658,6 +662,74 @@ class Author extends AbstractDb
             (int)$author->getId()
         );
         return $adapter->fetchCol($select);
+    }
+
+    /**
+     * @param $category
+     * @param $authors
+     * @return $this
+     */
+    public function saveAuthorCategoryRelation($category, $authors)
+    {
+        $category->setIsChangedAuthorList(false);
+        $id = $category->getId();
+        if ($authors === null) {
+            return $this;
+        }
+        $oldAuthorObjects = $this->authorCategory->getSelectedAuthors($category);
+        if (!is_array($oldAuthorObjects)) {
+            $oldAuthorObjects = array();
+        }
+        $oldAuthors = [];
+        foreach ($oldAuthorObjects as $author) {
+            /** @var \Sample\News\Model\Author $author */
+            $oldAuthors[$author->getId()] = $author->getPosition();
+        }
+        $insert = array_diff_key($authors, $oldAuthors);
+        $delete = array_diff_key($oldAuthors, $authors);
+        $update = array_intersect_key($authors, $oldAuthors);
+        $update = array_diff_assoc($update, $oldAuthors);
+
+
+        $adapter = $this->_getWriteAdapter();
+        if (!empty($delete)) {
+            $condition = array('author_id IN(?)' => array_keys($delete), 'author_id=?' => $id);
+            $adapter->delete($this->authorCategoryTable, $condition);
+        }
+        if (!empty($insert)) {
+            $data = array();
+            foreach ($insert as $authorId => $position) {
+                $data[] = [
+                    'category_id' => (int)$id,
+                    'author_id' => (int)$authorId,
+                    'position' => (int)$position
+                ];
+            }
+            $adapter->insertMultiple($this->authorCategoryTable, $data);
+        }
+
+        if (!empty($update)) {
+            foreach ($update as $authorId => $position) {
+                $where = ['category_id = ?' => (int)$id, 'author_id = ?' => (int)$authorId];
+                $bind = ['position' => (int)$position];
+                $adapter->update($this->authorCategoryTable, $bind, $where);
+            }
+        }
+
+        if (!empty($insert) || !empty($delete)) {
+            $authorIds = array_unique(array_merge(array_keys($insert), array_keys($delete)));
+            $this->eventManager->dispatch(
+                'sample_news_category_change_authors',
+                array('category' => $category, 'author_ids' => $authorIds)
+            );
+        }
+
+        if (!empty($insert) || !empty($update) || !empty($delete)) {
+            $category->setIsChangedAuthorList(true);
+            $authorIds = array_keys($insert + $delete + $update);
+            $category->setAffectedAuthorIds($authorIds);
+        }
+        return $this;
     }
 
 }

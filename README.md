@@ -17,7 +17,7 @@ What I got so far:
  - List related authors on product view page. There is a problem with the pagination due to a Magento2 bug [#970](https://github.com/magento/magento2/issues/970)
  - Rss feeds for author list.
  - Breadcrumbs support for list and view pages.
- - Many to many relation with the categories (only on author add/edit page for now)
+ - Many to many relation with the categories (one category tab on entity add/edit form and one tab with the entities on the category add/edit form)
 
 
 The other types of entities and features listed in **the purpose** will follow.  

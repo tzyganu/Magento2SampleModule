@@ -69,4 +69,42 @@ class Observer
         }
         return $this;
     }
+
+    public function addCategoryTab(EventObserver $observer)
+    {
+        $tabs = $observer->getEvent()->getTabs();
+        $container = $tabs->getLayout()->createBlock(
+            'Magento\Backend\Block\Template',
+            'category.author.grid.wrapper'
+        );
+        /** @var \Magento\Backend\Block\Template  $container */
+        $container->setTemplate('Sample_News::catalog/category/author.phtml');
+        $tab = $tabs->getLayout()->createBlock(
+            'Sample\News\Block\Adminhtml\Catalog\Category\Tab\Author',
+            'category.sample_news.author.grid'
+        );
+
+        $container->setChild('grid', $tab);
+        $content = $container->toHtml();
+        $tabs->addTab('sample_news_authors', array(
+            'label'     => __('Authors'),
+            'content'   => $content,
+        ));
+        return $this;
+    }
+
+    /**
+     * save category data
+     * @param $observer
+     * @return $this
+     */
+    public function saveCategoryData($observer) {
+        $post = $this->context->getRequest()->getPost('category_sample_news_authors', -1);
+        if ($post != '-1') {
+            $post = json_decode($post, true);
+            $category = $this->coreRegistry->registry('category');
+            $this->authorResource->saveAuthorCategoryRelation($category, $post);
+        }
+        return $this;
+    }
 }
