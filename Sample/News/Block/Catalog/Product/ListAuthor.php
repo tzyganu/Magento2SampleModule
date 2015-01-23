@@ -5,6 +5,7 @@ use Sample\News\Model\Author\Product as AuthorProduct;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\View\Element\BlockFactory;
 
 /**
  * @method ListAuthor setTitle(\string $title)
@@ -16,25 +17,36 @@ class ListAuthor extends Template
      */
     protected $registry;
 
+    /**
+     * @var \Sample\News\Model\Author\Product
+     */
     protected $authorProduct;
 
+    protected $blockFactory;
+
+    /**
+     * @var \Sample\News\Model\Resource\Author\Collection|null
+     */
     protected $authorCollection;
 
     /**
      * @param AuthorProduct $authorProduct
      * @param Registry $registry
+     * @param BlockFactory $blockFactory
      * @param Context $context
      * @param array $data
      */
     public function __construct(
         AuthorProduct $authorProduct,
         Registry $registry,
+        BlockFactory $blockFactory,
         Context $context,
         array $data = []
     )
     {
         $this->authorProduct = $authorProduct;
         $this->registry = $registry;
+        $this->blockFactory = $blockFactory;
         parent::__construct($context, $data);
         $this->setTabTitle();
     }
@@ -67,13 +79,14 @@ class ListAuthor extends Template
      */
     protected function _prepareLayout()
     {
+        //TODO: use block factory here
         /** @var \Magento\Theme\Block\Html\Pager $pager */
-        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager', 'sample_news.author.list.pager');
+        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager');
+        $pager->setNameInLayout('sample_news.author.list.pager');
         $pager->setPageVarName('p-author');
         $pager->setLimitVarName('l-author');
         $pager->setCollection($this->getAuthorCollection());
         $this->setChild('pager', $pager);
-        $this->getAuthorCollection()->load();
         return parent::_prepareLayout();
     }
 

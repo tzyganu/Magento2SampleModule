@@ -10,6 +10,7 @@ use Magento\Framework\Model\Resource\AbstractResource;
 use Magento\Framework\Data\Collection\Db;
 use Sample\News\Model\Author\Url;
 use Magento\Catalog\Model\Resource\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\Resource\Category\CollectionFactory as CategoryCollectionFactory;
 
 /**
  * @method string getName()
@@ -88,11 +89,29 @@ class Author extends AbstractModel implements IdentityInterface
      */
     protected $filter;
 
+    /**
+     * @var \Magento\Catalog\Model\Resource\Product\CollectionFactory
+     */
     protected $productCollectionFactory;
+
+    /**
+     * @var \Magento\Catalog\Model\Resource\Product\Collection
+     */
     protected $productCollection;
 
     /**
+     * @var \Magento\Catalog\Model\Resource\Category\CollectionFactory
+     */
+    protected $categoryCollectionFactory;
+
+    /**
+     * @var \Magento\Catalog\Model\Resource\Category\Collection
+     */
+    protected $categoryCollection;
+
+    /**
      * @param ProductCollectionFactory $productCollectionFactory
+     * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param FilterManager $filter
      * @param Url $urlModel
      * @param Context $context
@@ -103,6 +122,7 @@ class Author extends AbstractModel implements IdentityInterface
      */
     public function __construct(
         ProductCollectionFactory $productCollectionFactory,
+        CategoryCollectionFactory $categoryCollectionFactory,
         FilterManager $filter,
         Url $urlModel,
         Context $context,
@@ -113,6 +133,7 @@ class Author extends AbstractModel implements IdentityInterface
     )
     {
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
         $this->filter = $filter;
         $this->urlModel = $urlModel;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
@@ -250,5 +271,27 @@ class Author extends AbstractModel implements IdentityInterface
             $this->setData('category_ids', $ids);
         }
         return (array) $this->_getData('category_ids');
+    }
+
+    /**
+     * @param string $attributes
+     * @return \Magento\Catalog\Model\Resource\Category\Collection
+     */
+    public function getSelectedCategoriesCollection($attributes = '*')
+    {
+        if (is_null($this->categoryCollection)) {
+            $collection = $this->categoryCollectionFactory->create();
+            $collection->addAttributeToSelect($attributes);
+            $collection->joinField(
+                'position',
+                'sample_news_author_category',
+                'position',
+                'category_id=entity_id',
+                '{{table}}.author_id='.$this->getId(),
+                'inner'
+            );
+            $this->categoryCollection = $collection;
+        }
+        return $this->categoryCollection;
     }
 }

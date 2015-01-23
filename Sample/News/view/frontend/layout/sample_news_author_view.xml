@@ -12,6 +12,7 @@
                         <argument name="name" xsi:type="string">product_list_toolbar</argument>
                     </action>
                 </block>
+                <block class="Sample\News\Block\Author\ViewAuthor\Catalog\Category" name="sample_news.author.view.category" template="Sample_News::author/view/catalog/category.phtml" group="tabs" />
             </block>
         </referenceBlock>
     </body>

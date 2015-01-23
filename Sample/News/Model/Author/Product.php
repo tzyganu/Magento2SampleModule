@@ -38,7 +38,7 @@ class Product
     /**
      * @access public
      * @param \Magento\Catalog\Model\Product $product
-     * @return mixed
+     * @return \Sample\News\Model\Resource\Author\Collection
      */
     public function getSelectedAuthorsCollection(ProductModel $product)
     {

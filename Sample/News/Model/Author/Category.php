@@ -41,7 +41,7 @@ class Category
     /**
      * @access public
      * @param \Magento\Catalog\Model\Category $category
-     * @return mixed
+     * @return \Sample\News\Model\Resource\Author\Collection
      */
     public function getSelectedAuthorsCollection(CategoryModel $category)
     {

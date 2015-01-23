@@ -18,6 +18,8 @@ What I got so far:
  - Rss feeds for author list.
  - Breadcrumbs support for list and view pages.
  - Many to many relation with the categories (one category tab on entity add/edit form and one tab with the entities on the category add/edit form)
+ - Display related categories in the author page.
+ - Display related authors in the category page.
 
 
 The other types of entities and features listed in **the purpose** will follow.  
