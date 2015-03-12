@@ -2,7 +2,7 @@
 namespace Sample\News\Model\Resource;
 
 use Magento\Framework\Model\Resource\Db\AbstractDb;
-use Magento\Framework\App\Resource;
+use Magento\Framework\Model\Resource\Db\Context;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Stdlib\DateTime as LibDateTime;
@@ -61,7 +61,7 @@ class Author extends AbstractDb
     protected $authorProduct;
 
     /**
-     * @param Resource $resource
+     * @param Context $context
      * @param DateTime $date
      * @param StoreManagerInterface $storeManager
      * @param LibDateTime $dateTime
@@ -70,7 +70,7 @@ class Author extends AbstractDb
      * @param AuthorCategory $authorCategory
      */
     public function __construct(
-        Resource $resource,
+        Context $context,
         DateTime $date,
         StoreManagerInterface $storeManager,
         LibDateTime $dateTime,
@@ -79,13 +79,13 @@ class Author extends AbstractDb
         AuthorCategory $authorCategory
     )
     {
-        parent::__construct($resource);
         $this->date = $date;
         $this->storeManager = $storeManager;
         $this->dateTime = $dateTime;
         $this->eventManager = $eventManager;
         $this->authorProduct = $authorProduct;
         $this->authorCategory = $authorCategory;
+        parent::__construct($context);
         $this->authorProductTable = $this->getTable('sample_news_author_product');
         $this->authorCategoryTable = $this->getTable('sample_news_author_category');
 

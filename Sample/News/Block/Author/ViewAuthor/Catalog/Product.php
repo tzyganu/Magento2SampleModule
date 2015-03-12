@@ -4,10 +4,11 @@ namespace Sample\News\Block\Author\ViewAuthor\Catalog;
 use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Block\Product\Context;
-use Magento\Core\Helper\PostData;
+use Magento\Framework\Data\Helper\PostHelper;
 use Magento\Catalog\Model\Layer\Resolver;
 use Magento\Framework\Registry;
 use Magento\Catalog\Model\Product\Visibility;
+use Magento\Framework\Url\Helper\Data as UrlHelper;
 
 /**
  * @method Product setTitle(\string $title)
@@ -23,30 +24,35 @@ class Product extends ListProduct
      */
     protected $productVisibility;
 
+    /**
+     * @var \Magento\Catalog\Model\Resource\Product\Collection
+     */
     protected $productCollection;
 
     /**
      * @param Visibility $productVisibility
      * @param Registry $coreRegistry
      * @param Context $context
-     * @param PostData $postDataHelper
+     * @param PostHelper $postDataHelper
      * @param Resolver $layerResolver
      * @param CategoryRepositoryInterface $categoryRepository
+     * @param UrlHelper $urlHelper
      * @param array $data
      */
     public function __construct(
         Visibility $productVisibility,
         Registry $coreRegistry,
         Context $context,
-        PostData $postDataHelper,
+        PostHelper $postDataHelper,
         Resolver $layerResolver,
         CategoryRepositoryInterface $categoryRepository,
+        UrlHelper $urlHelper,
         array $data = []
     )
     {
         $this->productVisibility = $productVisibility;
         $this->coreRegistry = $coreRegistry;
-        parent::__construct($context, $postDataHelper, $layerResolver, $categoryRepository);
+        parent::__construct($context, $postDataHelper, $layerResolver, $categoryRepository, $urlHelper, $data);
         $this->setTabTitle();
     }
 
@@ -97,5 +103,19 @@ class Product extends ListProduct
     public function getCollectionSize()
     {
         return $this->_getProductCollection()->getSize();
+    }
+
+    /**
+     * @return $this
+     */
+    protected function _beforeToHtml()
+    {
+        parent::_beforeToHtml();
+        /** @var \Magento\Catalog\Block\Product\ProductList\Toolbar $toolbar */
+        $toolbar = $this->getChildBlock('toolbar');
+        /** @var \Magento\Theme\Block\Html\Pager  $pager */
+        $pager = $toolbar->getChildBlock('product_list_toolbar_pager');
+        $pager->setFragment('sample_news.author.view.product');
+        return $this;
     }
 }

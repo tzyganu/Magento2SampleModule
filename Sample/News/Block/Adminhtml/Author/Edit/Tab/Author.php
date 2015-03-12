@@ -165,7 +165,7 @@ class Author extends GenericForm implements TabInterface
                 'name'        => 'dob',
                 'label'       => __('Date of birth'),
                 'title'       => __('Date of birth'),
-                'image'       => $this->getViewFileUrl('images/grid-cal.gif'),
+                'image'       => $this->getViewFileUrl('images/grid-cal.png'),
                 'date_format' => $this->_localeDate->getDateFormat(
                     TimezoneInterface::FORMAT_TYPE_SHORT
                 ),

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Config/etc/system_file.xsd">
     <system>
         <tab id="sample_news" sortOrder="2000">
             <label>News</label>
@@ -12,7 +12,7 @@
                 <label>Authors</label>
                 <field id="breadcrumbs" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Breadcrumbs</label>
-                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="meta_title" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Author list meta title</label>
@@ -34,7 +34,7 @@
                 </field>
                 <field id="rss" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable RSS</label>
-                    <source_model>Magento\Backend\Model\Config\Source\Yesno</source_model>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="rss_cache" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>RSS Cache Lifetime</label>

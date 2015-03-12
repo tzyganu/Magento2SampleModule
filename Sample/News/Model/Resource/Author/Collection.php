@@ -3,7 +3,7 @@ namespace Sample\News\Model\Resource\Author;
 
 use Magento\Framework\Model\Resource\Db\Collection\AbstractCollection;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Core\Model\EntityFactory;
+use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Event\ManagerInterface;
@@ -43,7 +43,7 @@ class Collection extends AbstractCollection
     /**
      * constructor
      *
-     * @param EntityFactory $entityFactory
+     * @param EntityFactoryInterface $entityFactory
      * @param LoggerInterface $logger
      * @param FetchStrategyInterface $fetchStrategy
      * @param ManagerInterface $eventManager
@@ -52,7 +52,7 @@ class Collection extends AbstractCollection
      * @param AbstractDb $resource
      */
     public function __construct(
-        EntityFactory $entityFactory,
+        EntityFactoryInterface $entityFactory,
         LoggerInterface $logger,
         FetchStrategyInterface $fetchStrategy,
         ManagerInterface $eventManager,

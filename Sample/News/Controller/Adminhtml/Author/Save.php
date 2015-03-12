@@ -8,7 +8,7 @@ use Sample\News\Model\AuthorFactory;
 use Magento\Backend\Model\Session;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\RedirectFactory;
-use Magento\Framework\Model\Exception as FrameworkException;
+use Magento\Framework\Exception\LocalizedException;
 use Sample\News\Model\Author\Image as ImageModel;
 use Sample\News\Model\Author\File as FileModel;
 use Sample\News\Model\Upload;
@@ -21,13 +21,6 @@ class Save extends Author
      * @var \Sample\News\Model\AuthorFactory
      */
     protected $authorFactory;
-
-    /**
-     * backend session
-     *
-     * @var \Magento\Backend\Model\Session
-     */
-    protected $backendSession;
 
     /**
      * date filter
@@ -77,7 +70,6 @@ class Save extends Author
      */
     public function __construct(
         JsHelper $jsHelper,
-        Session $backendSession,
         Date $dateFilter,
         ImageModel $imageModel,
         FileModel $fileModel,
@@ -89,7 +81,6 @@ class Save extends Author
     )
     {
         $this->jsHelper = $jsHelper;
-        $this->backendSession = $backendSession;
         $this->dateFilter = $dateFilter;
         $this->imageModel = $imageModel;
         $this->fileModel = $fileModel;
@@ -128,7 +119,7 @@ class Save extends Author
             try {
                 $author->save();
                 $this->messageManager->addSuccess(__('The author has been saved.'));
-                $this->backendSession->setSampleNewsAuthorData(false);
+                $this->_getSession()->setSampleNewsAuthorData(false);
                 if ($this->getRequest()->getParam('back')) {
                     $resultRedirect->setPath(
                         'sample_news/*/edit',
@@ -141,7 +132,7 @@ class Save extends Author
                 }
                 $resultRedirect->setPath('sample_news/*/');
                 return $resultRedirect;
-            } catch (FrameworkException $e) {
+            } catch (LocalizedException $e) {
                 $this->messageManager->addError($e->getMessage());
             } catch (\RuntimeException $e) {
                 $this->messageManager->addError($e->getMessage());

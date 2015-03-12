@@ -68,12 +68,11 @@ class Category extends Template {
      */
     protected function _prepareLayout()
     {
-        //TODO: use block factory here
-        //TODO: fix bug: pagination does not keep the correct url. Most likely a core issue.
         /** @var \Magento\Theme\Block\Html\Pager $pager */
         $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager');
         $pager->setNameInLayout('sample_news.author.view.category.pager');
         $pager->setPageVarName('p-category');
+        $pager->setFragment('sample_news.author.view.category');
         $pager->setLimitVarName('l-category');
         $pager->setCollection($this->getCategoryCollection());
         $this->setChild('sample_news.author.view.category.pager', $pager);

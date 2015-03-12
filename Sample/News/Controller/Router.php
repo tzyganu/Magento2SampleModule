@@ -108,6 +108,7 @@ class Router implements RouterInterface
     {
         if (!$this->dispatched) {
             $urlKey = trim($request->getPathInfo(), '/');
+            $origUrlKey = $urlKey;
             /** @var Object $condition */
             $condition = new Object(['url_key' => $urlKey, 'continue' => true]);
             $this->eventManager->dispatch(
@@ -186,7 +187,7 @@ class Router implements RouterInterface
                     ->setControllerName('author')
                     ->setActionName('view')
                     ->setParam('id', $id);
-                $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
+                $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $origUrlKey);
                 $request->setDispatched(true);
                 $this->dispatched = true;
                 return $this->actionFactory->create(

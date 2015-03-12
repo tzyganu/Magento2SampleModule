@@ -68,12 +68,12 @@ class ListAuthor extends Template
      */
     protected function _prepareLayout()
     {
-        //TODO: use block factory here
         /** @var \Magento\Theme\Block\Html\Pager $pager */
         $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager');
         $pager->setNameInLayout('sample_news.author.list.pager');
         $pager->setPageVarName('p-author');
         $pager->setLimitVarName('l-author');
+        $pager->setFragment($this->getAnchorName());
         $pager->setCollection($this->getAuthorCollection());
         $this->setChild('pager', $pager);
         $this->getAuthorCollection()->load();
@@ -86,5 +86,10 @@ class ListAuthor extends Template
     public function getPagerHtml()
     {
         return $this->getChildHtml('pager');
+    }
+
+    public function getAnchorName()
+    {
+        return 'catalog.category.list.sample.news.author';
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Sample\News\Block\Catalog\Product;
 
+use Sample\News\Model\Author;
 use Sample\News\Model\Author\Product as AuthorProduct;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Registry;
@@ -59,7 +60,7 @@ class ListAuthor extends Template
         if (is_null($this->authorCollection)) {
             $collection = $this->authorProduct->getSelectedAuthorsCollection($this->getProduct());
             $collection->addStoreFilter($this->_storeManager->getStore()->getId());
-            $collection->addFieldToFilter('is_active', 1);
+            $collection->addFieldToFilter('is_active', Author::STATUS_ENABLED);
             $collection->getSelect()->order('position');
             $this->authorCollection = $collection;
         }
@@ -79,12 +80,12 @@ class ListAuthor extends Template
      */
     protected function _prepareLayout()
     {
-        //TODO: use block factory here
         /** @var \Magento\Theme\Block\Html\Pager $pager */
         $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager');
         $pager->setNameInLayout('sample_news.author.list.pager');
         $pager->setPageVarName('p-author');
         $pager->setLimitVarName('l-author');
+        $pager->setFragment('catalog.product.list.sample.news.author');
         $pager->setCollection($this->getAuthorCollection());
         $this->setChild('pager', $pager);
         return parent::_prepareLayout();

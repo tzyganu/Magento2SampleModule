@@ -4,7 +4,7 @@
         <referenceBlock name="content">
             <block class="Sample\News\Block\Author\ViewAuthor" name="sample_news.author.view" template="Sample_News::author/view.phtml" />
             <block class="Sample\News\Block\Tabs" name="sample_news.author.view.details" template="Sample_News::tabs.phtml">
-                <block class="Sample\News\Block\Author\ViewAuthor\Catalog\Product" template="Magento_catalog::product/list.phtml" group="tabs">
+                <block class="Sample\News\Block\Author\ViewAuthor\Catalog\Product" template="Magento_catalog::product/list.phtml" group="tabs" name="sample_news.author.view.product">
                     <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar" template="product/list/toolbar.phtml">
                         <block class="Magento\Theme\Block\Html\Pager" name="product_list_toolbar_pager"/>
                     </block>
