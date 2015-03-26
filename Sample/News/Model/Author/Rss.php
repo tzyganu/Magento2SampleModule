@@ -35,7 +35,7 @@ class Rss
      * @return bool
      */
     public function isRssEnabled()
-    {return true;
+    {
         return
             $this->scopeConfig->getValue('rss/config/active', ScopeInterface::SCOPE_STORE) &&
             $this->scopeConfig->getValue('sample_news/author/rss', ScopeInterface::SCOPE_STORE);

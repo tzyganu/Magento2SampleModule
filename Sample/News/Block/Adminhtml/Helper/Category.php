@@ -135,16 +135,16 @@ class Category extends Multiselect {
                 'disabled' => $this->getDisabled()
             ]);
         $widgetOptions = $this->jsonEncoder->encode(
-            array(
-                'suggestOptions' => array(
-                    'source' => $this->getUrl('catalog/category/suggestCategories'),
+            [
+                'suggestOptions' => [
+                    'source' => $this->backendData->getUrl('catalog/category/suggestCategories'),
                     'valueField' => '#new_category_parent',
                     'className' => 'category-select',
                     'multiselect' => true,
-                    'showAll' => true
-                ),
-                'saveCategoryUrl' => $this->getUrl('catalog/category/save')
-            )
+                    'showAll' => true,
+                ],
+                'saveCategoryUrl' => $this->backendData->getUrl('catalog/category/save'),
+            ]
         );
         //TODO: move this somewhere else when magento team decides to move it.
         $return = <<<HTML
@@ -152,7 +152,7 @@ class Category extends Multiselect {
         <script type="text/javascript">
             require(["jquery","mage/mage"],function($) {  // waiting for dependencies at first
                 $(function(){ // waiting for page to load to have '#category_ids-template' available
-                    $('#new-category').mage('newCategoryDialog', {$widgetOptions});
+                    $('#new-category').mage('newCategoryDialog', $widgetOptions);
                     $('#{$htmlId}-suggest').mage('treeSuggest', {$selectorOptions});
                 });
             });

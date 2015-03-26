@@ -1,3 +1,4 @@
+<?php /** @var \Sample\News\Block\Author\ViewAuthor $this */?>
 <?php /** @var \Sample\News\Model\Author $_author */?>
 <?php $_author = $this->getCurrentAuthor();?>
 <div class="author-view">
@@ -9,7 +10,7 @@
         <?php echo __('Biography') ?>: <?php echo $_author->getBiography();?>
     </div>
     <div class="author-dob">
-        <?php echo __('Date of birth') ?>: <?php echo $this->formatDate($_author->getDob(), 'long');?>
+        <?php echo __('Date of birth') ?>: <?php echo $this->formatDate($_author->getDob(), \IntlDateFormatter::LONG);?>
     </div>
     ...
 </div>
