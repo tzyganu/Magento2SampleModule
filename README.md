@@ -1,7 +1,7 @@
 Magento 2.0 Sample Module
 ====================
 
-Last tested on 0.74.0-beta1.
+Last tested on beta3.
 
 
 ![Magento 2 Sample Module](http://i.imgur.com/Ma6v2gs.jpg)
@@ -14,7 +14,7 @@ What I got so far:
  - Frontend list and view for the entity mentioned above
  - Backend relation (many to many) to catalog products. on the edit form there is a tab called 'Products' similar to related products. On the product edit page there is a tab called Authors. 
  - List on Author view page on frontend the related products paginated and with a sorting options.
- - List related authors on product view page. 
+ - List related authors on product view page. There is a problem with the pagination due to a Magento2 bug [#970](https://github.com/magento/magento2/issues/970)
  - Rss feeds for author list.
  - Breadcrumbs support for list and view pages.
  - Many to many relation with the categories (one category tab on entity add/edit form and one tab with the entities on the category add/edit form)
