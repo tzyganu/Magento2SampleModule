@@ -162,6 +162,26 @@ class InstallSchema implements InstallSchemaInterface
                 )
                 ->setComment('News authors');
             $installer->getConnection()->createTable($table);
+
+            $installer->getConnection()->addIndex(
+                $installer->getTable('sample_news_author'),
+                $setup->getIdxName(
+                    $installer->getTable('sample_news_author'),
+                    ['name','photo'],
+                    AdapterInterface::INDEX_TYPE_FULLTEXT
+                ),
+                [
+                    'name',
+                    'biography',
+                    'url_key',
+                    'resume',
+                    'country',
+                    'meta_title',
+                    'meta_keywords',
+                    'meta_description'
+                ],
+                AdapterInterface::INDEX_TYPE_FULLTEXT
+            );
         }
 
         //Create Authors to Store table
@@ -199,7 +219,6 @@ class InstallSchema implements InstallSchemaInterface
                     'author_id',
                     $installer->getTable('sample_news_author'),
                     'author_id',
-                    Table::ACTION_CASCADE,
                     Table::ACTION_CASCADE
                 )
                 ->addForeignKey(
@@ -207,7 +226,6 @@ class InstallSchema implements InstallSchemaInterface
                     'store_id',
                     $installer->getTable('store'),
                     'store_id',
-                    Table::ACTION_CASCADE,
                     Table::ACTION_CASCADE
                 )
                 ->setComment('Author To Store Link Table');
@@ -258,7 +276,6 @@ class InstallSchema implements InstallSchemaInterface
                     'author_id',
                     $installer->getTable('sample_news_author'),
                     'author_id',
-                    Table::ACTION_CASCADE,
                     Table::ACTION_CASCADE
                 )
                 ->addForeignKey(
@@ -266,7 +283,6 @@ class InstallSchema implements InstallSchemaInterface
                     'product_id',
                     $installer->getTable('catalog_product_entity'),
                     'entity_id',
-                    Table::ACTION_CASCADE,
                     Table::ACTION_CASCADE
                 )
                 ->addIndex(
@@ -334,7 +350,6 @@ class InstallSchema implements InstallSchemaInterface
                     'author_id',
                     $installer->getTable('sample_news_author'),
                     'author_id',
-                    Table::ACTION_CASCADE,
                     Table::ACTION_CASCADE
                 )
                 ->addForeignKey(
@@ -342,7 +357,6 @@ class InstallSchema implements InstallSchemaInterface
                     'category_id',
                     $installer->getTable('catalog_category_entity'),
                     'entity_id',
-                    Table::ACTION_CASCADE,
                     Table::ACTION_CASCADE
                 )
                 ->addIndex(

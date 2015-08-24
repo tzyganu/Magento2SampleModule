@@ -24,16 +24,14 @@ class IsActive implements ArrayInterface
         ];
     }
 
-    //TODO move this in parent class
     /**
      * get options as key value pair
      *
-     * @param array $options
      * @return array
      */
-    public function getOptions(array $options = [])
+    public function getOptions()
     {
-        $_tmpOptions = $this->toOptionArray($options);
+        $_tmpOptions = $this->toOptionArray();
         $_options = [];
         foreach ($_tmpOptions as $option) {
             $_options[$option['value']] = $option['label'];

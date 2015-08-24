@@ -7,7 +7,7 @@ use Magento\Backend\Model\View\Result\RedirectFactory;
 use Sample\News\Model\AuthorFactory;
 use Magento\Framework\Registry;
 
-class Author extends Action
+abstract class Author extends Action
 {
     /**
      * author factory

@@ -113,7 +113,7 @@ class Product extends ListProduct
         parent::_beforeToHtml();
         /** @var \Magento\Catalog\Block\Product\ProductList\Toolbar $toolbar */
         $toolbar = $this->getChildBlock('toolbar');
-        /** @var \Magento\Theme\Block\Html\Pager  $pager */
+        /** @var \Magento\Theme\Block\Html\Pager $pager */
         $pager = $toolbar->getChildBlock('product_list_toolbar_pager');
         $pager->setFragment('sample_news.author.view.product');
         return $this;

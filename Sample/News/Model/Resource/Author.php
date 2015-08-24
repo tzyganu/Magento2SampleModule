@@ -79,14 +79,15 @@ class Author extends AbstractDb
         AuthorCategory $authorCategory
     )
     {
-        $this->date = $date;
-        $this->storeManager = $storeManager;
-        $this->dateTime = $dateTime;
-        $this->eventManager = $eventManager;
-        $this->authorProduct = $authorProduct;
-        $this->authorCategory = $authorCategory;
+        $this->date             = $date;
+        $this->storeManager     = $storeManager;
+        $this->dateTime         = $dateTime;
+        $this->eventManager     = $eventManager;
+        $this->authorProduct    = $authorProduct;
+        $this->authorCategory   = $authorCategory;
+
         parent::__construct($context);
-        $this->authorProductTable = $this->getTable('sample_news_author_product');
+        $this->authorProductTable  = $this->getTable('sample_news_author_product');
         $this->authorCategoryTable = $this->getTable('sample_news_author_category');
 
     }
@@ -110,7 +111,7 @@ class Author extends AbstractDb
     protected function _beforeDelete(AbstractModel $object)
     {
         $condition = ['author_id = ?' => (int)$object->getId()];
-        $this->_getWriteAdapter()->delete($this->getTable('sample_news_author_store'), $condition);
+        $this->getConnection()->delete($this->getTable('sample_news_author_store'), $condition);
         return parent::_beforeDelete($object);
     }
 
@@ -244,9 +245,9 @@ class Author extends AbstractDb
      * @param int $isActive
      * @return \Magento\Framework\DB\Select
      */
-    protected function _getLoadByUrlKeySelect($urlKey, $store, $isActive = null)
+    protected function getLoadByUrlKeySelect($urlKey, $store, $isActive = null)
     {
-        $select = $this->_getReadAdapter()
+        $select = $this->getConnection()
             ->select()
             ->from(['author' => $this->getMainTable()])
             ->join(
@@ -280,12 +281,12 @@ class Author extends AbstractDb
     public function checkUrlKey($urlKey, $storeId)
     {
         $stores = [Store::DEFAULT_STORE_ID, $storeId];
-        $select = $this->_getLoadByUrlKeySelect($urlKey, $stores, 1);
+        $select = $this->getLoadByUrlKeySelect($urlKey, $stores, 1);
         $select->reset(\Zend_Db_Select::COLUMNS)
             ->columns('author.author_id')
             ->order('author_store.store_id DESC')
             ->limit(1);
-        return $this->_getReadAdapter()->fetchOne($select);
+        return $this->getConnection()->fetchOne($select);
     }
 
     /**
@@ -300,12 +301,12 @@ class Author extends AbstractDb
         if ($this->store) {
             $stores[] = (int)$this->getStore()->getId();
         }
-        $select = $this->_getLoadByUrlKeySelect($urlKey, $stores);
+        $select = $this->getLoadByUrlKeySelect($urlKey, $stores);
         $select->reset(\Zend_Db_Select::COLUMNS)
             ->columns('author.name')
             ->order('author.store_id DESC')
             ->limit(1);
-        return $this->_getReadAdapter()->fetchOne($select);
+        return $this->getConnection()->fetchOne($select);
     }
 
     /**
@@ -316,7 +317,7 @@ class Author extends AbstractDb
      */
     public function getAuthorNameById($id)
     {
-        $adapter = $this->_getReadAdapter();
+        $adapter = $this->getConnection();
         $select = $adapter->select()
             ->from($this->getMainTable(), 'name')
             ->where('author_id = :author_id');
@@ -332,7 +333,7 @@ class Author extends AbstractDb
      */
     public function getAuthorUrlKeyById($id)
     {
-        $adapter = $this->_getReadAdapter();
+        $adapter = $this->getConnection();
         $select = $adapter->select()
             ->from($this->getMainTable(), 'url_key')
             ->where('author_id = :author_id');
@@ -348,7 +349,7 @@ class Author extends AbstractDb
      */
     public function lookupStoreIds($authorId)
     {
-        $adapter = $this->_getReadAdapter();
+        $adapter = $this->getConnection();
         $select = $adapter->select()->from(
             $this->getTable('sample_news_author_store'),
             'store_id'
@@ -395,11 +396,11 @@ class Author extends AbstractDb
         } else {
             $stores = (array)$object->getData('stores');
         }
-        $select = $this->_getLoadByUrlKeySelect($object->getData('url_key'), $stores);
+        $select = $this->getLoadByUrlKeySelect($object->getData('url_key'), $stores);
         if ($object->getId()) {
             $select->where('author_store.author_id <> ?', $object->getId());
         }
-        if ($this->_getWriteAdapter()->fetchRow($select)) {
+        if ($this->getConnection()->fetchRow($select)) {
             return false;
         }
         return true;
@@ -411,7 +412,7 @@ class Author extends AbstractDb
      */
     public function getProductsPosition(AuthorModel $author)
     {
-        $select = $this->_getWriteAdapter()->select()->from(
+        $select = $this->getConnection()->select()->from(
             $this->authorProductTable,
             ['product_id', 'position']
         )
@@ -419,7 +420,7 @@ class Author extends AbstractDb
             'author_id = :author_id'
         );
         $bind = ['author_id' => (int)$author->getId()];
-        return $this->_getWriteAdapter()->fetchPairs($select, $bind);
+        return $this->getConnection()->fetchPairs($select, $bind);
     }
 
     /**
@@ -442,7 +443,7 @@ class Author extends AbstractDb
                 'author_id = ?' => (int)$author->getId(),
                 'store_id IN (?)' => $delete
             ];
-            $this->_getWriteAdapter()->delete($table, $where);
+            $this->getConnection()->delete($table, $where);
         }
         if ($insert) {
             $data = [];
@@ -452,7 +453,7 @@ class Author extends AbstractDb
                     'store_id' => (int)$storeId
                 ];
             }
-            $this->_getWriteAdapter()->insertMultiple($table, $data);
+            $this->getConnection()->insertMultiple($table, $data);
         }
         return $this;
     }
@@ -473,7 +474,6 @@ class Author extends AbstractDb
         $oldProducts = $author->getProductsPosition();
         $insert = array_diff_key($products, $oldProducts);
         $delete = array_diff_key($oldProducts, $products);
-        //TODO: make update code prettier.
         $update = array_intersect_key($products, $oldProducts);
         $_update = array();
         foreach ($update as $key=>$settings) {
@@ -482,7 +482,7 @@ class Author extends AbstractDb
             }
         }
         $update = $_update;
-        $adapter = $this->_getWriteAdapter();
+        $adapter = $this->getConnection();
         if (!empty($delete)) {
             $condition = ['product_id IN(?)' => array_keys($delete), 'author_id=?' => $id];
             $adapter->delete($this->authorProductTable, $condition);
@@ -558,7 +558,7 @@ class Author extends AbstractDb
         }
 
         $update = $toUpdate;
-        $adapter = $this->_getWriteAdapter();
+        $adapter = $this->getConnection();
         if (!empty($delete)) {
             $condition = ['author_id IN(?)' => array_keys($delete), 'product_id=?' => $id];
             $adapter->delete($this->authorProductTable, $condition);
@@ -612,7 +612,7 @@ class Author extends AbstractDb
         $insert = array_diff_key($categories, $oldCategoryIds);
         $delete = array_diff_key($oldCategoryIds, $categories);
 
-        $adapter = $this->_getWriteAdapter();
+        $adapter = $this->getConnection();
         if (!empty($delete)) {
             $condition = array('category_id IN(?)' => $delete, 'author_id=?' => $id);
             $adapter->delete($this->authorCategoryTable, $condition);
@@ -652,7 +652,7 @@ class Author extends AbstractDb
      */
     public function getCategoryIds(AuthorModel $author)
     {
-        $adapter = $this->_getReadAdapter();
+        $adapter = $this->getConnection();
         $select = $adapter->select()->from(
             $this->authorCategoryTable,
             'category_id'
@@ -671,6 +671,7 @@ class Author extends AbstractDb
      */
     public function saveAuthorCategoryRelation($category, $authors)
     {
+        /** @var \Magento\Catalog\Model\Category $category */
         $category->setIsChangedAuthorList(false);
         $id = $category->getId();
         if ($authors === null) {
@@ -691,7 +692,7 @@ class Author extends AbstractDb
         $update = array_diff_assoc($update, $oldAuthors);
 
 
-        $adapter = $this->_getWriteAdapter();
+        $adapter = $this->getConnection();
         if (!empty($delete)) {
             $condition = array('author_id IN(?)' => array_keys($delete), 'author_id=?' => $id);
             $adapter->delete($this->authorCategoryTable, $condition);

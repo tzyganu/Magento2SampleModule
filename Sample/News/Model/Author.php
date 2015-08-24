@@ -2,15 +2,16 @@
 namespace Sample\News\Model;
 
 use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Object\IdentityInterface;
 use Magento\Framework\Filter\FilterManager;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\Model\Resource\AbstractResource;
 use Magento\Framework\Data\Collection\Db;
 use Sample\News\Model\Author\Url;
+use Sample\News\Model\Author\Source\IsActive;
 use Magento\Catalog\Model\Resource\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\Resource\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Framework\Data\Collection\AbstractDb;
 
 /**
  * @method string getName()
@@ -44,7 +45,7 @@ use Magento\Catalog\Model\Resource\Category\CollectionFactory as CategoryCollect
  * @method Author setIsChangedCategoryList(\bool $changed)
  * @method Author setAffectedCategoryIds(array $categoryIds)
  */
-class Author extends AbstractModel implements IdentityInterface
+class Author extends AbstractModel
 {
     /**
      * status enabled
@@ -59,7 +60,9 @@ class Author extends AbstractModel implements IdentityInterface
      */
     const STATUS_DISABLED = 0;
 
-
+    /**
+     * @var Url
+     */
     protected $urlModel;
     /**
      * cache tag
@@ -90,6 +93,11 @@ class Author extends AbstractModel implements IdentityInterface
     protected $filter;
 
     /**
+     * @var IsActive
+     */
+    protected $statusList;
+
+    /**
      * @var \Magento\Catalog\Model\Resource\Product\CollectionFactory
      */
     protected $productCollectionFactory;
@@ -114,10 +122,12 @@ class Author extends AbstractModel implements IdentityInterface
      * @param CategoryCollectionFactory $categoryCollectionFactory
      * @param FilterManager $filter
      * @param Url $urlModel
+     * @param IsActive $statusList
+     * @param BooleanOptions $booleanOptions
      * @param Context $context
      * @param Registry $registry
-     * @param AbstractResource $resource
-     * @param Db $resourceCollection
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
@@ -125,17 +135,19 @@ class Author extends AbstractModel implements IdentityInterface
         CategoryCollectionFactory $categoryCollectionFactory,
         FilterManager $filter,
         Url $urlModel,
+        IsActive $statusList,
         Context $context,
         Registry $registry,
         AbstractResource $resource = null,
-        Db $resourceCollection = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     )
     {
-        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productCollectionFactory  = $productCollectionFactory;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
-        $this->filter = $filter;
-        $this->urlModel = $urlModel;
+        $this->filter                    = $filter;
+        $this->urlModel                  = $urlModel;
+        $this->statusList                = $statusList;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -169,10 +181,7 @@ class Author extends AbstractModel implements IdentityInterface
      */
     public function getAvailableStatuses()
     {
-        return [
-            self::STATUS_ENABLED => __('Yes'),
-            self::STATUS_DISABLED => __('No')
-        ];
+        return $this->statusList->getOptions();
     }
 
     /**

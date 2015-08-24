@@ -7,11 +7,10 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\Data\FormFactory;
 use Magento\Cms\Model\Wysiwyg\Config as WysiwygConfig;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Sample\News\Model\Author\Source\Award;
-use Sample\News\Model\Author\Source\IsActive;
 use Sample\News\Model\Author\Source\Type;
 use Sample\News\Model\Source\Country;
+use Magento\Config\Model\Config\Source\Yesno as BooleanOptions;
 
 class Author extends GenericForm implements TabInterface
 {
@@ -36,10 +35,16 @@ class Author extends GenericForm implements TabInterface
     protected $typeOptions;
 
     /**
+     * @var BooleanOptions
+     */
+    protected $booleanOptions;
+
+    /**
      * @param WysiwygConfig $wysiwygConfig
      * @param Country $countryOptions
      * @param Award $awardOptions
      * @param Type $typeOptions
+     * @param BooleanOptions $booleanOptions
      * @param Context $context
      * @param Registry $registry
      * @param FormFactory $formFactory
@@ -50,16 +55,18 @@ class Author extends GenericForm implements TabInterface
         Country $countryOptions,
         Award $awardOptions,
         Type $typeOptions,
+        BooleanOptions $booleanOptions,
         Context $context,
         Registry $registry,
         FormFactory $formFactory,
         array $data = []
     )
     {
-        $this->wysiwygConfig = $wysiwygConfig;
-        $this->countryOptions = $countryOptions;
-        $this->awardOptions = $awardOptions;
-        $this->typeOptions = $typeOptions;
+        $this->wysiwygConfig    = $wysiwygConfig;
+        $this->countryOptions   = $countryOptions;
+        $this->awardOptions     = $awardOptions;
+        $this->typeOptions      = $typeOptions;
+        $this->booleanOptions   = $booleanOptions;
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
@@ -143,7 +150,7 @@ class Author extends GenericForm implements TabInterface
                 'title'     => __('Show in RSS'),
                 'name'      => 'in_rss',
                 'required'  => true,
-                'options'   => $author->getAvailableStatuses(),//TODO: change options on this
+                'options'   => $this->booleanOptions->toArray()
             ]
         );
         $fieldset->addField(

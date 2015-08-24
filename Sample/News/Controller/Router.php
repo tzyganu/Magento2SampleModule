@@ -3,7 +3,7 @@ namespace Sample\News\Controller;
 
 use Magento\Framework\App\RouterInterface;
 use Magento\Framework\App\ActionFactory;
-use Magento\Framework\Object;
+use Magento\Framework\DataObject;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\App\State;
@@ -110,7 +110,7 @@ class Router implements RouterInterface
             $urlKey = trim($request->getPathInfo(), '/');
             $origUrlKey = $urlKey;
             /** @var Object $condition */
-            $condition = new Object(['url_key' => $urlKey, 'continue' => true]);
+            $condition = new DataObject(['url_key' => $urlKey, 'continue' => true]);
             $this->eventManager->dispatch(
                 'sample_news_controller_router_match_before',
                 ['router' => $this, 'condition' => $condition]
