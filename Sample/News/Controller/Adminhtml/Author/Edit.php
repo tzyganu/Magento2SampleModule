@@ -8,6 +8,7 @@ use Magento\Backend\Model\Session as BackendSession;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\RedirectFactory;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Stdlib\DateTime\Filter\Date;
 
 class Edit extends AuthorController
 {
@@ -35,16 +36,18 @@ class Edit extends AuthorController
      */
     public function __construct(
         Registry $registry,
+        PageFactory $resultPageFactory,
         AuthorFactory $authorFactory,
         BackendSession $backendSession,
-        PageFactory $resultPageFactory,
-        Context $context,
-        RedirectFactory $resultRedirectFactory
+        RedirectFactory $resultRedirectFactory,
+        Date $dateFilter,
+        Context $context
+
     )
     {
         $this->backendSession = $backendSession;
         $this->resultPageFactory = $resultPageFactory;
-        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);
+        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $dateFilter, $context);
     }
 
     /**

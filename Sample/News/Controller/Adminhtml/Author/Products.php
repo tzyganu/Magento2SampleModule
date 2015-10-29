@@ -7,6 +7,7 @@ use Sample\News\Model\AuthorFactory;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\RedirectFactory;
 use Magento\Framework\View\Result\LayoutFactory;
+use Magento\Framework\Stdlib\DateTime\Filter\Date;
 
 class Products extends Author
 {
@@ -27,12 +28,14 @@ class Products extends Author
         LayoutFactory $resultLayoutFactory,
         Registry $registry,
         AuthorFactory $authorFactory,
-        Context $context,
-        RedirectFactory $resultRedirectFactory
+        RedirectFactory $resultRedirectFactory,
+        Date $dateFilter,
+        Context $context
+
     )
     {
         $this->resultLayoutFactory = $resultLayoutFactory;
-        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);
+        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $dateFilter, $context);
     }
 
     /**

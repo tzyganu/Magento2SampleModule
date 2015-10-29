@@ -2,7 +2,7 @@
 namespace Sample\News\Block\Adminhtml\Helper;
 
 use Magento\Framework\Data\Form\Element\Multiselect;
-use Magento\Catalog\Model\Resource\Category\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Backend\Helper\Data as DataHelper;
 use Magento\Framework\View\LayoutInterface;
 use Magento\Framework\Json\EncoderInterface;
@@ -28,7 +28,7 @@ class Category extends Multiselect {
     protected $backendData;
 
     /**
-     * @var \Magento\Catalog\Model\Resource\Category\CollectionFactory
+     * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
      */
     protected $collectionFactory;
 
@@ -44,7 +44,7 @@ class Category extends Multiselect {
 
 
     /**
-     * @param \Magento\Catalog\Model\Resource\Category\CollectionFactory $collectionFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $collectionFactory
      * @param \Magento\Backend\Helper\Data $backendData
      * @param \Magento\Framework\View\LayoutInterface $layout
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
@@ -108,7 +108,7 @@ class Category extends Multiselect {
 
     /**
      * Get categories collection
-     * @return \Magento\Catalog\Model\Resource\Category\Collection
+     * @return \Magento\Catalog\Model\ResourceModel\Category\Collection
      */
     protected function _getCategoriesCollection()
     {
@@ -121,42 +121,32 @@ class Category extends Multiselect {
      */
     public function getAfterElementHtml()
     {
+        if (!$this->isAllowed()) {
+            return '';
+        }
         $htmlId = $this->getHtmlId();
         $suggestPlaceholder = __('start typing to search category');
         $selectorOptions = $this->jsonEncoder->encode($this->_getSelectorOptions());
         $newCategoryCaption = __('New Category');
-        /** @var \Magento\Backend\Block\Widget\Button $button */
-        $button = $this->layout->createBlock('Magento\Backend\Block\Widget\Button')
-            ->setData([
+        /** @var Magento\Backend\Block\Widget\Button $button */
+        $button = $this->layout->createBlock(
+            'Magento\Backend\Block\Widget\Button'
+        )->setData(
+            [
                 'id' => 'add_category_button',
                 'label' => $newCategoryCaption,
                 'title' => $newCategoryCaption,
-                'onclick' => 'jQuery("#new-category").dialog("open")',
-                'disabled' => $this->getDisabled()
-            ]);
-        $widgetOptions = $this->jsonEncoder->encode(
-            [
-                'suggestOptions' => [
-                    'source' => $this->backendData->getUrl('catalog/category/suggestCategories'),
-                    'valueField' => '#new_category_parent',
-                    'className' => 'category-select',
-                    'multiselect' => true,
-                    'showAll' => true,
-                ],
-                'saveCategoryUrl' => $this->backendData->getUrl('catalog/category/save'),
+                'onclick' => 'jQuery("#new-category").modal("openModal")',
+                'disabled' => $this->getDisabled(),
             ]
         );
-        //TODO: move this somewhere else when magento team decides to move it.
         $return = <<<HTML
-        <input id="{$htmlId}-suggest" placeholder="$suggestPlaceholder" />
-        <script type="text/javascript">
-            require(["jquery","mage/mage"],function($) {  // waiting for dependencies at first
-                $(function(){ // waiting for page to load to have '#category_ids-template' available
-                    $('#new-category').mage('newCategoryDialog', $widgetOptions);
-                    $('#{$htmlId}-suggest').mage('treeSuggest', {$selectorOptions});
-                });
-            });
-        </script>
+    <input id="{$htmlId}-suggest" placeholder="$suggestPlaceholder" />
+    <script>
+        require(["jquery", "mage/mage"], function($){
+            $('#{$htmlId}-suggest').mage('treeSuggest', {$selectorOptions});
+        });
+    </script>
 HTML;
         return $return . $button->toHtml();
     }
@@ -174,5 +164,15 @@ HTML;
             'multiselect' => true,
             'showAll' => true
         );
+    }
+
+    /**
+     * Whether permission is granted
+     *
+     * @return bool
+     */
+    protected function isAllowed()
+    {
+        return $this->authorization->isAllowed('Magento_Catalog::categories');
     }
 }

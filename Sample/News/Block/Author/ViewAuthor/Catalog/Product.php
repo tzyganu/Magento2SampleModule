@@ -25,7 +25,7 @@ class Product extends ListProduct
     protected $productVisibility;
 
     /**
-     * @var \Magento\Catalog\Model\Resource\Product\Collection
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     protected $productCollection;
 

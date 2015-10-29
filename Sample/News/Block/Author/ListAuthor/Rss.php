@@ -5,7 +5,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Sample\News\Model\Author\Rss as RssModel;
 use Sample\News\Model\Author\Url;
 use Magento\Framework\View\Element\Context;
-use Sample\News\Model\Resource\Author\CollectionFactory;
+use Sample\News\Model\ResourceModel\Author\CollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Rss\DataProviderInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -28,7 +28,7 @@ class Rss extends AbstractBlock implements DataProviderInterface
     protected $urlModel;
 
     /**
-     * @var \Sample\News\Model\Resource\Author\CollectionFactory
+     * @var \Sample\News\Model\ResourceModel\Author\CollectionFactory
      */
     protected $authorCollectionFactory;
 

@@ -5,12 +5,12 @@ use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Filter\FilterManager;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
-use Magento\Framework\Model\Resource\AbstractResource;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Data\Collection\Db;
 use Sample\News\Model\Author\Url;
 use Sample\News\Model\Author\Source\IsActive;
-use Magento\Catalog\Model\Resource\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Catalog\Model\Resource\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Data\Collection\AbstractDb;
 
 /**
@@ -26,8 +26,8 @@ use Magento\Framework\Data\Collection\AbstractDb;
  * @method string getAvatar()
  * @method Author setResume(\string $resumee)
  * @method string getResume()
- * @method Resource\Author _getResource()
- * @method Resource\Author getResource()
+ * @method ResourceModel\Author _getResource()
+ * @method ResourceModel\Author getResource()
  * @method string getUrlKey()
  * @method int getIsActive()
  * @method string getBiography()
@@ -98,22 +98,22 @@ class Author extends AbstractModel
     protected $statusList;
 
     /**
-     * @var \Magento\Catalog\Model\Resource\Product\CollectionFactory
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
     protected $productCollectionFactory;
 
     /**
-     * @var \Magento\Catalog\Model\Resource\Product\Collection
+     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     protected $productCollection;
 
     /**
-     * @var \Magento\Catalog\Model\Resource\Category\CollectionFactory
+     * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
      */
     protected $categoryCollectionFactory;
 
     /**
-     * @var \Magento\Catalog\Model\Resource\Category\Collection
+     * @var \Magento\Catalog\Model\ResourceModel\Category\Collection
      */
     protected $categoryCollection;
 
@@ -123,7 +123,6 @@ class Author extends AbstractModel
      * @param FilterManager $filter
      * @param Url $urlModel
      * @param IsActive $statusList
-     * @param BooleanOptions $booleanOptions
      * @param Context $context
      * @param Registry $registry
      * @param AbstractResource|null $resource
@@ -158,7 +157,7 @@ class Author extends AbstractModel
      */
     protected function _construct()
     {
-        $this->_init('Sample\News\Model\Resource\Author');
+        $this->_init('Sample\News\Model\ResourceModel\Author');
     }
 
     /**
@@ -250,7 +249,7 @@ class Author extends AbstractModel
 
     /**
      * @param string $attributes
-     * @return \Magento\Catalog\Model\Resource\Product\Collection
+     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
      */
     public function getSelectedProductsCollection($attributes = '*')
     {
@@ -284,7 +283,7 @@ class Author extends AbstractModel
 
     /**
      * @param string $attributes
-     * @return \Magento\Catalog\Model\Resource\Category\Collection
+     * @return \Magento\Catalog\Model\ResourceModel\Category\Collection
      */
     public function getSelectedCategoriesCollection($attributes = '*')
     {

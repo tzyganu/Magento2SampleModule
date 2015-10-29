@@ -1,12 +1,13 @@
 <?php
-namespace Sample\News\Model;
+namespace Sample\News\Observer;
 
 use Sample\News\Model\Author\Url as AuthorUrl;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Data\Tree\Node;
 use Magento\Framework\App\Request\Http;
+use Magento\Framework\Event\ObserverInterface;
 
-class Observer
+class TopMenu implements ObserverInterface
 {
     protected $request;
     protected $authorUrl;
@@ -24,7 +25,7 @@ class Observer
      * @param $observer
      * @return $this
      */
-    public function addLinksToTopMenu(EventObserver $observer)
+    public function execute(EventObserver $observer)
     {
         /** @var \Magento\Framework\Data\Tree\Node $menu */
         $menu = $observer->getMenu();

@@ -13,16 +13,16 @@
  * @copyright Copyright (c) 2015
  * @license   http://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Sample\News\Model\Resource\Author\Grid;
+namespace Sample\News\Model\ResourceModel\Author\Grid;
 
-use Sample\News\Model\Resource\Author\Collection as AuthorCollection;
+use Sample\News\Model\ResourceModel\Author\Collection as AuthorCollection;
 use Magento\Framework\Api\Search\SearchResultInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Model\Resource\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Collection extends AuthorCollection implements SearchResultInterface
@@ -47,7 +47,7 @@ class Collection extends AuthorCollection implements SearchResultInterface
      * @param $resourceModel
      * @param $model
      * @param $connection
-     * @param \Magento\Framework\Model\Resource\Db\AbstractDb $resource
+     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource
      */
     public function __construct(
         EntityFactoryInterface $entityFactory,

@@ -5,7 +5,7 @@ use Magento\Framework\Registry;
 use Magento\Framework\UrlInterface;
 use Magento\Backend\Helper\Js as JsHelper;
 use Magento\Backend\App\Action\Context;
-use Sample\News\Model\Resource\Author;
+use Sample\News\Model\ResourceModel\Author;
 use Magento\Framework\Event\Observer as EventObserver;
 
 class Observer
@@ -27,7 +27,7 @@ class Observer
      */
     protected $context;
     /**
-     * @var \Sample\News\Model\Resource\Author
+     * @var \Sample\News\Model\ResourceModel\Author
      */
     protected $authorResource;
 

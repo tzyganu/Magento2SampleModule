@@ -1,13 +1,13 @@
 <?php
-namespace Sample\News\Model\Resource\Author;
+namespace Sample\News\Model\ResourceModel\Author;
 
-use Magento\Framework\Model\Resource\Db\Collection\AbstractCollection;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Model\Resource\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Category;
@@ -72,7 +72,7 @@ class Collection extends AbstractCollection
      */
     protected function _construct()
     {
-        $this->_init('Sample\News\Model\Author', 'Sample\News\Model\Resource\Author');
+        $this->_init('Sample\News\Model\Author', 'Sample\News\Model\ResourceModel\Author');
         $this->_map['fields']['author_id'] = 'main_table.author_id';
         $this->_map['fields']['store_id'] = 'store_table.store_id';
     }

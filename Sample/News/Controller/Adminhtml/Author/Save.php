@@ -23,13 +23,6 @@ class Save extends Author
     protected $authorFactory;
 
     /**
-     * date filter
-     *
-     * @var \Magento\Framework\Stdlib\DateTime\Filter\Date
-     */
-    protected $dateFilter;
-
-    /**
      * image model
      *
      * @var \Sample\News\Model\Author\Image
@@ -70,22 +63,22 @@ class Save extends Author
      */
     public function __construct(
         JsHelper $jsHelper,
-        Date $dateFilter,
+
         ImageModel $imageModel,
         FileModel $fileModel,
         Upload $uploadModel,
         Registry $registry,
         AuthorFactory $authorFactory,
         RedirectFactory $resultRedirectFactory,
+        Date $dateFilter,
         Context $context
     )
     {
         $this->jsHelper = $jsHelper;
-        $this->dateFilter = $dateFilter;
         $this->imageModel = $imageModel;
         $this->fileModel = $fileModel;
         $this->uploadModel = $uploadModel;
-        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $context);
+        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $dateFilter, $context);
     }
 
     /**
@@ -152,27 +145,5 @@ class Save extends Author
         }
         $resultRedirect->setPath('sample_news/*/');
         return $resultRedirect;
-    }
-
-    /**
-     * filter dates
-     *
-     * @param array $data
-     * @return array
-     */
-    public function filterData($data)
-    {
-        $inputFilter = new \Zend_Filter_Input(
-            ['dob' => $this->dateFilter],
-            [],
-            $data
-        );
-        $data = $inputFilter->getUnescaped();
-        if (isset($data['awards'])) {
-            if (is_array($data['awards'])) {
-                $data['awards'] = implode(',', $data['awards']);
-            }
-        }
-        return $data;
     }
 }

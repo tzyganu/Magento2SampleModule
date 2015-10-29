@@ -19,7 +19,7 @@ class ListAuthor extends Template
     protected $categoryModel;
 
     /**
-     * @var \Sample\News\Model\Resource\Author\Collection
+     * @var \Sample\News\Model\ResourceModel\Author\Collection
      */
     protected $authorCollection;
 
@@ -41,7 +41,7 @@ class ListAuthor extends Template
     }
 
     /**
-     * @return \Sample\News\Model\Resource\Author\Collection
+     * @return \Sample\News\Model\ResourceModel\Author\Collection
      */
     public function getAuthorCollection()
     {

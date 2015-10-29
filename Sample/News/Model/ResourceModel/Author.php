@@ -1,8 +1,8 @@
 <?php
-namespace Sample\News\Model\Resource;
+namespace Sample\News\Model\ResourceModel;
 
-use Magento\Framework\Model\Resource\Db\AbstractDb;
-use Magento\Framework\Model\Resource\Db\Context;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Context;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Stdlib\DateTime as LibDateTime;

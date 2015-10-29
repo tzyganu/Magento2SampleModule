@@ -4,7 +4,7 @@ namespace Sample\News\Block\Adminhtml\Catalog\Product\Edit\Tab;
 use Magento\Backend\Block\Widget\Grid\Extended as ExtendedGrid;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
 use Magento\Framework\Registry;
-use Sample\News\Model\Resource\Author\CollectionFactory as AuthorCollectionFactory;
+use Sample\News\Model\ResourceModel\Author\CollectionFactory as AuthorCollectionFactory;
 use Sample\News\Model\Author\Product as AuthorProduct;
 use Magento\Catalog\Controller\Adminhtml\Product\Builder as ProductBuilder;
 use Magento\Backend\Block\Template\Context;
@@ -18,7 +18,7 @@ use Magento\Backend\Helper\Data as BackendHelper;
 class Author extends ExtendedGrid implements TabInterface
 {
     /**
-     * @var \Sample\News\Model\Resource\Author\CollectionFactory
+     * @var \Sample\News\Model\ResourceModel\Author\CollectionFactory
      */
     protected $authorCollectionFactory;
     /**

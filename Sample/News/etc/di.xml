@@ -17,22 +17,22 @@
     </virtualType>
     <virtualType name="SampleNewsAuthorGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
         <arguments>
-            <argument name="collection" xsi:type="object" shared="false">Sample\News\Model\Resource\Author\Collection</argument>
+            <argument name="collection" xsi:type="object" shared="false">Sample\News\Model\ResourceModel\Author\Collection</argument>
             <argument name="filterPool" xsi:type="object" shared="false">SampleNewsGirdFilterPool</argument>
         </arguments>
     </virtualType>
-    <type name="Sample\News\Model\Resource\Author\Grid\Collection">
+    <type name="Sample\News\Model\ResourceModel\Author\Grid\Collection">
         <arguments>
             <argument name="mainTable" xsi:type="string">sample_news_author</argument>
             <argument name="eventPrefix" xsi:type="string">sample_news_author_grid_collection</argument>
             <argument name="eventObject" xsi:type="string">author_grid_collection</argument>
-            <argument name="resourceModel" xsi:type="string">Sample\News\Model\Resource\Author</argument>
+            <argument name="resourceModel" xsi:type="string">Sample\News\Model\ResourceModel\Author</argument>
         </arguments>
     </type>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="sample_news_author_listing_data_source" xsi:type="string">Sample\News\Model\Resource\Author\Grid\Collection</item>
+                <item name="sample_news_author_listing_data_source" xsi:type="string">Sample\News\Model\ResourceModel\Author\Grid\Collection</item>
             </argument>
         </arguments>
     </type>

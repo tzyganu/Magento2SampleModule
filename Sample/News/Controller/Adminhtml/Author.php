@@ -6,6 +6,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\RedirectFactory;
 use Sample\News\Model\AuthorFactory;
 use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\Filter\Date;
 
 abstract class Author extends Action
 {
@@ -29,6 +30,13 @@ abstract class Author extends Action
     protected $resultRedirectFactory;
 
     /**
+     * date filter
+     *
+     * @var \Magento\Framework\Stdlib\DateTime\Filter\Date
+     */
+    protected $dateFilter;
+
+    /**
      * @param Registry $registry
      * @param AuthorFactory $authorFactory
      * @param RedirectFactory $resultRedirectFactory
@@ -38,6 +46,7 @@ abstract class Author extends Action
         Registry $registry,
         AuthorFactory $authorFactory,
         RedirectFactory $resultRedirectFactory,
+        Date $dateFilter,
         Context $context
 
     )
@@ -45,6 +54,7 @@ abstract class Author extends Action
         $this->coreRegistry = $registry;
         $this->authorFactory = $authorFactory;
         $this->resultRedirectFactory = $resultRedirectFactory;
+        $this->dateFilter = $dateFilter;
         parent::__construct($context);
     }
 
@@ -61,6 +71,28 @@ abstract class Author extends Action
         }
         $this->coreRegistry->register('sample_news_author', $author);
         return $author;
+    }
+
+    /**
+     * filter dates
+     *
+     * @param array $data
+     * @return array
+     */
+    public function filterData($data)
+    {
+        $inputFilter = new \Zend_Filter_Input(
+            ['dob' => $this->dateFilter],
+            [],
+            $data
+        );
+        $data = $inputFilter->getUnescaped();
+        if (isset($data['awards'])) {
+            if (is_array($data['awards'])) {
+                $data['awards'] = implode(',', $data['awards']);
+            }
+        }
+        return $data;
     }
 
 }

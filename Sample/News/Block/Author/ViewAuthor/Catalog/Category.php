@@ -15,7 +15,7 @@ class Category extends Template {
      */
     protected $coreRegistry;
     /**
-     * @var \Magento\Catalog\Model\Resource\Category\Collection
+     * @var \Magento\Catalog\Model\ResourceModel\Category\Collection
      */
     protected $categoryCollection;
 
@@ -48,7 +48,7 @@ class Category extends Template {
     }
 
     /**
-     * @return \Magento\Catalog\Model\Resource\Category\Collection
+     * @return \Magento\Catalog\Model\ResourceModel\Category\Collection
      */
     public function getCategoryCollection()
     {

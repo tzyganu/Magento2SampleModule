@@ -1,7 +1,7 @@
 <?php
 namespace Sample\News\Model\Author;
 
-use Sample\News\Model\Resource\Author\CollectionFactory;
+use Sample\News\Model\ResourceModel\Author\CollectionFactory;
 use Magento\Catalog\Model\Product as ProductModel;
 
 class Product
@@ -38,7 +38,7 @@ class Product
     /**
      * @access public
      * @param \Magento\Catalog\Model\Product $product
-     * @return \Sample\News\Model\Resource\Author\Collection
+     * @return \Sample\News\Model\ResourceModel\Author\Collection
      */
     public function getSelectedAuthorsCollection(ProductModel $product)
     {

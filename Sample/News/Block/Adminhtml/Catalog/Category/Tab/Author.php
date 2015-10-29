@@ -2,7 +2,7 @@
 namespace Sample\News\Block\Adminhtml\Catalog\Category\Tab;
 
 use Magento\Backend\Block\Widget\Grid\Extended as ExtendedGrid;
-use Sample\News\Model\Resource\Author\CollectionFactory;
+use Sample\News\Model\ResourceModel\Author\CollectionFactory;
 use Magento\Framework\Registry;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Helper\Data as BackendHelper;

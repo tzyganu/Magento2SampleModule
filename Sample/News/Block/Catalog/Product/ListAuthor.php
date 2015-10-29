@@ -26,7 +26,7 @@ class ListAuthor extends Template
     protected $blockFactory;
 
     /**
-     * @var \Sample\News\Model\Resource\Author\Collection|null
+     * @var \Sample\News\Model\ResourceModel\Author\Collection|null
      */
     protected $authorCollection;
 
@@ -53,7 +53,7 @@ class ListAuthor extends Template
     }
 
     /**
-     * @return \Sample\News\Model\Resource\Author\Collection
+     * @return \Sample\News\Model\ResourceModel\Author\Collection
      */
     public function getAuthorCollection()
     {

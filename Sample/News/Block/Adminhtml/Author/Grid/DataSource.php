@@ -2,7 +2,7 @@
 namespace Sample\News\Block\Adminhtml\Author\Grid;
 
 use Magento\Framework\Data\CollectionDataSourceInterface;
-use Sample\News\Model\Resource\Author\Collection;
+use Sample\News\Model\ResourceModel\Author\Collection;
 use Magento\Backend\Block\Widget\Grid\Column;
 
 class DataSource implements CollectionDataSourceInterface

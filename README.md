@@ -1,7 +1,7 @@
 Magento 2.0 Sample Module
 ====================
 
-Last tested on beta3.
+Last tested on Magento2 version 1.0.0-beta5.
 
 
 ![Magento 2 Sample Module](http://i.imgur.com/Ma6v2gs.jpg)

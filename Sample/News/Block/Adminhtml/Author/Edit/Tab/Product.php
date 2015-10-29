@@ -3,7 +3,7 @@ namespace Sample\News\Block\Adminhtml\Author\Edit\Tab;
 
 use Magento\Backend\Block\Widget\Grid\Extended as ExtendedGrid;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
-use Magento\Catalog\Model\Resource\Product\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\Product\Attribute\Source\Status as ProductStatus;
 use Magento\Catalog\Model\Product\Visibility as ProductVisibility;
@@ -11,7 +11,7 @@ use Magento\Framework\Registry;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Helper\Data as DataHelper;
 use Magento\Store\Model\Store;
-use Magento\Eav\Model\Resource\Entity\Attribute\Set\CollectionFactory as SetCollectionFactory;
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\CollectionFactory as SetCollectionFactory;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Directory\Model\Currency;
 use Magento\Store\Model\ScopeInterface;
@@ -24,7 +24,7 @@ use Magento\Store\Model\ScopeInterface;
 class Product extends ExtendedGrid implements TabInterface
 {
     /**
-     * @var \Magento\Catalog\Model\Resource\Product\CollectionFactory
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
     protected $productCollectionFactory;
 
@@ -187,7 +187,7 @@ class Product extends ExtendedGrid implements TabInterface
                 'column_css_class' => 'col-type'
             ]
         );
-        /** @var \Magento\Catalog\Model\Resource\Product $resource */
+        /** @var \Magento\Catalog\Model\ResourceModel\Product $resource */
         $resource = $this->productFactory->create()->getResource();
         $sets = $this->setCollectionFactory->create()->setEntityTypeFilter(
             $resource->getTypeId()

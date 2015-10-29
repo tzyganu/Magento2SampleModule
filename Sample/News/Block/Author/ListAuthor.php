@@ -5,23 +5,27 @@ use Magento\Framework\View\Element\Template;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\UrlFactory;
-use Sample\News\Model\Resource\Author\CollectionFactory as AuthorCollectionFactory;
+use Sample\News\Model\ResourceModel\Author\CollectionFactory as AuthorCollectionFactory;
 
 /**
- * @method \Sample\News\Model\Resource\Author\Collection getAuthors()
- * @method ListAuthor setAuthors(\Sample\News\Model\Resource\Author\Collection $authors)
+ * @method \Sample\News\Model\ResourceModel\Author\Collection getAuthors()
+ * @method ListAuthor setAuthors(\Sample\News\Model\ResourceModel\Author\Collection $authors)
  */
 class ListAuthor extends Template
 {
-
+    /**
+     * @var AuthorCollectionFactory
+     */
     protected $authorCollectionFactory;
+    /**
+     * @var UrlFactory
+     */
     protected $urlFactory;
 
-
     /**
-     * @param \Sample\News\Model\Resource\Author\CollectionFactory $authorCollectionFactory
-     * @param \Magento\Framework\UrlFactory $urlFactory
-     * @param Template\Context $context
+     * @param AuthorCollectionFactory $authorCollectionFactory
+     * @param UrlFactory $urlFactory
+     * @param Context $context
      * @param array $data
      */
     public function __construct(
@@ -42,7 +46,7 @@ class ListAuthor extends Template
     protected  function _construct()
     {
         parent::_construct();
-        /** @var \Sample\News\Model\Resource\Author\Collection $authors */
+        /** @var \Sample\News\Model\ResourceModel\Author\Collection $authors */
         $authors = $this->authorCollectionFactory->create()->addFieldToSelect('*')
             ->addFieldToFilter('is_active', 1)
             ->addStoreFilter($this->_storeManager->getStore()->getId())

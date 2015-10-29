@@ -1,7 +1,7 @@
 <?php
 namespace Sample\News\Model\Author;
 
-use Sample\News\Model\Resource\Author\CollectionFactory;
+use Sample\News\Model\ResourceModel\Author\CollectionFactory;
 use Magento\Catalog\Model\Category as CategoryModel;
 
 class Category
@@ -41,7 +41,7 @@ class Category
     /**
      * @access public
      * @param \Magento\Catalog\Model\Category $category
-     * @return \Sample\News\Model\Resource\Author\Collection
+     * @return \Sample\News\Model\ResourceModel\Author\Collection
      */
     public function getSelectedAuthorsCollection(CategoryModel $category)
     {
