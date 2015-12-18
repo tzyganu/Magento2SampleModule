@@ -1,0 +1,24 @@
+{
+  "name": "tzyganu/magento2-sample-module",
+  "description": "Magento 2 Sample crud module",
+  "version": "2.0.0",
+  "require": {
+    "magento/module-backend": "~100.0.0"
+    "magento/module-catalog": "~100.0.0"
+  },
+  "type": "magento2-module",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/tzyganu/Magento2SampleModule"
+    }
+  ],
+  "extra": {
+    "map": [
+      [
+        "*",
+        "Sample/News"
+      ]
+    ]
+  }
+}

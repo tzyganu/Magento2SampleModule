@@ -14,6 +14,7 @@ use Magento\Catalog\Model\Category;
 
 class Collection extends AbstractCollection
 {
+    protected $_idFieldName = 'author_id';
     /**
      * Event prefix
      *
@@ -63,6 +64,7 @@ class Collection extends AbstractCollection
     {
         parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
         $this->storeManager = $storeManager;
+
     }
 
     /**

@@ -30,6 +30,7 @@ use Magento\Framework\Data\Collection\AbstractDb;
  * @method ResourceModel\Author getResource()
  * @method string getUrlKey()
  * @method int getIsActive()
+ * @method Author setIsActive(\bool $active)
  * @method string getBiography()
  * @method string getDob()
  * @method string getMetaTitle()

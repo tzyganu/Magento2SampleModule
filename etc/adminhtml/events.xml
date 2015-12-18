@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_save_after">
+        <observer name="sample_news_author_product" instance="Sample\News\Observer\Adminhtml\Author\SaveProductData" />
+    </event>
+    <event name="adminhtml_catalog_category_tabs">
+        <observer name="sample_news_author_category" instance="Sample\News\Observer\Adminhtml\Author\AddCategoryTab" />
+    </event>
+    <event name="catalog_category_save_after">
+        <observer name="sample_news_author_category" instance="Sample\News\Observer\Adminhtml\Author\SaveCategoryData" />
+    </event>
+</config>
