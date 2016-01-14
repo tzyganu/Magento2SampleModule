@@ -477,7 +477,9 @@ class Author extends AbstractDb
         $update = array_intersect_key($products, $oldProducts);
         $_update = array();
         foreach ($update as $key=>$settings) {
-            if (isset($oldProducts[$key]) && $oldProducts[$key] != $settings['position']) {
+            if ( isset($oldProducts[$key]) && isset($settings['position']) &&
+                 $oldProducts[$key] != $settings['position']
+            ) {
                 $_update[$key] = $settings;
             }
         }
