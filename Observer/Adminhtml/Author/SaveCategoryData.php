@@ -8,7 +8,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Registry;
 use Sample\News\Model\ResourceModel\Author;
 
-class SaveProductData extends Catalog implements ObserverInterface
+class SaveCategoryData extends Catalog implements ObserverInterface
 {
     /**
      * @param Observer $observer
