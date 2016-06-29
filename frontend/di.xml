@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="sample_news" xsi:type="array">
+                    <item name="class" xsi:type="string">Sample\News\Controller\Router</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">10</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="SampleNewsRoutingEntityAuthor" type="Sample\News\Model\Routing\Entity">
+        <arguments>
+            <argument name="prefixConfigPath" xsi:type="const">Sample\News\Model\Author\Url::URL_PREFIX_CONFIG_PATH</argument>
+            <argument name="suffixConfigPath" xsi:type="const">Sample\News\Model\Author\Url::URL_SUFFIX_CONFIG_PATH</argument>
+            <argument name="listKeyConfigPath" xsi:type="const">Sample\News\Model\Author\Url::LIST_URL_CONFIG_PATH</argument>
+            <argument name="factory" xsi:type="object">Sample\News\Model\AuthorFactory</argument>
+            <argument name="controller" xsi:type="string">author</argument>
+        </arguments>
+    </virtualType>
+    <type name="Sample\News\Controller\Router">
+        <arguments>
+            <argument name="routingEntities" xsi:type="array">
+                <item name="author" xsi:type="object">SampleNewsRoutingEntityAuthor</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Theme\Block\Html\Topmenu">
+        <plugin name="authorTopmenu" type="Sample\News\Plugin\Block\Topmenu" />
+    </type>
+</config>
