@@ -1,84 +1,82 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use Magento\Framework\Registry;
-use Sample\News\Controller\Adminhtml\Author;
-use Magento\Framework\Stdlib\DateTime\Filter\Date;
-use Sample\News\Model\AuthorFactory;
 use Magento\Backend\Model\Session;
 use Magento\Backend\App\Action\Context;
-use Magento\Backend\Model\View\Result\RedirectFactory;
+use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Exception\LocalizedException;
-use Sample\News\Model\Author\Image as ImageModel;
-use Sample\News\Model\Author\File as FileModel;
-use Sample\News\Model\Upload;
-use Magento\Backend\Helper\Js as JsHelper;
+use Magento\Framework\Reflection\DataObjectProcessor;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\Filter\Date;
+use Magento\Framework\View\Result\PageFactory;
+use Sample\News\Api\AuthorRepositoryInterface;
+use Sample\News\Api\Data\AuthorInterface;
+use Sample\News\Api\Data\AuthorInterfaceFactory;
+use Sample\News\Controller\Adminhtml\Author;
+use Sample\News\Model\Uploader;
+use Sample\News\Model\UploaderPool;
 
 class Save extends Author
 {
     /**
-     * author factory
-     * @var \Sample\News\Model\AuthorFactory
+     * @var DataObjectProcessor
      */
-    protected $authorFactory;
+    protected $dataObjectProcessor;
 
     /**
-     * image model
-     *
-     * @var \Sample\News\Model\Author\Image
+     * @var DataObjectHelper
      */
-    protected $imageModel;
+    protected $dataObjectHelper;
 
     /**
-     * file model
-     *
-     * @var \Sample\News\Model\Author\File
+     * @var UploaderPool
      */
-    protected $fileModel;
+    protected $uploaderPool;
 
     /**
-     * upload model
-     *
-     * @var \Sample\News\Model\Upload
-     */
-    protected $uploadModel;
-
-    /**
-     * @var \Magento\Backend\Helper\Js
-     */
-    protected $jsHelper;
-
-
-    /**
-     * @param JsHelper $jsHelper
-     * @param Session $backendSession
-     * @param Date $dateFilter
-     * @param ImageModel $imageModel
-     * @param FileModel $fileModel
-     * @param Upload $uploadModel
      * @param Registry $registry
-     * @param AuthorFactory $authorFactory
-     * @param RedirectFactory $resultRedirectFactory
+     * @param AuthorRepositoryInterface $authorRepository
+     * @param PageFactory $resultPageFactory
+     * @param Date $dateFilter
      * @param Context $context
+     * @param AuthorInterfaceFactory $authorFactory
+     * @param DataObjectProcessor $dataObjectProcessor
+     * @param DataObjectHelper $dataObjectHelper
+     * @param UploaderPool $uploaderPool
      */
     public function __construct(
-        JsHelper $jsHelper,
-
-        ImageModel $imageModel,
-        FileModel $fileModel,
-        Upload $uploadModel,
         Registry $registry,
-        AuthorFactory $authorFactory,
-        RedirectFactory $resultRedirectFactory,
+        AuthorRepositoryInterface $authorRepository,
+        PageFactory $resultPageFactory,
         Date $dateFilter,
-        Context $context
+        Context $context,
+        AuthorInterfaceFactory $authorFactory,
+        DataObjectProcessor $dataObjectProcessor,
+        DataObjectHelper $dataObjectHelper,
+        UploaderPool $uploaderPool
     )
     {
-        $this->jsHelper = $jsHelper;
-        $this->imageModel = $imageModel;
-        $this->fileModel = $fileModel;
-        $this->uploadModel = $uploadModel;
-        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $dateFilter, $context);
+        $this->authorFactory = $authorFactory;
+        $this->dataObjectProcessor = $dataObjectProcessor;
+        $this->dataObjectHelper = $dataObjectHelper;
+        $this->uploaderPool = $uploaderPool;
+        parent::__construct($registry, $authorRepository, $resultPageFactory, $dateFilter, $context);
     }
 
     /**
@@ -88,62 +86,71 @@ class Save extends Author
      */
     public function execute()
     {
-        $data = $this->getRequest()->getPost('author');
+        /** @var \Sample\News\Api\Data\AuthorInterface $author */
+        $author = null;
+        $data = $this->getRequest()->getPostValue();
+        $id = !empty($data['author_id']) ? $data['author_id'] : null;
         $resultRedirect = $this->resultRedirectFactory->create();
-        if ($data) {
-            $data = $this->filterData($data);
-            $author = $this->initAuthor();
-            $author->setData($data);
-            $avatar = $this->uploadModel->uploadFileAndGetName('avatar', $this->imageModel->getBaseDir(), $data);
-            $author->setAvatar($avatar);
-            $resume = $this->uploadModel->uploadFileAndGetName('resume', $this->fileModel->getBaseDir(), $data);
-            $author->setResume($resume);
-            $products = $this->getRequest()->getPost('products', -1);
-            if ($products != -1) {
-                $author->setProductsData($this->jsHelper->decodeGridSerializedInput($products));
+        try {
+            if ($id) {
+                $author = $this->authorRepository->getById((int)$id);
+            } else {
+                unset($data['author_id']);
+                $author = $this->authorFactory->create();
             }
-            $this->_eventManager->dispatch(
-                'sample_news_author_prepare_save',
-                [
-                    'author' => $author,
-                    'request' => $this->getRequest()
-                ]
-            );
-            try {
-                $author->save();
-                $this->messageManager->addSuccess(__('The author has been saved.'));
-                $this->_getSession()->setSampleNewsAuthorData(false);
-                if ($this->getRequest()->getParam('back')) {
-                    $resultRedirect->setPath(
-                        'sample_news/*/edit',
-                        [
-                            'author_id' => $author->getId(),
-                            '_current' => true
-                        ]
-                    );
-                    return $resultRedirect;
-                }
-                $resultRedirect->setPath('sample_news/*/');
-                return $resultRedirect;
-            } catch (LocalizedException $e) {
-                $this->messageManager->addError($e->getMessage());
-            } catch (\RuntimeException $e) {
-                $this->messageManager->addError($e->getMessage());
-            } catch (\Exception $e) {
-                $this->messageManager->addException($e, __('Something went wrong while saving the author.'));
+            $avatar = $this->getUploader('image')->uploadFileAndGetName('avatar', $data);
+            $data['avatar'] = $avatar;
+            $resume = $this->getUploader('file')->uploadFileAndGetName('resume', $data);
+            $data['resume'] = $resume;
+            $this->dataObjectHelper->populateWithArray($author, $data, AuthorInterface::class);
+            $this->authorRepository->save($author);
+            $this->messageManager->addSuccessMessage(__('You saved the author'));
+            if ($this->getRequest()->getParam('back')) {
+                $resultRedirect->setPath('sample_news/author/edit', ['author_id' => $author->getId()]);
+            } else {
+                $resultRedirect->setPath('sample_news/author');
             }
-
-            $this->_getSession()->setSampleNewsAuthorData($data);
-            $resultRedirect->setPath(
-                'sample_news/*/edit',
-                [
-                    'author_id' => $author->getId(),
-                    '_current' => true
-                ]
-            );
-            return $resultRedirect;
+        } catch (LocalizedException $e) {
+            $this->messageManager->addErrorMessage($e->getMessage());
+            if ($author != null) {
+                $this->storeAuthorDataToSession(
+                    $this->dataObjectProcessor->buildOutputDataArray(
+                        $author,
+                        AuthorInterface::class
+                    )
+                );
+            }
+            $resultRedirect->setPath('sample_news/author/edit', ['author_id' => $id]);
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage(__('There was a problem saving the author'));
+            if ($author != null) {
+                $this->storeAuthorDataToSession(
+                    $this->dataObjectProcessor->buildOutputDataArray(
+                        $author,
+                        AuthorInterface::class
+                    )
+                );
+            }
+            $resultRedirect->setPath('sample_news/author/edit', ['author_id' => $id]);
         }
-        $resultRedirect->setPath('sample_news/*/');
         return $resultRedirect;
+    }
+
+    /**
+     * @param $type
+     * @return Uploader
+     * @throws \Exception
+     */
+    protected function getUploader($type)
+    {
+        return $this->uploaderPool->getUploader($type);
+    }
+
+    /**
+     * @param $authorData
+     */
+    protected function storeAuthorDataToSession($authorData)
+    {
+        $this->_getSession()->setSampleNewsAuthorData($authorData);
     }
 }

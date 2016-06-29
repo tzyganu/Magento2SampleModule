@@ -1,23 +1,42 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Controller\Author;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Sample\News\Model\AuthorFactory;
-use Magento\Framework\Controller\Result\ForwardFactory;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\Registry;
-use Sample\News\Model\Author\Url as UrlModel;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Controller\Result\ForwardFactory;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Result\PageFactory;
 use Magento\Store\Model\ScopeInterface;
+use Sample\News\Api\AuthorRepositoryInterface;
+use Sample\News\Model\Author\Url as UrlModel;
 
 class View extends Action
 {
+    /**
+     * @var string
+     */
     const BREADCRUMBS_CONFIG_PATH = 'sample_news/author/breadcrumbs';
     /**
-     * @var \Sample\News\Model\AuthorFactory
+     * @var \Sample\News\Api\AuthorRepositoryInterface
      */
-    protected $authorFactory;
+    protected $authorRepository;
 
     /**
      * @var \Magento\Framework\Controller\Result\ForwardFactory
@@ -46,7 +65,7 @@ class View extends Action
 
     /**
      * @param Context $context
-     * @param AuthorFactory $authorFactory
+     * @param AuthorRepositoryInterface $authorRepository
      * @param ForwardFactory $resultForwardFactory
      * @param PageFactory $resultPageFactory
      * @param Registry $coreRegistry
@@ -55,20 +74,19 @@ class View extends Action
      */
     public function __construct(
         Context $context,
-        AuthorFactory $authorFactory,
+        AuthorRepositoryInterface $authorRepository,
         ForwardFactory $resultForwardFactory,
         PageFactory $resultPageFactory,
         Registry $coreRegistry,
         UrlModel $urlModel,
         ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         $this->resultForwardFactory = $resultForwardFactory;
-        $this->authorFactory = $authorFactory;
-        $this->resultPageFactory = $resultPageFactory;
-        $this->coreRegistry = $coreRegistry;
-        $this->urlModel = $urlModel;
-        $this->scopeConfig = $scopeConfig;
+        $this->authorRepository     = $authorRepository;
+        $this->resultPageFactory    = $resultPageFactory;
+        $this->coreRegistry         = $coreRegistry;
+        $this->urlModel             = $urlModel;
+        $this->scopeConfig          = $scopeConfig;
         parent::__construct($context);
     }
 
@@ -77,11 +95,14 @@ class View extends Action
      */
     public function execute()
     {
-        $authorId = (int) $this->getRequest()->getParam('id');
-        $author = $this->authorFactory->create();
-        $author->load($authorId);
+        try {
+            $authorId = (int)$this->getRequest()->getParam('id');
+            $author = $this->authorRepository->getById($authorId);
 
-        if (!$author->isActive()) {
+            if (!$author->getIsActive()) {
+                throw new \Exception();
+            }
+        } catch (\Exception $e){
             $resultForward = $this->resultForwardFactory->create();
             $resultForward->forward('noroute');
             return $resultForward;

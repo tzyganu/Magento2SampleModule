@@ -1,16 +1,32 @@
-<?php /** @var \Sample\News\Block\Author\ViewAuthor $this */?>
-<?php /** @var \Sample\News\Model\Author $_author */?>
-<?php $_author = $this->getCurrentAuthor();?>
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
+?>
+<?php /** @var \Sample\News\Block\Author\ViewAuthor $block */?>
+<?php $_author = $block->getCurrentAuthor();?>
 <div class="author-view">
     <div class="author-name">
-        <?php echo __('Name') ?>: <?php echo $_author->getName();?>
+        <?php /* @escapeNotVerified */ echo __('Name') ?>: <?php /* @escapeNotVerified */ echo $_author->getName();?>
     </div>
-    <?php //TODO: handle WYSIWYG attributes differently ?>
     <div class="author-biography">
-        <?php echo __('Biography') ?>: <?php echo $_author->getBiography();?>
+        <?php /* @escapeNotVerified */ echo __('Biography') ?>: <?php /* @escapeNotVerified */ echo $_author->getProcessedBiography();?>
     </div>
     <div class="author-dob">
-        <?php echo __('Date of birth') ?>: <?php echo $this->formatDate($_author->getDob(), \IntlDateFormatter::LONG);?>
+        <?php /* @escapeNotVerified */ echo __('Date of birth') ?>: <?php /* @escapeNotVerified */ echo $block->formatDate($_author->getDob(), \IntlDateFormatter::LONG);?>
     </div>
     ...
 </div>

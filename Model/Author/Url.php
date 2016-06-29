@@ -1,22 +1,51 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Model\Author;
 
-use Magento\Framework\UrlInterface;
-use Sample\News\Model\Author;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
+use Sample\News\Model\Author;
 
 class Url
 {
-    const LIST_URL_CONFIG_PATH = 'sample_news/author/list_url';
-    const URL_PREFIX_CONFIG_PATH = 'sample_news/author/url_prefix';
-    const URL_SUFFIX_CONFIG_PATH = 'sample_news/author/url_suffix';
+    /**
+     * @var string
+     */
+    const LIST_URL_CONFIG_PATH      = 'sample_news/author/list_url';
+    /**
+     * @var string
+     */
+    const URL_PREFIX_CONFIG_PATH    = 'sample_news/author/url_prefix';
+    /**
+     * @var string
+     */
+    const URL_SUFFIX_CONFIG_PATH    = 'sample_news/author/url_suffix';
     /**
      * url builder
      *
      * @var \Magento\Framework\UrlInterface
      */
     protected $urlBuilder;
+
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $scopeConfig;
 
     /**
@@ -26,12 +55,14 @@ class Url
     public function __construct(
         UrlInterface $urlBuilder,
         ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         $this->urlBuilder = $urlBuilder;
         $this->scopeConfig = $scopeConfig;
     }
 
+    /**
+     * @return string
+     */
     public function getListUrl()
     {
         $sefUrl = $this->scopeConfig->getValue(self::LIST_URL_CONFIG_PATH, ScopeInterface::SCOPE_STORE);

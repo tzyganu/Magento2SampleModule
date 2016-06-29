@@ -1,4 +1,24 @@
-<?php /** @var \Sample\News\Block\Author\ListAuthor\Rss\Link $this */?>
-<?php if($this->isRssEnabled()): ?>
-    <a href="<?php echo $this->getLink() ?>" class="action link rss"><span><?php echo __('Subscribe to RSS Feed') ?></span></a>
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
+?>
+<?php /** @var \Sample\News\Block\Author\ListAuthor\Rss\Link $block */?>
+<?php if ($block->isRssEnabled()) : ?>
+    <a href="<?php /* @escapeNotVerified */ echo $block->getLink() ?>" class="action link rss">
+        <span><?php /* @escapeNotVerified */ echo __('Subscribe to RSS Feed') ?></span>
+    </a>
 <?php endif; ?>

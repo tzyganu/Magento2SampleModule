@@ -1,68 +1,39 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
+use \Sample\News\Controller\Adminhtml\Author as AuthorController;
 
-
-class Index extends Action
+class Index extends AuthorController
 {
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
-     */
-    protected $resultPageFactory;
-
-    /**
-     * @var \Magento\Backend\Model\View\Result\Page
-     */
-    protected $resultPage;
-
-    /**
-     * @param Context $context
-     * @param PageFactory $resultPageFactory
-     */
-    public function __construct(
-        Context $context,
-        PageFactory $resultPageFactory
-    )
-    {
-        parent::__construct($context);
-        $this->resultPageFactory = $resultPageFactory;
-    }
-
-    /**
-     * @return \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page
+     * Authors list.
+     *
+     * @return \Magento\Backend\Model\View\Result\Page
      */
     public function execute()
     {
-        $this->setPageData();
-        return $this->getResultPage();
-    }
-
-    /**
-     * instantiate result page object
-     *
-     * @return \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page
-     */
-    public function getResultPage()
-    {
-        if (is_null($this->resultPage)) {
-            $this->resultPage = $this->resultPageFactory->create();
-        }
-        return $this->resultPage;
-    }
-
-    /**
-     * set page data
-     *
-     * @return $this
-     */
-    protected function setPageData()
-    {
-        $resultPage = $this->getResultPage();
+        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+        $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Sample_News::author');
-        $resultPage->getConfig()->getTitle()->set((__('Authors')));
-        return $this;
+        $resultPage->getConfig()->getTitle()->prepend(__('Authors'));
+        $resultPage->addBreadcrumb(__('News'), __('News'));
+        $resultPage->addBreadcrumb(__('Authors'), __('Authors'));
+        return $resultPage;
     }
 }

@@ -1,94 +1,64 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Controller\Adminhtml\Author;
 
-use Sample\News\Controller\Adminhtml\Author as AuthorController;
-use Magento\Framework\Registry;
-use Sample\News\Model\AuthorFactory;
-use Magento\Backend\Model\Session as BackendSession;
-use Magento\Backend\App\Action\Context;
-use Magento\Backend\Model\View\Result\RedirectFactory;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\Stdlib\DateTime\Filter\Date;
+use Sample\News\Controller\Adminhtml\Author;
+use Sample\News\Controller\RegistryConstants;
 
-class Edit extends AuthorController
+class Edit extends Author
 {
     /**
-     * backend session
+     * Initialize current author and set it in the registry.
      *
-     * @var BackendSession
+     * @return int
      */
-    protected $backendSession;
-
-    /**
-     * @var PageFactory
-     */
-    protected $resultPageFactory;
-
-    /**
-     * constructor
-     *
-     * @param Registry $registry
-     * @param AuthorFactory $authorFactory
-     * @param BackendSession $backendSession
-     * @param PageFactory $resultPageFactory
-     * @param Context $context
-     * @param RedirectFactory $resultRedirectFactory
-     */
-    public function __construct(
-        Registry $registry,
-        PageFactory $resultPageFactory,
-        AuthorFactory $authorFactory,
-        BackendSession $backendSession,
-        RedirectFactory $resultRedirectFactory,
-        Date $dateFilter,
-        Context $context
-
-    )
+    protected function _initAuthor()
     {
-        $this->backendSession = $backendSession;
-        $this->resultPageFactory = $resultPageFactory;
-        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $dateFilter, $context);
+        $authorId = $this->getRequest()->getParam('author_id');
+        $this->coreRegistry->register(RegistryConstants::CURRENT_AUTHOR_ID, $authorId);
+
+        return $authorId;
     }
 
     /**
-     * is action allowed
+     * Edit or create author
      *
-     * @return bool
+     * @return \Magento\Backend\Model\View\Result\Page
      */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed('Sample_News::author');
-    }
-
     public function execute()
     {
-        $id = $this->getRequest()->getParam('author_id');
-        /** @var \Sample\News\Model\Author $author */
-        $author = $this->initAuthor();
-        /** @var \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page $resultPage */
+        $authorId = $this->_initAuthor();
+
+        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Sample_News::author');
-        $resultPage->getConfig()->getTitle()->set((__('Authors')));
-        if ($id) {
-            $author->load($id);
-            if (!$author->getId()) {
-                $this->messageManager->addError(__('This author no longer exists.'));
-                $resultRedirect = $this->resultRedirectFactory->create();
-                $resultRedirect->setPath(
-                    'sample_news/*/edit',
-                    [
-                        'author_id' => $author->getId(),
-                        '_current' => true
-                    ]
-                );
-                return $resultRedirect;
-            }
-        }
-        $title = $author->getId() ? $author->getName() : __('New Author');
-        $resultPage->getConfig()->getTitle()->append($title);
-        $data = $this->backendSession->getData('sample_news_author_data', true);
-        if (!empty($data)) {
-            $author->setData($data);
+        $resultPage->getConfig()->getTitle()->prepend(__('Authors'));
+        $resultPage->addBreadcrumb(__('News'), __('News'));
+        $resultPage->addBreadcrumb(__('Authors'), __('Authors'), $this->getUrl('sample_news/author'));
+
+        if ($authorId === null) {
+            $resultPage->addBreadcrumb(__('New Author'), __('New Author'));
+            $resultPage->getConfig()->getTitle()->prepend(__('New Author'));
+        } else {
+            $resultPage->addBreadcrumb(__('Edit Author'), __('Edit Author'));
+            $resultPage->getConfig()->getTitle()->prepend(
+                $this->authorRepository->getById($authorId)->getName()
+            );
         }
         return $resultPage;
     }

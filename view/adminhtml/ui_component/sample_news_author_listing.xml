@@ -5,7 +5,7 @@
  * NOTICE OF LICENSE
  * 
  * This source file is subject to the MIT License
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/mit-license.php
  * 
@@ -15,7 +15,7 @@
  * @license   http://opensource.org/licenses/mit-license.php MIT License
  */
 -->
-<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Ui/etc/ui_configuration.xsd">
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">sample_news_author_listing.sample_news_author_listing_data_source</item>
@@ -33,13 +33,17 @@
     </argument>
     <dataSource name="sample_news_author_listing_data_source">
         <argument name="dataProvider" xsi:type="configurableObject">
-            <argument name="class" xsi:type="string">SampleNewsAuthorGridDataProvider</argument>
+            <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
             <argument name="name" xsi:type="string">sample_news_author_listing_data_source</argument>
             <argument name="primaryFieldName" xsi:type="string">author_id</argument>
             <argument name="requestFieldName" xsi:type="string">author_id</argument>
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
                     <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">author_id</item>
+                    </item>
                 </item>
             </argument>
         </argument>
@@ -115,6 +119,22 @@
                     <item name="column" xsi:type="string">column</item>
                 </item>
             </argument>
+            <filterSelect name="store_id">
+                <argument name="optionsProvider" xsi:type="configurableObject">
+                    <argument name="class" xsi:type="string">Sample\News\Ui\Component\Listing\Column\Store\Options</argument>
+                </argument>
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="provider" xsi:type="string">${ $.parentName }</item>
+                        <item name="imports" xsi:type="array">
+                            <item name="visible" xsi:type="string">componentType = column, index = ${ $.index }:visible</item>
+                        </item>
+                        <item name="dataScope" xsi:type="string">store_id</item>
+                        <item name="label" xsi:type="string" translate="true">Store View</item>
+                        <item name="captionValue" xsi:type="string">0</item>
+                    </item>
+                </argument>
+            </filterSelect>
         </filters>
         <massaction name="listing_massaction">
             <argument name="data" xsi:type="array">
@@ -268,6 +288,15 @@
                 </item>
             </argument>
         </column>
+        <column name="store_id" class="Magento\Store\Ui\Component\Listing\Column\Store">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Store View</item>
+                </item>
+            </argument>
+        </column>
         <column name="dob">
             <argument name="data" xsi:type="array">
                 <item name="js_config" xsi:type="array">
@@ -284,7 +313,7 @@
         </column>
         <column name="type">
             <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Sample\News\Model\Author\Source\Type</item>
+                <item name="options" xsi:type="object">SampleNewsModelAuthorSourceType</item>
                 <item name="config" xsi:type="array">
                     <item name="editor" xsi:type="string">select</item>
                     <item name="filter" xsi:type="string">select</item>
@@ -310,13 +339,13 @@
         </column>
         <column name="is_active">
             <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Sample\News\Model\Author\Source\IsActive</item>
+                <item name="options" xsi:type="object">SampleNewsModelAuthorSourceIsActive</item>
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">select</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="editor" xsi:type="string">select</item>
                     <item name="dataType" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Status</item>
+                    <item name="label" xsi:type="string" translate="true">Is Active</item>
                 </item>
             </argument>
         </column>
@@ -330,6 +359,17 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="align" xsi:type="string">left</item>
                     <item name="label" xsi:type="string" translate="true">In RSS</item>
+                </item>
+            </argument>
+        </column>
+        <column name="avatar" class="Sample\News\Ui\Component\Listing\Column\Avatar">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/thumbnail</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="altField" xsi:type="string">name</item>
+                    <item name="has_preview" xsi:type="string">1</item>
+                    <item name="label" xsi:type="string" translate="true">Avatar</item>
                 </item>
             </argument>
         </column>
@@ -368,13 +408,4 @@
             </argument>
         </actionsColumn>
     </columns>
-    <container name="sticky">
-        <argument name="data" xsi:type="array">
-            <item name="config" xsi:type="array">
-                <item name="component" xsi:type="string">Magento_Ui/js/grid/sticky/sticky</item>
-                <item name="toolbarProvider" xsi:type="string">sample_news_author_listing.sample_news_author_listing.listing_top</item>
-                <item name="listingProvider" xsi:type="string">sample_news_author_listing.sample_news_author_listing.sample_news_author_columns</item>
-            </item>
-        </argument>
-    </container>
 </listing>

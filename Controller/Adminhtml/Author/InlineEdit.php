@@ -1,15 +1,36 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Controller\Adminhtml\Author;
 
 use Magento\Backend\App\Action\Context;
-use Sample\News\Model\AuthorFactory;
+use Magento\Backend\Model\Session;
+use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Sample\News\Controller\Adminhtml\Author as AuthorController;
-use Magento\Backend\Model\View\Result\RedirectFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Reflection\DataObjectProcessor;
 use Magento\Framework\Registry;
-use Sample\News\Model\Author;
 use Magento\Framework\Stdlib\DateTime\Filter\Date;
-
+use Magento\Framework\View\Result\PageFactory;
+use Sample\News\Api\AuthorRepositoryInterface;
+use Sample\News\Api\Data\AuthorInterface;
+use Sample\News\Api\Data\AuthorInterfaceFactory;
+use Sample\News\Controller\Adminhtml\Author as AuthorController;
+use Sample\News\Model\Author;
 
 class InlineEdit extends AuthorController
 {
@@ -19,25 +40,33 @@ class InlineEdit extends AuthorController
     protected $jsonFactory;
 
     /**
-     * @param JsonFactory $jsonFactory
      * @param Registry $registry
-     * @param AuthorFactory $authorFactory
-     * @param RedirectFactory $resultRedirectFactory
+     * @param AuthorRepositoryInterface $authorRepository
+     * @param PageFactory $resultPageFactory
      * @param Date $dateFilter
      * @param Context $context
+     * @param AuthorInterfaceFactory $authorFactory
+     * @param DataObjectProcessor $dataObjectProcessor
+     * @param DataObjectHelper $dataObjectHelper
+     * @param JsonFactory $jsonFactory
      */
     public function __construct(
-        JsonFactory $jsonFactory,
         Registry $registry,
-        AuthorFactory $authorFactory,
-        RedirectFactory $resultRedirectFactory,
+        AuthorRepositoryInterface $authorRepository,
+        PageFactory $resultPageFactory,
         Date $dateFilter,
-        Context $context
-
-    ) {
+        Context $context,
+        AuthorInterfaceFactory $authorFactory,
+        DataObjectProcessor $dataObjectProcessor,
+        DataObjectHelper $dataObjectHelper,
+        JsonFactory $jsonFactory
+    )
+    {
+        $this->authorFactory = $authorFactory;
+        $this->dataObjectProcessor = $dataObjectProcessor;
+        $this->dataObjectHelper = $dataObjectHelper;
         $this->jsonFactory = $jsonFactory;
-        parent::__construct($registry, $authorFactory, $resultRedirectFactory, $dateFilter, $context);
-
+        parent::__construct($registry, $authorRepository, $resultPageFactory, $dateFilter, $context);
     }
 
     /**
@@ -60,13 +89,12 @@ class InlineEdit extends AuthorController
 
         foreach (array_keys($postItems) as $authorId) {
             /** @var \Sample\News\Model\Author $author */
-            $author = $this->authorFactory->create()->load($authorId);
+            $author = $this->authorRepository->getById((int)$authorId);
             try {
                 $authorData = $this->filterData($postItems[$authorId]);
-                $author->addData($authorData);
-
-                $author->save();
-            } catch (\Magento\Framework\Exception\LocalizedException $e) {
+                $this->dataObjectHelper->populateWithArray($author, $authorData , AuthorInterface::class);
+                $this->authorRepository->save($author);
+            } catch (LocalizedException $e) {
                 $messages[] = $this->getErrorWithAuthorId($author, $e->getMessage());
                 $error = true;
             } catch (\RuntimeException $e) {
@@ -75,7 +103,7 @@ class InlineEdit extends AuthorController
             } catch (\Exception $e) {
                 $messages[] = $this->getErrorWithAuthorId(
                     $author,
-                    __('Something went wrong while saving the page.')
+                    __('Something went wrong while saving the author.')
                 );
                 $error = true;
             }

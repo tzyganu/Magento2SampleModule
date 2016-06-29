@@ -1,16 +1,28 @@
 <?php
 /**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
  */
-
 namespace Sample\News\Setup;
 
+use Magento\Framework\DB\Ddl\Table;
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\DB\Adapter\AdapterInterface;
+
 
 /**
  * @codeCoverageIgnore
@@ -20,6 +32,7 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * {@inheritdoc}
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     * @SuppressWarnings(PHPMD.Generic.CodeAnalysis.UnusedFunctionParameter)
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
@@ -232,152 +245,5 @@ class InstallSchema implements InstallSchemaInterface
             $installer->getConnection()->createTable($table);
         }
 
-        if (!$installer->tableExists('sample_news_author_product')) {
-            $table = $installer->getConnection()
-                ->newTable($installer->getTable('sample_news_author_product'));
-            $table->addColumn(
-                    'author_id',
-                    Table::TYPE_INTEGER,
-                    null,
-                    [
-                        'unsigned' => true,
-                        'nullable' => false,
-                        'primary'   => true,
-                    ],
-                    'Author ID'
-                )
-                ->addColumn(
-                    'product_id',
-                    Table::TYPE_INTEGER,
-                    null,
-                    [
-                        'unsigned' => true,
-                        'nullable' => false,
-                        'primary'   => true,
-                    ],
-                    'Product ID'
-                )
-                ->addColumn(
-                    'position',
-                    Table::TYPE_INTEGER,
-                    null,
-                    [
-                        'nullable' => false,
-                        'default' => '0'
-                    ],
-                    'Position'
-                )
-                ->addIndex(
-                    $installer->getIdxName('sample_news_author_product', ['product_id']),
-                    ['product_id']
-                )
-                ->addForeignKey(
-                    $installer->getFkName('sample_news_author_product', 'author_id', 'sample_news_author', 'author_id'),
-                    'author_id',
-                    $installer->getTable('sample_news_author'),
-                    'author_id',
-                    Table::ACTION_CASCADE
-                )
-                ->addForeignKey(
-                    $installer->getFkName('sample_news_author_product', 'product_id', 'catalog_product_entity', 'entity_id'),
-                    'product_id',
-                    $installer->getTable('catalog_product_entity'),
-                    'entity_id',
-                    Table::ACTION_CASCADE
-                )
-                ->addIndex(
-                    $installer->getIdxName(
-                        'sample_news_author_product',
-                        [
-                            'author_id',
-                            'product_id'
-                        ],
-                        AdapterInterface::INDEX_TYPE_UNIQUE
-                    ),
-                    [
-                        'author_id',
-                        'product_id'
-                    ],
-                    [
-                        'type' => AdapterInterface::INDEX_TYPE_UNIQUE
-                    ]
-                )
-                ->setComment('Author To product Link Table');
-            $installer->getConnection()->createTable($table);
-        }
-
-        if (!$installer->tableExists('sample_news_author_category')) {
-            $table = $installer->getConnection()
-                ->newTable($installer->getTable('sample_news_author_category'));
-            $table->addColumn(
-                    'author_id',
-                    Table::TYPE_INTEGER,
-                    null,
-                    [
-                        'unsigned' => true,
-                        'nullable' => false,
-                        'primary'   => true,
-                    ],
-                    'Author ID'
-                )
-                ->addColumn(
-                    'category_id',
-                    Table::TYPE_INTEGER,
-                    null,
-                    [
-                        'unsigned' => true,
-                        'nullable' => false,
-                        'primary'   => true,
-                    ],
-                    'Category ID'
-                )
-                ->addColumn(
-                    'position',
-                    Table::TYPE_INTEGER,
-                    null,
-                    [
-                        'nullable' => false,
-                        'default' => '0'
-                    ],
-                    'Position'
-                )
-                ->addIndex(
-                    $installer->getIdxName('sample_news_author_category', ['category_id']),
-                    ['category_id']
-                )
-                ->addForeignKey(
-                    $installer->getFkName('sample_news_author_category', 'author_id', 'sample_news_author', 'author_id'),
-                    'author_id',
-                    $installer->getTable('sample_news_author'),
-                    'author_id',
-                    Table::ACTION_CASCADE
-                )
-                ->addForeignKey(
-                    $installer->getFkName('sample_news_author_category', 'category_id', 'catalog_category_entity', 'entity_id'),
-                    'category_id',
-                    $installer->getTable('catalog_category_entity'),
-                    'entity_id',
-                    Table::ACTION_CASCADE
-                )
-                ->addIndex(
-                    $installer->getIdxName(
-                        'sample_news_author_category',
-                        [
-                            'author_id',
-                            'category_id'
-                        ],
-                        AdapterInterface::INDEX_TYPE_UNIQUE
-                    ),
-                    [
-                        'author_id',
-                        'category_id'
-                    ],
-                    [
-                        'type' => AdapterInterface::INDEX_TYPE_UNIQUE
-                    ]
-                )
-                ->setComment('Author To category Link Table');
-            $installer->getConnection()->createTable($table);
-        }
     }
 }

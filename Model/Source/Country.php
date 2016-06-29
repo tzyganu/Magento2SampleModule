@@ -1,8 +1,24 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Model\Source;
 
-use Magento\Framework\Option\ArrayInterface;
 use Magento\Directory\Model\ResourceModel\Country\CollectionFactory as CountryCollectionFactory;
+use Magento\Framework\Option\ArrayInterface;
 
 class Country implements ArrayInterface
 {
@@ -39,12 +55,11 @@ class Country implements ArrayInterface
     }
 
     /**
-     * @param array $options
      * @return array
      */
-    public function getOptions(array $options = [])
+    public function getOptions()
     {
-        $countryOptions = $this->toOptionArray($options);
+        $countryOptions = $this->toOptionArray();
         $_options = [];
         foreach ($countryOptions as $option) {
             $_options[$option['value']] = $option['label'];

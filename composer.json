@@ -1,10 +1,16 @@
 {
-  "name": "tzyganu/magento2-sample-module",
+  "name": "sample/module-news",
   "description": "Magento 2 Sample crud module",
   "version": "2.0.0",
+  "license": "MIT",
   "require": {
     "magento/module-backend": "~100.0.0",
-    "magento/module-catalog": "~100.0.0"
+    "magento/module-cms": "~100.0.0",
+    "magento/module-ui": "~100.0.0",
+    "magento/module-store": "100.0.*",
+    "magento/framework": "100.0.*",
+    "magento/module-media-storage": "100.0.*",
+    "magento/module-directory": "100.0.*"
   },
   "type": "magento2-module",
   "repositories": [
@@ -13,12 +19,12 @@
       "url": "https://github.com/tzyganu/Magento2SampleModule"
     }
   ],
-  "extra": {
-    "map": [
-      [
-        "*",
-        "Sample/News"
-      ]
-    ]
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Sample\\News\\": ""
+    }
   }
 }

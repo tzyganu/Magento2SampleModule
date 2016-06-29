@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="SampleNewsUiDataProviderAuthorFormModifierPool" type="Magento\Ui\DataProvider\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="author_data" xsi:type="array">
+                    <item name="class" xsi:type="string">Sample\News\Ui\DataProvider\Author\Form\Modifier\AuthorData</item>
+                    <item name="sortOrder" xsi:type="number">10</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Sample\News\Model\Author\DataProvider">
+        <arguments>
+            <argument name="pool" xsi:type="object">SampleNewsUiDataProviderAuthorFormModifierPool</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Controller\Adminhtml\Author\MassDelete">
+        <arguments>
+            <argument name="successMessage" xsi:type="string" translate="true">A total of %1 record(s) have been deleted.</argument>
+            <argument name="errorMessage" xsi:type="string" translate="true">An error occurred while deleting record(s).</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Controller\Adminhtml\Author\MassDisable">
+        <arguments>
+            <argument name="successMessage" xsi:type="string" translate="true">A total of %1 authors have been disabled.</argument>
+            <argument name="errorMessage" xsi:type="string" translate="true">An error occurred while disabling authors.</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Controller\Adminhtml\Author\MassEnable">
+        <arguments>
+            <argument name="successMessage" xsi:type="string" translate="true">A total of %1 authors have been enabled.</argument>
+            <argument name="errorMessage" xsi:type="string" translate="true">An error occurred while enabling authors.</argument>
+        </arguments>
+    </type>
+</config>

@@ -1,53 +1,57 @@
 <?php
 /**
  * Sample_News extension
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the MIT License
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/mit-license.php
- * 
+ *
  * @category  Sample
  * @package   Sample_News
- * @copyright Copyright (c) 2015
+ * @copyright 2016 Marius Strajeru
  * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
  */
 namespace Sample\News\Model\ResourceModel\Author\Grid;
 
-use Sample\News\Model\ResourceModel\Author\Collection as AuthorCollection;
+
 use Magento\Framework\Api\Search\SearchResultInterface;
+use Magento\Framework\Api\Search\AggregationInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Data\Collection\EntityFactoryInterface;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\View\Element\UiComponent\DataProvider\Document;
 use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+use Sample\News\Model\ResourceModel\Author\Collection as AuthorCollection;
+
 
 class Collection extends AuthorCollection implements SearchResultInterface
 {
     /**
-     * Aggregations
-     * 
-     * @var \Magento\Framework\Search\AggregationInterface
+     * @var AggregationInterface
      */
     protected $aggregations;
 
     /**
-     * constructor
-     * 
-     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param $mainTable
-     * @param $eventPrefix
+     * @param EntityFactoryInterface $entityFactory
+     * @param LoggerInterface $logger
+     * @param FetchStrategyInterface $fetchStrategy
+     * @param ManagerInterface $eventManager
+     * @param StoreManagerInterface $storeManager
+     * @param null $mainTable
+     * @param AbstractDb $eventPrefix
      * @param $eventObject
      * @param $resourceModel
-     * @param $model
-     * @param $connection
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource
+     * @param string $model
+     * @param null $connection
+     * @param AbstractDb|null $resource
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         EntityFactoryInterface $entityFactory,
@@ -59,21 +63,27 @@ class Collection extends AuthorCollection implements SearchResultInterface
         $eventPrefix,
         $eventObject,
         $resourceModel,
-        $model = 'Magento\Framework\View\Element\UiComponent\DataProvider\Document',
+        $model = Document::class,
         $connection = null,
         AbstractDb $resource = null
-    )
-    {
-        parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $storeManager, $connection, $resource);
+    ) {
+        parent::__construct(
+            $entityFactory,
+            $logger,
+            $fetchStrategy,
+            $eventManager,
+            $storeManager,
+            $connection,
+            $resource
+        );
         $this->_eventPrefix = $eventPrefix;
         $this->_eventObject = $eventObject;
         $this->_init($model, $resourceModel);
         $this->setMainTable($mainTable);
     }
 
-
     /**
-     * @return \Magento\Framework\Search\AggregationInterface
+     * @return AggregationInterface
      */
     public function getAggregations()
     {
@@ -81,26 +91,12 @@ class Collection extends AuthorCollection implements SearchResultInterface
     }
 
     /**
-     * @param \Magento\Framework\Search\AggregationInterface $aggregations
+     * @param AggregationInterface $aggregations
      * @return $this
      */
     public function setAggregations($aggregations)
     {
         $this->aggregations = $aggregations;
-    }
-
-
-    /**
-     * Retrieve all ids for collection
-     * Backward compatibility with EAV collection
-     *
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
-    public function getAllIds($limit = null, $offset = null)
-    {
-        return $this->getConnection()->fetchCol($this->_getAllIdsSelect($limit, $offset), $this->_bindParams);
     }
 
     /**

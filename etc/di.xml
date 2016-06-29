@@ -1,26 +1,32 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
-    <type name="Magento\Framework\App\Rss\RssManagerInterface">
+<!--
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Sample\News\Api\AuthorRepositoryInterface" type="Sample\News\Model\AuthorRepository" />
+    <preference for="Sample\News\Api\Data\AuthorInterface" type="Sample\News\Model\Author" />
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
-            <argument name="dataProviders" xsi:type="array">
-                <item name="authors" xsi:type="string">Sample\News\Block\Author\ListAuthor\Rss</item>
+            <argument name="collections" xsi:type="array">
+                <item name="sample_news_author_listing_data_source" xsi:type="string">Sample\News\Model\ResourceModel\Author\Grid\Collection</item>
             </argument>
         </arguments>
     </type>
-    <virtualType name="SampleNewsGirdFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
-        <arguments>
-            <argument name="appliers" xsi:type="array">
-                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
-                <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
-            </argument>
-        </arguments>
-    </virtualType>
-    <virtualType name="SampleNewsAuthorGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object" shared="false">Sample\News\Model\ResourceModel\Author\Collection</argument>
-            <argument name="filterPool" xsi:type="object" shared="false">SampleNewsGirdFilterPool</argument>
-        </arguments>
-    </virtualType>
     <type name="Sample\News\Model\ResourceModel\Author\Grid\Collection">
         <arguments>
             <argument name="mainTable" xsi:type="string">sample_news_author</argument>
@@ -29,10 +35,114 @@
             <argument name="resourceModel" xsi:type="string">Sample\News\Model\ResourceModel\Author</argument>
         </arguments>
     </type>
-    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+    <virtualType name="SampleNewsAuthorImageUploader" type="Sample\News\Model\Uploader">
         <arguments>
-            <argument name="collections" xsi:type="array">
-                <item name="sample_news_author_listing_data_source" xsi:type="string">Sample\News\Model\ResourceModel\Author\Grid\Collection</item>
+            <argument name="baseTmpPath" xsi:type="const">Sample\News\Model\Uploader::IMAGE_TMP_PATH</argument>
+            <argument name="basePath" xsi:type="const">Sample\News\Model\Uploader::IMAGE_PATH</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Sample\News\Controller\Adminhtml\Author\Image\Upload">
+        <arguments>
+            <argument name="uploader" xsi:type="object">SampleNewsAuthorImageUploader</argument>
+        </arguments>
+    </type>
+    <virtualType name="SampleNewsAuthorFileUploader" type="Sample\News\Model\Uploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="const">Sample\News\Model\Uploader::FILE_TMP_PATH</argument>
+            <argument name="basePath" xsi:type="const">Sample\News\Model\Uploader::FILE_PATH</argument>
+            <argument name="allowedExtensions" xsi:type="array" />
+        </arguments>
+    </virtualType>
+    <type name="Sample\News\Controller\Adminhtml\Author\File\Upload">
+        <arguments>
+            <argument name="uploader" xsi:type="object">SampleNewsAuthorFileUploader</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Model\UploaderPool">
+        <arguments>
+            <argument name="uploaders" xsi:type="array">
+                <item name="image" xsi:type="string">SampleNewsAuthorImageUploader</item>
+                <item name="file" xsi:type="string">SampleNewsAuthorFileUploader</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Controller\Adminhtml\Author\Save">
+        <arguments>
+            <argument name="uploaderPool" xsi:type="object">Sample\News\Model\UploaderPool</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Model\Author">
+        <arguments>
+            <argument name="uploaderPool" xsi:type="object">Sample\News\Model\UploaderPool</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Ui\Component\Listing\Column\Avatar">
+        <arguments>
+            <argument name="imageModel" xsi:type="object">SampleNewsAuthorImageUploader</argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Model\Output">
+        <arguments>
+            <argument name="templateProcessor" xsi:type="object">Magento\Widget\Model\Template\Filter</argument>
+        </arguments>
+    </type>
+    <virtualType name="SampleNewsModelAuthorSourceAward" type="Sample\News\Model\Source\Options">
+        <arguments>
+            <argument name="options" xsi:type="array">
+                <item name="1" xsi:type="array">
+                    <item name="value" xsi:type="number">1</item>
+                    <item name="label" xsi:type="string" translate="true">Award 1</item>
+                </item>
+                <item name="2" xsi:type="array">
+                    <item name="value" xsi:type="number">2</item>
+                    <item name="label" xsi:type="string" translate="true">Award 2</item>
+                </item>
+                <item name="3" xsi:type="array">
+                    <item name="value" xsi:type="number">3</item>
+                    <item name="label" xsi:type="string" translate="true">Award 3</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="SampleNewsModelAuthorSourceType" type="Sample\News\Model\Source\Options">
+        <arguments>
+            <argument name="options" xsi:type="array">
+                <item name="1" xsi:type="array">
+                    <item name="value" xsi:type="number">1</item>
+                    <item name="label" xsi:type="string" translate="true">Collaborator</item>
+                </item>
+                <item name="2" xsi:type="array">
+                    <item name="value" xsi:type="number">2</item>
+                    <item name="label" xsi:type="string" translate="true">Employee</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="SampleNewsModelAuthorSourceIsActive" type="Sample\News\Model\Source\Options">
+        <arguments>
+            <argument name="options" xsi:type="array">
+                <item name="1" xsi:type="array">
+                    <item name="value" xsi:type="const">Sample\News\Model\Author::STATUS_ENABLED</item>
+                    <item name="label" xsi:type="string" translate="true">Yes</item>
+                </item>
+                <item name="2" xsi:type="array">
+                    <item name="value" xsi:type="const">Sample\News\Model\Author::STATUS_DISABLED</item>
+                    <item name="label" xsi:type="string" translate="true">No</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\App\Rss\RssManagerInterface">
+        <arguments>
+            <argument name="dataProviders" xsi:type="array">
+                <item name="authors" xsi:type="string">Sample\News\Block\Author\ListAuthor\Rss</item>
             </argument>
         </arguments>
     </type>

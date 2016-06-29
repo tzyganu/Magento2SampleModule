@@ -1,19 +1,38 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Model\ResourceModel\Author;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Data\Collection\EntityFactoryInterface;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
+use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Store\Model\Store;
-use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\Category;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+use Sample\News\Model\Author;
+use Sample\News\Model\ResourceModel\Author as AuthorResourceModel;
 
 class Collection extends AbstractCollection
 {
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'author_id';
     /**
      * Event prefix
@@ -60,11 +79,9 @@ class Collection extends AbstractCollection
         StoreManagerInterface $storeManager,
         $connection = null,
         AbstractDb $resource = null
-    )
-    {
-        parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
+    ) {
         $this->storeManager = $storeManager;
-
+        parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
     }
 
     /**
@@ -74,7 +91,7 @@ class Collection extends AbstractCollection
      */
     protected function _construct()
     {
-        $this->_init('Sample\News\Model\Author', 'Sample\News\Model\ResourceModel\Author');
+        $this->_init(Author::class, AuthorResourceModel::class);
         $this->_map['fields']['author_id'] = 'main_table.author_id';
         $this->_map['fields']['store_id'] = 'store_table.store_id';
     }
@@ -86,28 +103,24 @@ class Collection extends AbstractCollection
      */
     protected function _afterLoad()
     {
-        $items = $this->getColumnValues('author_id');
-        $connection = $this->getConnection();
-        if (count($items)) {
-            $select = $connection->select()->from(
-                ['author_store' => $this->getTable('sample_news_author_store')]
-            )
-            ->where(
-                'author_store.author_id IN (?)',
-                $items
-            );
-
-            if ($result = $connection->fetchPairs($select)) {
-                foreach ($this as $item) {
-                    /** @var $item \Sample\News\Model\Author */
-                    if (!isset($result[$item->getData('author_id')])) {
-                        continue;
-                    }
-                    $item->setData('store_id', $result[$item->getData('author_id')]);
-                }
+        $this->performAfterLoad('sample_news_author_store', 'author_id');
+        foreach ($this->getItems() as $item) {
+            /** @var \Sample\News\Model\Author $item */
+            $awards = $item->getAwards();
+            if ($awards && !is_array($awards)) {
+                $item->setAwards(explode(',', $awards));
             }
         }
         return parent::_afterLoad();
+    }
+
+    public function addFieldToFilter($field, $condition = null)
+    {
+        if ($field === 'store_id') {
+            return $this->addStoreFilter($condition, false);
+        }
+
+        return parent::addFieldToFilter($field, $condition);
     }
 
     /**
@@ -169,46 +182,40 @@ class Collection extends AbstractCollection
     }
 
     /**
-     * @param $product
-     * @return $this
+     * @param $tableName
+     * @param $linkField
      */
-    public function addProductFilter($product)
+    protected function performAfterLoad($tableName, $linkField)
     {
-        if ($product instanceof Product) {
-            $product = $product->getId();
+        $linkedIds = $this->getColumnValues($linkField);
+        if (count($linkedIds)) {
+            $connection = $this->getConnection();
+            $select = $connection->select()->from(['sample_news_author_store' => $this->getTable($tableName)])
+                ->where('sample_news_author_store.' . $linkField . ' IN (?)', $linkedIds);
+            $result = $connection->fetchAll($select);
+            if ($result) {
+                $storesData = [];
+                foreach ($result as $storeData) {
+                    $storesData[$storeData[$linkField]][] = $storeData['store_id'];
+                }
+
+                foreach ($this as $item) {
+                    $linkedId = $item->getData($linkField);
+                    if (!isset($storesData[$linkedId])) {
+                        continue;
+                    }
+                    $storeIdKey = array_search(Store::DEFAULT_STORE_ID, $storesData[$linkedId], true);
+                    if ($storeIdKey !== false) {
+                        $stores = $this->storeManager->getStores(false, true);
+                        $storeId = current($stores)->getId();
+                        $storeCode = key($stores);
+                    } else {
+                        $storeId = current($storesData[$linkedId]);
+                        $storeCode = $this->storeManager->getStore($storeId)->getCode();
+                    }
+                    $item->setData('store_id', $storesData[$linkedId]);
+                }
+            }
         }
-        if (!isset($this->_joinedFields['product'])) {
-            $this->getSelect()->join(
-                ['related_product' => $this->getTable('sample_news_author_product')],
-                'related_product.author_id = main_table.author_id',
-                ['position']
-            );
-            $this->getSelect()->where('related_product.product_id = ?', $product);
-            $this->_joinedFields['product'] = true;
-        }
-        return $this;
     }
-
-    /**
-     * @param $category
-     * @return $this
-     */
-    public function addCategoryFilter($category)
-    {
-        if ($category instanceof Category){
-            $category = $category->getId();
-        }
-        if (!isset($this->_joinedFields['category'])) {
-            $this->getSelect()->join(
-                ['related_category' => $this->getTable('sample_news_author_category')],
-                'related_category.author_id = main_table.author_id',
-                ['position']
-            );
-
-            $this->getSelect()->where('related_category.category_id = ?', $category);
-            $this->_joinedFields['category'] = true;
-        }
-        return $this;
-    }
-
 }

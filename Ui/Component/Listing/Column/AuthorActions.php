@@ -15,7 +15,15 @@
  */
 namespace Sample\News\Ui\Component\Listing\Column;
 
-class AuthorActions extends \Magento\Ui\Component\Listing\Columns\Column
+use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Element\UiComponentFactory;
+use Magento\Framework\View\Element\UiComponent\ContextInterface;
+use Magento\Ui\Component\Listing\Columns\Column;
+
+/**
+ * @method AuthorActions setName($name)
+ */
+class AuthorActions extends Column
 {
     /**
      * Url path  to edit
@@ -39,18 +47,16 @@ class AuthorActions extends \Magento\Ui\Component\Listing\Columns\Column
     protected $_urlBuilder;
 
     /**
-     * constructor
-     * 
-     * @param \Magento\Framework\UrlInterface $urlBuilder
-     * @param \Magento\Framework\View\Element\UiComponent\ContextInterface $context
-     * @param \Magento\Framework\View\Element\UiComponentFactory $uiComponentFactory
+     * @param ContextInterface $context
+     * @param UiComponentFactory $uiComponentFactory
+     * @param UrlInterface $urlBuilder
      * @param array $components
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Framework\View\Element\UiComponent\ContextInterface $context,
-        \Magento\Framework\View\Element\UiComponentFactory $uiComponentFactory,
+        ContextInterface $context,
+        UiComponentFactory $uiComponentFactory,
+        UrlInterface $urlBuilder,
         array $components = [],
         array $data = []
     )

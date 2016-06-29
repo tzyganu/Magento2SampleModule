@@ -1,19 +1,37 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Controller;
 
-use Magento\Framework\App\RouterInterface;
 use Magento\Framework\App\ActionFactory;
+use Magento\Framework\App\Action\Forward;
+use Magento\Framework\App\Action\Redirect;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\App\RouterInterface;
+use Magento\Framework\App\State;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\UrlInterface;
-use Magento\Framework\App\State;
-use Sample\News\Model\AuthorFactory;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Url;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Sample\News\Model\Routing\Entity;
 
 class Router implements RouterInterface
 {
@@ -54,7 +72,7 @@ class Router implements RouterInterface
 
     /**
      * Response
-     * @var \Magento\Framework\App\ResponseInterface
+     * @var \Magento\Framework\App\ResponseInterface|\Magento\Framework\App\Response\Http
      */
     protected $response;
 
@@ -68,41 +86,45 @@ class Router implements RouterInterface
     protected $dispatched;
 
     /**
+     * @var \Sample\News\Model\Routing\Entity[]
+     */
+    protected $routingEntities;
+
+    /**
      * @param ActionFactory $actionFactory
      * @param ManagerInterface $eventManager
      * @param UrlInterface $url
      * @param State $appState
-     * @param AuthorFactory $authorFactory
      * @param StoreManagerInterface $storeManager
      * @param ResponseInterface $response
      * @param ScopeConfigInterface $scopeConfig
+     * @param array $routingEntities
      */
     public function __construct(
         ActionFactory $actionFactory,
         ManagerInterface $eventManager,
         UrlInterface $url,
         State $appState,
-        AuthorFactory $authorFactory,
         StoreManagerInterface $storeManager,
         ResponseInterface $response,
-        ScopeConfigInterface $scopeConfig
-    )
-    {
-        $this->actionFactory = $actionFactory;
-        $this->eventManager = $eventManager;
-        $this->url = $url;
-        $this->appState = $appState;
-        $this->authorFactory = $authorFactory;
-        $this->storeManager = $storeManager;
-        $this->response = $response;
-        $this->scopeConfig = $scopeConfig;
+        ScopeConfigInterface $scopeConfig,
+        array $routingEntities
+    ) {
+        $this->actionFactory    = $actionFactory;
+        $this->eventManager     = $eventManager;
+        $this->url              = $url;
+        $this->appState         = $appState;
+        $this->storeManager     = $storeManager;
+        $this->response         = $response;
+        $this->scopeConfig      = $scopeConfig;
+        $this->routingEntities  = $routingEntities;
     }
 
     /**
      * Validate and Match News Author and modify request
-     * @param \Magento\Framework\App\RequestInterface $request
+     *
+     * @param \Magento\Framework\App\RequestInterface|\Magento\Framework\HTTP\PhpEnvironment\Request $request
      * @return bool
-     * //TODO: maybe remove this and use the url rewrite table.
      */
     public function match(RequestInterface $request)
     {
@@ -119,83 +141,70 @@ class Router implements RouterInterface
             if ($condition->getRedirectUrl()) {
                 $this->response->setRedirect($condition->getRedirectUrl());
                 $request->setDispatched(true);
-                return $this->actionFactory->create(
-                    'Magento\Framework\App\Action\Redirect',
-                    ['request' => $request]
-                );
+                return $this->actionFactory->create(Redirect::class);
             }
             if (!$condition->getContinue()) {
                 return null;
             }
-            $entities = [
-                'author' => [
-                    'prefix'        => $this->scopeConfig->getValue(
-                        'sample_news/author/url_prefix',
-                        ScopeInterface::SCOPE_STORES
-                    ),
-                    'suffix'        => $this->scopeConfig->getValue(
-                        'sample_news/author/url_suffix',
-                        ScopeInterface::SCOPE_STORES
-                    ),
-                    'list_key'      => $this->scopeConfig->getValue(
-                        'sample_news/author/list_url',
-                        ScopeInterface::SCOPE_STORES
-                    ),
-                    'list_action'   => 'index',
-                    'factory'       => $this->authorFactory,
-                    'controller'    => 'author',
-                    'action'        => 'view',
-                    'param'         => 'id',
-                ]
-            ];
-
-            foreach ($entities as $entity => $settings) {
-                if ($settings['list_key']) {
-                    if ($urlKey == $settings['list_key']) {
-                        $request->setModuleName('sample_news')
-                            ->setControllerName($settings['controller'])
-                            ->setActionName($settings['list_action']);
-                        $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
-                        $this->dispatched = true;
-                        return $this->actionFactory->create(
-                            'Magento\Framework\App\Action\Forward',
-                            ['request' => $request]
-                        );
-                    }
+            foreach ($this->routingEntities as $entityKey => $entity) {
+                $match = $this->matchRoute($request, $entity, $urlKey, $origUrlKey);
+                if ($match === false) {
+                    continue;
                 }
-                if ($settings['prefix']) {
-                    $parts = explode('/', $urlKey);
-                    if ($parts[0] != $settings['prefix'] || count($parts) != 2) {
-                        continue;
-                    }
-                    $urlKey = $parts[1];
-                }
-                if ($settings['suffix']) {
-                    $suffix = substr($urlKey, -strlen($settings['suffix']) - 1);
-                    if ($suffix != '.'.$settings['suffix']) {
-                        continue;
-                    }
-                    $urlKey = substr($urlKey, 0, -strlen($settings['suffix']) - 1);
-                }
-                /** @var \Sample\News\Model\Author $instance */
-                $instance = $settings['factory']->create();
-                $id = $instance->checkUrlKey($urlKey, $this->storeManager->getStore()->getId());
-                if (!$id) {
-                    return null;
-                }
-                $request->setModuleName('sample_news')
-                    ->setControllerName('author')
-                    ->setActionName('view')
-                    ->setParam('id', $id);
-                $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $origUrlKey);
-                $request->setDispatched(true);
-                $this->dispatched = true;
-                return $this->actionFactory->create(
-                    'Magento\Framework\App\Action\Forward',
-                    ['request' => $request]
-                );
+                return $match;
             }
         }
         return null;
+    }
+
+    /**
+     * @param RequestInterface|\Magento\Framework\HTTP\PhpEnvironment\Request $request
+     * @param Entity $entity
+     * @param $urlKey
+     * @param $origUrlKey
+     * @return bool|\Magento\Framework\App\ActionInterface|null
+     */
+    protected function matchRoute(RequestInterface $request, Entity $entity, $urlKey, $origUrlKey)
+    {
+        $listKey = $this->scopeConfig->getValue($entity->getListKeyConfigPath(), ScopeInterface::SCOPE_STORE);
+        if ($listKey) {
+            if ($urlKey == $listKey) {
+                $request->setModuleName('sample_news');
+                $request->setControllerName($entity->getController());
+                $request->setActionName($entity->getListAction());
+                $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $urlKey);
+                $this->dispatched = true;
+                return $this->actionFactory->create(Forward::class);
+            }
+        }
+        $prefix = $this->scopeConfig->getValue($entity->getPrefixConfigPath(), ScopeInterface::SCOPE_STORE);
+        if ($prefix) {
+            $parts = explode('/', $urlKey);
+            if ($parts[0] != $prefix || count($parts) != 2) {
+                return false;
+            }
+            $urlKey = $parts[1];
+        }
+        $configSuffix = $this->scopeConfig->getValue($entity->getSuffixConfigPath(), ScopeInterface::SCOPE_STORE);
+        if ($configSuffix) {
+            $suffix = substr($urlKey, -strlen($configSuffix) - 1);
+            if ($suffix != '.'.$configSuffix) {
+                return false;
+            }
+            $urlKey = substr($urlKey, 0, -strlen($configSuffix) - 1);
+        }
+        $instance = $entity->getFactory()->create();
+        $id = $instance->checkUrlKey($urlKey, $this->storeManager->getStore()->getId());
+        if (!$id) {
+            return null;
+        }
+        $request->setModuleName('sample_news');
+        $request->setControllerName($entity->getController());
+        $request->setActionName($entity->getViewAction());
+        $request->setParam($entity->getParam(), $id);
+        $request->setAlias(Url::REWRITE_REQUEST_PATH_ALIAS, $origUrlKey);
+        $request->setDispatched(true);
+        $this->dispatched = true;
+        return $this->actionFactory->create(Forward::class);
     }
 }

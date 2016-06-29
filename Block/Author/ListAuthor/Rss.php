@@ -1,14 +1,31 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Block\Author\ListAuthor;
 
+use Magento\Framework\App\Rss\DataProviderInterface;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magento\Framework\View\Element\Context;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Sample\News\Model\Author;
 use Sample\News\Model\Author\Rss as RssModel;
 use Sample\News\Model\Author\Url;
-use Magento\Framework\View\Element\Context;
 use Sample\News\Model\ResourceModel\Author\CollectionFactory;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\App\Rss\DataProviderInterface;
-use Magento\Store\Model\ScopeInterface;
 
 class Rss extends AbstractBlock implements DataProviderInterface
 {
@@ -38,22 +55,21 @@ class Rss extends AbstractBlock implements DataProviderInterface
     protected $storeManager;
 
     /**
+     * @param Context $context
      * @param RssModel $rssModel
      * @param Url $urlModel
      * @param CollectionFactory $authorCollectionFactory
      * @param StoreManagerInterface $storeManager
-     * @param Context $context
      * @param array $data
      */
     public function __construct(
+        Context $context,
         RssModel $rssModel,
         Url $urlModel,
         CollectionFactory $authorCollectionFactory,
         StoreManagerInterface $storeManager,
-        Context $context,
         array $data = []
-    )
-    {
+    ) {
         $this->rssModel = $rssModel;
         $this->urlModel = $urlModel;
         $this->authorCollectionFactory = $authorCollectionFactory;
@@ -79,16 +95,18 @@ class Rss extends AbstractBlock implements DataProviderInterface
     public function getRssData()
     {
         $url = $this->urlModel->getListUrl();
-        $data = ['title' => __('Authors'), 'description' => __('Authors'), 'link' => $url, 'charset' => 'UTF-8'];
-
-
+        $data = [
+            'title' => __('Authors'),
+            'description' => __('Authors'),
+            'link' => $url,
+            'charset' => 'UTF-8'
+        ];
         $collection = $this->authorCollectionFactory->create();
         $collection->addStoreFilter($this->getStoreId());
-        $collection->addFieldToFilter('is_active', 1); //TODO: use constant
-        $collection->addFieldToFilter('in_rss', 1); //TODO: use constant
+        $collection->addFieldToFilter('is_active', Author::STATUS_ENABLED);
+        $collection->addFieldToFilter('in_rss', 1);
         foreach ($collection as $item) {
             /** @var \Sample\News\Model\Author $item */
-            //TODO: add more attributes to RSS
             $description = '<table><tr><td><a href="%s">%s</a></td></tr></table>';
             $description = sprintf($description, $item->getAuthorUrl(), $item->getName());
             $data['entries'][] = [

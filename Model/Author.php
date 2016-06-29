@@ -1,66 +1,50 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Model;
 
-use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Filter\FilterManager;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Registry;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Framework\Data\Collection\Db;
-use Sample\News\Model\Author\Url;
-use Sample\News\Model\Author\Source\IsActive;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Data\Collection\Db;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filter\FilterManager;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Sample\News\Api\Data\AuthorInterface;
+use Sample\News\Model\Author\Url;
+use Sample\News\Model\ResourceModel\Author as AuthorResourceModel;
+use Sample\News\Model\Routing\RoutableInterface;
+
 
 /**
- * @method string getName()
- * @method Author setUpdatedAt(\string $date)
- * @method Author setCreatedAt(\string $date)
- * @method Author setUrlKey(\string $urlKey)
- * @method array getStores()
- * @method int getStoreId()
- * @method bool hasStores()
- * @method Author setStoreId(\int $storeId)
- * @method Author setAvatar(\string $avatar)
- * @method string getAvatar()
- * @method Author setResume(\string $resumee)
- * @method string getResume()
- * @method ResourceModel\Author _getResource()
- * @method ResourceModel\Author getResource()
- * @method string getUrlKey()
- * @method int getIsActive()
- * @method Author setIsActive(\bool $active)
- * @method string getBiography()
- * @method string getDob()
- * @method string getMetaTitle()
- * @method string getMetaDescription()
- * @method string getMetaKeywords()
- * @method Author setProductsData(array $products)
- * @method Author setIsChangedProductList(\bool $changed)
- * @method array|null getProductsData()
- * @method Author setAffectedProductIds(array $productIds)
- * @method int getPosition()
- * @method array getCategoriesIds()
- * @method Author setCategoriesIds(array $categoryIds)
- * @method Author setIsChangedCategoryList(\bool $changed)
- * @method Author setAffectedCategoryIds(array $categoryIds)
+ * @method AuthorResourceModel _getResource()
+ * @method AuthorResourceModel getResource()
  */
-class Author extends AbstractModel
+class Author extends AbstractModel implements AuthorInterface, RoutableInterface
 {
     /**
-     * status enabled
-     *
      * @var int
      */
     const STATUS_ENABLED = 1;
     /**
-     * status disabled
-     *
      * @var int
      */
     const STATUS_DISABLED = 0;
-
     /**
      * @var Url
      */
@@ -94,36 +78,20 @@ class Author extends AbstractModel
     protected $filter;
 
     /**
-     * @var IsActive
+     * @var UploaderPool
      */
-    protected $statusList;
+    protected $uploaderPool;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     * @var \Sample\News\Model\Output
      */
-    protected $productCollectionFactory;
+    protected $outputProcessor;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
-     */
-    protected $productCollection;
-
-    /**
-     * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
-     */
-    protected $categoryCollectionFactory;
-
-    /**
-     * @var \Magento\Catalog\Model\ResourceModel\Category\Collection
-     */
-    protected $categoryCollection;
-
-    /**
-     * @param ProductCollectionFactory $productCollectionFactory
-     * @param CategoryCollectionFactory $categoryCollectionFactory
+     * @param \Sample\News\Model\Output $outputProcessor
+     * @param UploaderPool $uploaderPool
      * @param FilterManager $filter
      * @param Url $urlModel
-     * @param IsActive $statusList
      * @param Context $context
      * @param Registry $registry
      * @param AbstractResource|null $resource
@@ -131,23 +99,21 @@ class Author extends AbstractModel
      * @param array $data
      */
     public function __construct(
-        ProductCollectionFactory $productCollectionFactory,
-        CategoryCollectionFactory $categoryCollectionFactory,
-        FilterManager $filter,
-        Url $urlModel,
-        IsActive $statusList,
         Context $context,
         Registry $registry,
+        Output $outputProcessor,
+        UploaderPool $uploaderPool,
+        FilterManager $filter,
+        Url $urlModel,
+        array $data = [],
         AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = []
+        AbstractDb $resourceCollection = null
     )
     {
-        $this->productCollectionFactory  = $productCollectionFactory;
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->outputProcessor           = $outputProcessor;
+        $this->uploaderPool              = $uploaderPool;
         $this->filter                    = $filter;
         $this->urlModel                  = $urlModel;
-        $this->statusList                = $statusList;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -158,8 +124,332 @@ class Author extends AbstractModel
      */
     protected function _construct()
     {
-        $this->_init('Sample\News\Model\ResourceModel\Author');
+        $this->_init(AuthorResourceModel::class);
     }
+
+    /**
+     * Get in rss
+     *
+     * @return bool|int
+     */
+    public function getInRss()
+    {
+        return $this->getData(AuthorInterface::IN_RSS);
+    }
+
+    /**
+     * Get type
+     *
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->getData(AuthorInterface::TYPE);
+    }
+
+    /**
+     * Get awards
+     *
+     * @return string
+     */
+    public function getAwards()
+    {
+        return $this->getData(AuthorInterface::AWARDS);
+    }
+
+    /**
+     * Get country
+     *
+     * @return string
+     */
+    public function getCountry()
+    {
+        return $this->getData(AuthorInterface::COUNTRY);
+    }
+
+    /**
+     * set name
+     *
+     * @param $name
+     * @return AuthorInterface
+     */
+    public function setName($name)
+    {
+        return $this->setData(AuthorInterface::NAME, $name);
+    }
+
+    /**
+     * Set in rss
+     *
+     * @param $inRss
+     * @return AuthorInterface
+     */
+    public function setInRss($inRss)
+    {
+        return $this->setData(AuthorInterface::IN_RSS, $inRss);
+    }
+
+    /**
+     * Set biography
+     *
+     * @param $biography
+     * @return AuthorInterface
+     */
+    public function setBiography($biography)
+    {
+        return $this->setData(AuthorInterface::BIOGRAPHY, $biography);
+    }
+
+    /**
+     * Set DOB
+     *
+     * @param $dob
+     * @return AuthorInterface
+     */
+    public function setDob($dob)
+    {
+        return $this->setData(AuthorInterface::DOB, $dob);
+    }
+
+    /**
+     * set type
+     *
+     * @param $type
+     * @return AuthorInterface
+     */
+    public function setType($type)
+    {
+        return $this->setData(AuthorInterface::TYPE, $type);
+    }
+
+    /**
+     * set awards
+     *
+     * @param $awards
+     * @return AuthorInterface
+     */
+    public function setAwards($awards)
+    {
+        return $this->setData(AuthorInterface::AWARDS, $awards);
+    }
+
+    /**
+     * Set country
+     *
+     * @param $country
+     * @return AuthorInterface
+     */
+    public function setCountry($country)
+    {
+        return $this->setData(AuthorInterface::COUNTRY, $country);
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getData(AuthorInterface::NAME);
+    }
+
+    /**
+     * Get url key
+     *
+     * @return string
+     */
+    public function getUrlKey()
+    {
+        return $this->getData(AuthorInterface::URL_KEY);
+    }
+
+    /**
+     * Get is active
+     *
+     * @return bool|int
+     */
+    public function getIsActive()
+    {
+        return $this->getData(AuthorInterface::IS_ACTIVE);
+    }
+
+    /**
+     * Get biography
+     *
+     * @return string
+     */
+    public function getBiography()
+    {
+        return $this->getData(AuthorInterface::BIOGRAPHY);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProcessedBiography()
+    {
+        return $this->outputProcessor->filterOutput($this->getBiography());
+    }
+
+    /**
+     * Get DOB
+     *
+     * @return string
+     */
+    public function getDob()
+    {
+        return $this->getData(AuthorInterface::DOB);
+    }
+
+    /**
+     * Get avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        return $this->getData(AuthorInterface::AVATAR);
+    }
+
+    /**
+     * @return bool|string
+     * @throws LocalizedException
+     */
+    public function getAvatarUrl()
+    {
+        $url = false;
+        $avatar = $this->getAvatar();
+        if ($avatar) {
+            if (is_string($avatar)) {
+                $uploader = $this->uploaderPool->getUploader('image');
+                $url = $uploader->getBaseUrl().$uploader->getBasePath().$avatar;
+            } else {
+                throw new LocalizedException(
+                    __('Something went wrong while getting the avatar url.')
+                );
+            }
+        }
+        return $url;
+    }
+
+    /**
+     * @return bool|string
+     * @throws LocalizedException
+     */
+    public function getResumeUrl()
+    {
+        $url = false;
+        $resume = $this->getResume();
+        if ($resume) {
+            if (is_string($resume)) {
+                $uploader = $this->uploaderPool->getUploader('image');
+                $url = $uploader->getBaseUrl().$uploader->getBasePath().$resume;
+            } else {
+                throw new LocalizedException(
+                    __('Something went wrong while getting the resume url.')
+                );
+            }
+        }
+        return $url;
+    }
+
+    /**
+     * Get resume
+     *
+     * @return string
+     */
+    public function getResume()
+    {
+        return $this->getData(AuthorInterface::RESUME);
+    }
+
+    /**
+     * Get created at
+     *
+     * @return string
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData(AuthorInterface::CREATED_AT);
+    }
+
+    /**
+     * Get updated at
+     *
+     * @return string
+     */
+    public function getUpdatedAt()
+    {
+        return $this->getData(AuthorInterface::UPDATED_AT);
+    }
+
+    /**
+     * set url key
+     *
+     * @param $urlKey
+     * @return AuthorInterface
+     */
+    public function setUrlKey($urlKey)
+    {
+        return $this->setData(AuthorInterface::URL_KEY, $urlKey);
+    }
+
+    /**
+     * Set is active
+     *
+     * @param $isActive
+     * @return AuthorInterface
+     */
+    public function setIsActive($isActive)
+    {
+        return $this->setData(AuthorInterface::IS_ACTIVE, $isActive);
+    }
+
+    /**
+     * set avatar
+     *
+     * @param $avatar
+     * @return AuthorInterface
+     */
+    public function setAvatar($avatar)
+    {
+        return $this->setData(AuthorInterface::AVATAR, $avatar);
+    }
+
+    /**
+     * set resume
+     *
+     * @param $resume
+     * @return AuthorInterface
+     */
+    public function setResume($resume)
+    {
+        return $this->setData(AuthorInterface::RESUME, $resume);
+    }
+
+    /**
+     * set created at
+     *
+     * @param $createdAt
+     * @return AuthorInterface
+     */
+    public function setCreatedAt($createdAt)
+    {
+        return $this->setData(AuthorInterface::CREATED_AT, $createdAt);
+    }
+
+    /**
+     * set updated at
+     *
+     * @param $updatedAt
+     * @return AuthorInterface
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        return $this->setData(AuthorInterface::UPDATED_AT, $updatedAt);
+    }
+
 
     /**
      * Check if author url key exists
@@ -175,16 +465,6 @@ class Author extends AbstractModel
     }
 
     /**
-     * Prepare author's statuses.
-     *
-     * @return array
-     */
-    public function getAvailableStatuses()
-    {
-        return $this->statusList->getOptions();
-    }
-
-    /**
      * Get identities
      *
      * @return array
@@ -195,15 +475,77 @@ class Author extends AbstractModel
     }
 
     /**
-     * get default author values
+     * @param $storeId
+     * @return AuthorInterface
+     */
+    public function setStoreId($storeId)
+    {
+        $this->setData(AuthorInterface::STORE_ID, $storeId);
+        return $this;
+    }
+
+    /**
      * @return array
      */
-    public function getDefaultValues()
+    public function getStoreId()
     {
-        return [
-            'is_active' => self::STATUS_ENABLED
-        ];
+        return $this->getData(AuthorInterface::STORE_ID);
     }
+
+    /**
+     * @return string
+     */
+    public function getMetaTitle()
+    {
+        return $this->getData(AuthorInterface::META_TITLE);
+    }
+
+    /**
+     * @param $metaTitle
+     * @return AuthorInterface
+     */
+    public function setMetaTitle($metaTitle)
+    {
+        $this->setData(AuthorInterface::META_TITLE, $metaTitle);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetaDescription()
+    {
+        return $this->getData(AuthorInterface::META_DESCRIPTION);
+    }
+
+    /**
+     * @param $metaDescription
+     * @return AuthorInterface
+     */
+    public function setMetaDescription($metaDescription)
+    {
+        $this->setData(AuthorInterface::META_DESCRIPTION, $metaDescription);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMetaKeywords()
+    {
+        return $this->getData(AuthorInterface::META_KEYWORDS);
+    }
+
+    /**
+     * @param $metaKeywords
+     * @return AuthorInterface
+     */
+    public function setMetaKeywords($metaKeywords)
+    {
+        $this->setData(AuthorInterface::META_KEYWORDS, $metaKeywords);
+        return $this;
+    }
+
 
     /**
      * sanitize the url key
@@ -230,77 +572,5 @@ class Author extends AbstractModel
     public function isActive()
     {
         return (bool)$this->getIsActive();
-    }
-
-    /**
-     * @return array|mixed
-     */
-    public function getProductsPosition()
-    {
-        if (!$this->getId()) {
-            return array();
-        }
-        $array = $this->getData('products_position');
-        if (is_null($array)) {
-            $array = $this->getResource()->getProductsPosition($this);
-            $this->setData('products_position', $array);
-        }
-        return $array;
-    }
-
-    /**
-     * @param string $attributes
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
-     */
-    public function getSelectedProductsCollection($attributes = '*')
-    {
-        if (is_null($this->productCollection)) {
-            $collection = $this->productCollectionFactory->create();
-            $collection->addAttributeToSelect($attributes);
-            $collection->joinField(
-                'position',
-                'sample_news_author_product',
-                'position',
-                'product_id=entity_id',
-                '{{table}}.author_id='.$this->getId(),
-                'inner'
-            );
-            $this->productCollection = $collection;
-        }
-        return $this->productCollection;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCategoryIds()
-    {
-        if (!$this->hasData('category_ids')) {
-            $ids = $this->_getResource()->getCategoryIds($this);
-            $this->setData('category_ids', $ids);
-        }
-        return (array) $this->_getData('category_ids');
-    }
-
-    /**
-     * @param string $attributes
-     * @return \Magento\Catalog\Model\ResourceModel\Category\Collection
-     */
-    public function getSelectedCategoriesCollection($attributes = '*')
-    {
-        if (is_null($this->categoryCollection)) {
-            $collection = $this->categoryCollectionFactory->create();
-            $collection->addAttributeToSelect($attributes);
-            $collection->joinField(
-                'position',
-                'sample_news_author_category',
-                'position',
-                'category_id=entity_id',
-                '{{table}}.author_id='.$this->getId(),
-                'inner'
-            );
-            $this->categoryCollection = $collection;
-        }
-        return $this->categoryCollection;
     }
 }

@@ -1,18 +1,38 @@
-<?php /** @var Sample\News\Block\Author\ListAuthor $this */ ?>
-<?php $_authors = $this->getAuthors(); ?>
+<?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
+?>
+<?php /** @var Sample\News\Block\Author\ListAuthor $block */ ?>
+<?php $_authors = $block->getAuthors(); ?>
 <div class="authors">
     <?php if ($_authors->getSize() > 0) :?>
-        <div class="sample-news-authors-toolbar toolbar top"><?php echo $this->getPagerHtml(); ?></div>
+        <div class="sample-news-authors-toolbar toolbar top"><?php echo $block->getPagerHtml(); ?></div>
         <div class="sample-news-authors-list-container">
             <?php foreach ($_authors as $_author) : ?>
                 <?php /** @var Sample\News\Model\Author $_author */ ?>
                 <div class="sample-news-author-list-item">
-                    <a href="<?php echo $_author->getAuthorUrl();?>"><?php echo $_author->getName();?></a>
+                    <a href="<?php /* @escapeNotVerified */ echo $_author->getAuthorUrl();?>">
+                        <?php echo /* @escapeNotVerified */ $_author->getName();?>
+                    </a>
                 </div>
             <?php endforeach;?>
         </div>
-        <div class="sample-news-authors-toolbar toolbar bottom"><?php echo $this->getPagerHtml(); ?></div>
+        <div class="sample-news-authors-toolbar toolbar bottom"><?php echo $block->getPagerHtml(); ?></div>
     <?php else : ?>
-        <?php echo __('There are no authors at this moment');?>
+        <?php /* @escapeNotVerified */ echo __('There are no authors at this moment');?>
     <?php endif;?>
 </div>

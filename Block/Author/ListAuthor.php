@@ -1,16 +1,29 @@
 <?php
+/**
+ * Sample_News extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the MIT License
+ * that is bundled with this package in the file LICENSE
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Sample
+ * @package   Sample_News
+ * @copyright 2016 Marius Strajeru
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ * @author    Marius Strajeru
+ */
 namespace Sample\News\Block\Author;
 
-use Magento\Framework\View\Element\Template;
-use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\UrlFactory;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Theme\Block\Html\Pager;
+use Sample\News\Model\Author;
 use Sample\News\Model\ResourceModel\Author\CollectionFactory as AuthorCollectionFactory;
 
-/**
- * @method \Sample\News\Model\ResourceModel\Author\Collection getAuthors()
- * @method ListAuthor setAuthors(\Sample\News\Model\ResourceModel\Author\Collection $authors)
- */
 class ListAuthor extends Template
 {
     /**
@@ -23,45 +36,40 @@ class ListAuthor extends Template
     protected $urlFactory;
 
     /**
+     * @var \Sample\News\Model\ResourceModel\Author\Collection
+     */
+    protected $authors;
+
+    /**
+     * @param Context $context
      * @param AuthorCollectionFactory $authorCollectionFactory
      * @param UrlFactory $urlFactory
-     * @param Context $context
      * @param array $data
      */
     public function __construct(
+        Context $context,
         AuthorCollectionFactory $authorCollectionFactory,
         UrlFactory $urlFactory,
-        Context $context,
         array $data = []
-    )
-    {
+    ) {
         $this->authorCollectionFactory = $authorCollectionFactory;
         $this->urlFactory = $urlFactory;
         parent::__construct($context, $data);
     }
 
     /**
-     * load the authors
+     * @return \Sample\News\Model\ResourceModel\Author\Collection
      */
-    protected  function _construct()
+    public function getAuthors()
     {
-        parent::_construct();
-        /** @var \Sample\News\Model\ResourceModel\Author\Collection $authors */
-        $authors = $this->authorCollectionFactory->create()->addFieldToSelect('*')
-            ->addFieldToFilter('is_active', 1)
-            ->addStoreFilter($this->_storeManager->getStore()->getId())
-            ->setOrder('name', 'ASC');
-        $this->setAuthors($authors);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRssEnabled()
-    {
-        return
-            $this->_scopeConfig->getValue('rss/config/active', ScopeInterface::SCOPE_STORE) &&
-            $this->_scopeConfig->getValue('sample_news/author/rss', ScopeInterface::SCOPE_STORE);
+        if (is_null($this->authors)) {
+            $this->authors = $this->authorCollectionFactory->create()
+                ->addFieldToSelect('*')
+                ->addFieldToFilter('is_active', Author::STATUS_ENABLED)
+                ->addStoreFilter($this->_storeManager->getStore()->getId())
+                ->setOrder('name', 'ASC');
+        }
+        return $this->authors;
     }
 
     /**
@@ -71,7 +79,7 @@ class ListAuthor extends Template
     {
         parent::_prepareLayout();
         /** @var \Magento\Theme\Block\Html\Pager $pager */
-        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager', 'sample_news.author.list.pager');
+        $pager = $this->getLayout()->createBlock(Pager::class, 'sample_news.author.list.pager');
         $pager->setCollection($this->getAuthors());
         $this->setChild('pager', $pager);
         $this->getAuthors()->load();
@@ -84,16 +92,5 @@ class ListAuthor extends Template
     public function getPagerHtml()
     {
         return $this->getChildHtml('pager');
-    }
-
-    /**
-     * @return string
-     */
-    public function getRssLink()
-    {
-        return $this->_urlBuilder->getUrl(
-            'sample_news/author/rss',
-            ['store' => $this->_storeManager->getStore()->getId()]
-        );
     }
 }
