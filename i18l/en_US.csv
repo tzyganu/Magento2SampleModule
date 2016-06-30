@@ -1,0 +1,76 @@
+"A total of %1 authors have been disabled.","A total of %1 authors have been disabled."
+"A total of %1 record(s) have been deleted.","A total of %1 record(s) have been deleted."
+"A total of %1 authors have been enabled.","A total of %1 authors have been enabled."
+"Add New Author","Add New Author"
+"All Store Views","All Store Views"
+"An error occurred while deleting record(s).","An error occurred while deleting record(s)."
+"An error occurred while disabling authors.","An error occurred while disabling authors."
+"An error occurred while enabling authors.","An error occurred while enabling authors."
+"Are you sure you want to delete selected items?","Are you sure you want to delete selected items?"
+"Are you sure you want to delete the Author ""${ $.$data.name }"" ?","Are you sure you want to delete the Author ""${ $.$data.name }"" ?"
+"Are you sure you want to do this?","Are you sure you want to do this?"
+"Author in Store views","Author in Store views"
+"Author Information","Author Information"
+Authors,Authors
+Avatar,Avatar
+"Award 1","Award 1"
+"Award 2","Award 2"
+"Award 3","Award 3"
+Awards,Awards
+Back,Back
+Biography,Biography
+Collaborator,Collaborator
+"Could not save the author: %1","Could not save the author: %1"
+Country,Country
+"Created At","Created At"
+"Date of birth","Date of birth"
+Delete,Delete
+"Delete Author","Delete Author"
+"Delete items","Delete items"
+"Delete ""${ $.$data.name }""","Delete ""${ $.$data.name }"""
+Disable,Disable
+DOB,DOB
+Edit,Edit
+"Edit Author","Edit Author"
+Employee,Employee
+Enable,Enable
+"Enter full name here","Enter full name here"
+"File can not be saved to the destination folder.","File can not be saved to the destination folder."
+Home,Home
+ID,ID
+"In RSS","In RSS"
+"Is Active","Is Active"
+label,label
+"Meta Description","Meta Description"
+"Meta Keywords","Meta Keywords"
+"Meta Title","Meta Title"
+Name,Name
+"New Author","New Author"
+News,News
+No,No
+"Please correct the data sent.","Please correct the data sent."
+"Requested author doesn't exist","Requested author doesn't exist"
+Reset,Reset
+Resume,Resume
+"Save Author","Save Author"
+"Save and Continue Edit","Save and Continue Edit"
+"Show In RSS","Show In RSS"
+"Something went wrong while getting the avatar url.","Something went wrong while getting the avatar url."
+"Something went wrong while getting the resume url.","Something went wrong while getting the resume url."
+"Something went wrong while saving the author.","Something went wrong while saving the author."
+"Something went wrong while saving the file(s).","Something went wrong while saving the file(s)."
+"Store View","Store View"
+"Subscribe to RSS Feed","Subscribe to RSS Feed"
+"There are no authors at this moment","There are no authors at this moment"
+"The author has been deleted.","The author has been deleted."
+"The author no longer exists.","The author no longer exists."
+"There was a problem deleting the author","There was a problem deleting the author"
+"There was a problem saving the author","There was a problem saving the author"
+Type,Type
+"Unable to remove author %1","Unable to remove author %1"
+"Updated At","Updated At"
+"URL Key","URL Key"
+"Url Key","Url Key"
+"We can't find a author to delete.","We can't find a author to delete."
+Yes,Yes
+"You saved the author","You saved the author"
