@@ -73,3 +73,17 @@ Via composer
  - composer config repositories.sample-module-news git git@github.com:tzyganu/Magento2SampleModule.git
  - sudo composer require sample/module-news:dev-master
  - php bin/magento setup:upgrade
+
+
+Uninstall
+--------
+
+If you installed it manually:
+ - remove the folder `app/code/Sample/News`
+ - drop the tables `sample_news_author_store` and `sample_news_author` (in this order)
+ - remove the config settings.  `DELETE FROM core_config_data WHERE path LIKE 'sample_news/%'`
+ - remove the module `Sample_News` from `app/etc/config.php`
+ - remove the module `Sample_News` from table `setup_module`: `DELETE FROM setup_module WHERE module='Sample_News'`
+
+If you installed it via composer:
+ - run this in console  `bin/magento module:uninstall -r Sample_News`. You might have some problems while uninstalling. See more [details here](http://magento.stackexchange.com/q/123544/146):
