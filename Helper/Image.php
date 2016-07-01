@@ -258,11 +258,13 @@ class Image extends AbstractHelper
 
     /**
      * Set watermark properties
-     * TODO: set proper watermarks paths
      * @return $this
      */
     protected function setWatermarkProperties()
     {
+        // @codingStandardsIgnoreStart
+        //TODO: set proper watermarks paths
+        // @codingStandardsIgnoreEnd
         $this->setWatermark(
             $this->scopeConfig->getValue(
                 "design/watermark/{$this->getModel()->getDestinationSubdir()}_image",

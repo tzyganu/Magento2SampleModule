@@ -17,6 +17,7 @@
  */
 namespace Sample\News\Setup;
 
+use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UninstallInterface;
@@ -56,7 +57,9 @@ class Uninstall implements UninstallInterface
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      * @SuppressWarnings(PHPMD.Generic.CodeAnalysis.UnusedFunctionParameter)
      */
+    // @codingStandardsIgnoreStart
     public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    // @codingStandardsIgnoreEnd
     {
         //remove tables
         if ($setup->tableExists('sample_news_author_store')) {
@@ -69,7 +72,16 @@ class Uninstall implements UninstallInterface
         $collection = $this->collectionFactory->create()
             ->addPathFilter('sample_news');
         foreach ($collection as $config) {
-            $this->configResource->delete($config);
+            $this->deleteConfig($config);
         }
+    }
+
+    /**
+     * @param AbstractModel $config
+     * @throws \Exception
+     */
+    protected function deleteConfig(AbstractModel $config)
+    {
+        $this->configResource->delete($config);
     }
 }

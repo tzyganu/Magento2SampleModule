@@ -154,6 +154,7 @@ class Collection extends AbstractCollection
      * Join store relation table if there is store filter
      *
      * @return void
+     * @SuppressWarnings(PHPMD.Ecg.Sql.SlowQuery)
      */
     protected function _renderFiltersBefore()
     {
@@ -163,7 +164,9 @@ class Collection extends AbstractCollection
                 'main_table.author_id = store_table.author_id',
                 []
             )
+            // @codingStandardsIgnoreStart
             ->group('main_table.author_id');
+            // @codingStandardsIgnoreEnd
         }
         parent::_renderFiltersBefore();
     }
@@ -192,7 +195,9 @@ class Collection extends AbstractCollection
             $connection = $this->getConnection();
             $select = $connection->select()->from(['sample_news_author_store' => $this->getTable($tableName)])
                 ->where('sample_news_author_store.' . $linkField . ' IN (?)', $linkedIds);
+            // @codingStandardsIgnoreStart
             $result = $connection->fetchAll($select);
+            // @codingStandardsIgnoreEnd
             if ($result) {
                 $storesData = [];
                 foreach ($result as $storeData) {

@@ -38,7 +38,7 @@ abstract class AbstractSource implements ArrayInterface
     /**
      * @return array
      */
-    abstract function toOptionArray();
+    abstract public function toOptionArray();
 
     /**
      * @param $value

@@ -31,13 +31,26 @@ use Sample\News\Api\Data\AuthorInterface;
 use Sample\News\Api\Data\AuthorInterfaceFactory;
 use Sample\News\Controller\Adminhtml\Author as AuthorController;
 use Sample\News\Model\Author;
+use Sample\News\Model\ResourceModel\Author as AuthorResourceModel;
 
 class InlineEdit extends AuthorController
 {
     /**
+     * @var DataObjectHelper
+     */
+    protected $dataObjectHelper;
+    /**
+     * @var DataObjectProcessor
+     */
+    protected $dataObjectProcessor;
+    /**
      * @var JsonFactory
      */
     protected $jsonFactory;
+    /**
+     * @var AuthorResourceModel
+     */
+    protected $authorResourceModel;
 
     /**
      * @param Registry $registry
@@ -45,10 +58,10 @@ class InlineEdit extends AuthorController
      * @param PageFactory $resultPageFactory
      * @param Date $dateFilter
      * @param Context $context
-     * @param AuthorInterfaceFactory $authorFactory
      * @param DataObjectProcessor $dataObjectProcessor
      * @param DataObjectHelper $dataObjectHelper
      * @param JsonFactory $jsonFactory
+     * @param AuthorResourceModel $authorResourceModel
      */
     public function __construct(
         Registry $registry,
@@ -56,16 +69,16 @@ class InlineEdit extends AuthorController
         PageFactory $resultPageFactory,
         Date $dateFilter,
         Context $context,
-        AuthorInterfaceFactory $authorFactory,
         DataObjectProcessor $dataObjectProcessor,
         DataObjectHelper $dataObjectHelper,
-        JsonFactory $jsonFactory
+        JsonFactory $jsonFactory,
+        AuthorResourceModel $authorResourceModel
     )
     {
-        $this->authorFactory = $authorFactory;
         $this->dataObjectProcessor = $dataObjectProcessor;
-        $this->dataObjectHelper = $dataObjectHelper;
-        $this->jsonFactory = $jsonFactory;
+        $this->dataObjectHelper    = $dataObjectHelper;
+        $this->jsonFactory         = $jsonFactory;
+        $this->authorResourceModel = $authorResourceModel;
         parent::__construct($registry, $authorRepository, $resultPageFactory, $dateFilter, $context);
     }
 
@@ -88,12 +101,12 @@ class InlineEdit extends AuthorController
         }
 
         foreach (array_keys($postItems) as $authorId) {
-            /** @var \Sample\News\Model\Author $author */
+            /** @var \Sample\News\Model\Author|AuthorInterface $author */
             $author = $this->authorRepository->getById((int)$authorId);
             try {
                 $authorData = $this->filterData($postItems[$authorId]);
                 $this->dataObjectHelper->populateWithArray($author, $authorData , AuthorInterface::class);
-                $this->authorRepository->save($author);
+                $this->authorResourceModel->saveAttribute($author, array_keys($authorData));
             } catch (LocalizedException $e) {
                 $messages[] = $this->getErrorWithAuthorId($author, $e->getMessage());
                 $error = true;

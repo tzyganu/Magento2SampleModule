@@ -18,7 +18,7 @@
 namespace Sample\News\Block;
 
 use Magento\Framework\Model\AbstractModel;
-use Sample\News\Helper\Image;
+use Sample\News\Helper\Image as ImageHelper;
 use Sample\News\Helper\ImageFactory as HelperFactory;
 
 class ImageBuilder
@@ -121,10 +121,10 @@ class ImageBuilder
     /**
      * Calculate image ratio
      *
-     * @param \Sample\News\Helper\Image $helper
+     * @param ImageHelper $helper
      * @return float|int
      */
-    protected function getRatio(Image $helper)
+    protected function getRatio(ImageHelper $helper)
     {
         $width = $helper->getWidth();
         $height = $helper->getHeight();
@@ -141,9 +141,16 @@ class ImageBuilder
      */
     public function create()
     {
-        /** @var \Sample\News\Helper\Image $helper */
-        $helper = $this->helperFactory->create(['entityCode' => $this->entityCode])
-            ->init($this->entity, $this->imageId, $this->attributes);
+        /** @var ImageHelper $helper */
+        $helper = $this->helperFactory
+            ->create([
+                'entityCode' => $this->entityCode
+            ])
+            ->init(
+                $this->entity,
+                $this->imageId,
+                $this->attributes
+            );
 
         $template = $helper->getFrame()
             ? 'Sample_News::image.phtml'

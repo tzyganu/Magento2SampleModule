@@ -52,12 +52,14 @@ class Topmenu
      * @param int $limit
      * @SuppressWarnings("PMD.UnusedFormalParameter")
      */
+    // @codingStandardsIgnoreStart
     public function beforeGetHtml(
         TopmenuBlock $subject,
         $outermostClass = '',
         $childrenWrapClass = '',
         $limit = 0
     ) {
+        // @codingStandardsIgnoreEnd
         $node = new Node(
             $this->getNodeAsArray(),
             'id',

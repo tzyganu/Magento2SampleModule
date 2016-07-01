@@ -24,9 +24,6 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
 
-/**
- * @codeCoverageIgnore
- */
 class InstallSchema implements InstallSchemaInterface
 {
     /**
@@ -34,7 +31,9 @@ class InstallSchema implements InstallSchemaInterface
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      * @SuppressWarnings(PHPMD.Generic.CodeAnalysis.UnusedFunctionParameter)
      */
+    // @codingStandardsIgnoreStart
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    // @codingStandardsIgnoreEnd
     {
         $installer = $setup;
 
