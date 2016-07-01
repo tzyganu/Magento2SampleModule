@@ -20,6 +20,7 @@ namespace Sample\News\Block\Author;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Sample\News\Block\ImageBuilder;
 
 class ViewAuthor extends Template
 {
@@ -29,16 +30,24 @@ class ViewAuthor extends Template
     protected $coreRegistry;
 
     /**
+     * @var ImageBuilder
+     */
+    protected $imageBuilder;
+
+    /**
      * @param Context $context
      * @param Registry $registry
+     * @param $imageBuilder
      * @param array $data
      */
     public function __construct(
         Context $context,
         Registry $registry,
+        ImageBuilder $imageBuilder,
         array $data = []
     ) {
         $this->coreRegistry = $registry;
+        $this->imageBuilder = $imageBuilder;
         parent::__construct($context, $data);
     }
 
@@ -50,5 +59,19 @@ class ViewAuthor extends Template
     public function getCurrentAuthor()
     {
         return $this->coreRegistry->registry('current_author');
+    }
+
+    /**
+     * @param $entity
+     * @param $imageId
+     * @param array $attributes
+     * @return \Sample\News\Block\Image
+     */
+    public function getImage($entity, $imageId, $attributes = [])
+    {
+        return $this->imageBuilder->setEntity($entity)
+            ->setImageId($imageId)
+            ->setAttributes($attributes)
+            ->create();
     }
 }

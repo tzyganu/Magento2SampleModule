@@ -29,6 +29,7 @@ use Sample\News\Api\Data\AuthorInterface;
 use Sample\News\Model\Author\Url;
 use Sample\News\Model\ResourceModel\Author as AuthorResourceModel;
 use Sample\News\Model\Routing\RoutableInterface;
+use Sample\News\Model\Source\AbstractSource;
 
 
 /**
@@ -88,15 +89,21 @@ class Author extends AbstractModel implements AuthorInterface, RoutableInterface
     protected $outputProcessor;
 
     /**
-     * @param \Sample\News\Model\Output $outputProcessor
+     * @var AbstractSource[]
+     */
+    protected $optionProviders;
+
+    /**
+     * @param Context $context
+     * @param Registry $registry
+     * @param Output $outputProcessor
      * @param UploaderPool $uploaderPool
      * @param FilterManager $filter
      * @param Url $urlModel
-     * @param Context $context
-     * @param Registry $registry
+     * @param array $optionProviders
+     * @param array $data
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
-     * @param array $data
      */
     public function __construct(
         Context $context,
@@ -105,15 +112,17 @@ class Author extends AbstractModel implements AuthorInterface, RoutableInterface
         UploaderPool $uploaderPool,
         FilterManager $filter,
         Url $urlModel,
+        array $optionProviders = [],
         array $data = [],
         AbstractResource $resource = null,
         AbstractDb $resourceCollection = null
     )
     {
-        $this->outputProcessor           = $outputProcessor;
-        $this->uploaderPool              = $uploaderPool;
-        $this->filter                    = $filter;
-        $this->urlModel                  = $urlModel;
+        $this->outputProcessor = $outputProcessor;
+        $this->uploaderPool    = $uploaderPool;
+        $this->filter          = $filter;
+        $this->urlModel        = $urlModel;
+        $this->optionProviders = $optionProviders;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -343,7 +352,7 @@ class Author extends AbstractModel implements AuthorInterface, RoutableInterface
         $resume = $this->getResume();
         if ($resume) {
             if (is_string($resume)) {
-                $uploader = $this->uploaderPool->getUploader('image');
+                $uploader = $this->uploaderPool->getUploader('file');
                 $url = $uploader->getBaseUrl().$uploader->getBasePath().$resume;
             } else {
                 throw new LocalizedException(
@@ -572,5 +581,20 @@ class Author extends AbstractModel implements AuthorInterface, RoutableInterface
     public function isActive()
     {
         return (bool)$this->getIsActive();
+    }
+
+    /**
+     * @param $attribute
+     * @return string
+     */
+    public function getAttributeText($attribute)
+    {
+        if (!isset($this->optionProviders[$attribute])) {
+            return '';
+        }
+        if (!($this->optionProviders[$attribute] instanceof AbstractSource)) {
+            return '';
+        }
+        return $this->optionProviders[$attribute]->getOptionText($this->getData($attribute));
     }
 }

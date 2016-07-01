@@ -80,6 +80,11 @@
     <type name="Sample\News\Model\Author">
         <arguments>
             <argument name="uploaderPool" xsi:type="object">Sample\News\Model\UploaderPool</argument>
+            <argument name="optionProviders" xsi:type="array">
+                <item name="awards" xsi:type="object">SampleNewsModelAuthorSourceAward</item>
+                <item name="type" xsi:type="object">SampleNewsModelAuthorSourceType</item>
+                <item name="country" xsi:type="object">Sample\News\Model\Source\Country</item>
+            </argument>
         </arguments>
     </type>
     <type name="Sample\News\Ui\Component\Listing\Column\Avatar">
@@ -144,6 +149,21 @@
             <argument name="dataProviders" xsi:type="array">
                 <item name="authors" xsi:type="string">Sample\News\Block\Author\ListAuthor\Rss</item>
             </argument>
+        </arguments>
+    </type>
+    <type name="Sample\News\Model\Image">
+        <arguments>
+            <argument name="uploader" xsi:type="object">SampleNewsAuthorImageUploader</argument>
+        </arguments>
+    </type>
+    <virtualType name="SampleNewsBlockAuthorImageBuilder" type="Sample\News\Block\ImageBuilder">
+        <arguments>
+            <argument name="entityCode" xsi:type="string">author</argument>
+        </arguments>
+    </virtualType>
+    <type name="Sample\News\Block\Author\ViewAuthor">
+        <arguments>
+            <argument name="imageBuilder" xsi:type="object">SampleNewsBlockAuthorImageBuilder</argument>
         </arguments>
     </type>
 </config>

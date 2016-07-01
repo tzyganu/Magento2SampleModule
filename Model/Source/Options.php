@@ -19,21 +19,8 @@ namespace Sample\News\Model\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
-class Options implements ArrayInterface
+class Options extends AbstractSource implements ArrayInterface
 {
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * @param array $options
-     */
-    public function __construct(
-        array $options = []
-    ) {
-        $this->options = $options;
-    }
     /**
      * get options
      *
@@ -52,17 +39,5 @@ class Options implements ArrayInterface
 
     }
 
-    /**
-     * get options as key value pair
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-        $options = [];
-        foreach ($this->options as $values) {
-            $options[$values['value']] = __($values['label']);
-        }
-        return $options;
-    }
+
 }

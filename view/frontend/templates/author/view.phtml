@@ -20,13 +20,39 @@
 <?php $_author = $block->getCurrentAuthor();?>
 <div class="author-view">
     <div class="author-name">
-        <?php /* @escapeNotVerified */ echo __('Name') ?>: <?php /* @escapeNotVerified */ echo $_author->getName();?>
+        <strong><?php /* @escapeNotVerified */ echo __('Name') ?></strong>: <?php /* @escapeNotVerified */ echo $_author->getName();?>
     </div>
+    <?php if ($type = $_author->getAttributeText('type')) :?>
+    <div class="author-type">
+        <strong><?php /* @escapeNotVerified */ echo __('Type') ?></strong>: <?php /* @escapeNotVerified */ echo $type;?>
+    </div>
+    <?php endif;?>
+    <?php if ($biography = $_author->getProcessedBiography()) :?>
     <div class="author-biography">
-        <?php /* @escapeNotVerified */ echo __('Biography') ?>: <?php /* @escapeNotVerified */ echo $_author->getProcessedBiography();?>
+        <strong><?php /* @escapeNotVerified */ echo __('Biography') ?></strong>: <?php /* @escapeNotVerified */ echo $biography;?>
     </div>
+    <?php endif;?>
+    <?php if ($dob = $_author->getDob()) :?>
     <div class="author-dob">
-        <?php /* @escapeNotVerified */ echo __('Date of birth') ?>: <?php /* @escapeNotVerified */ echo $block->formatDate($_author->getDob(), \IntlDateFormatter::LONG);?>
+        <strong><?php /* @escapeNotVerified */ echo __('Date of birth') ?></strong>: <?php /* @escapeNotVerified */ echo $block->formatDate($dob, \IntlDateFormatter::LONG);?>
     </div>
-    ...
+    <?php endif;?>
+    <?php if ($awards = $_author->getAttributeText('awards')) :?>
+    <div class="author-awards">
+        <strong><?php /* @escapeNotVerified */ echo __('Awards') ?></strong>: <?php /* @escapeNotVerified */ echo $awards;?>
+    </div>
+    <?php endif;?>
+    <?php if ($country = $_author->getAttributeText('country')) :?>
+    <div class="author-country">
+        <strong><?php /* @escapeNotVerified */ echo __('Country') ?></strong>: <?php /* @escapeNotVerified */ echo $country;?>
+    </div>
+    <?php endif;?>
+    <?php if ($resume = $_author->getResume()) :?>
+    <div class="author-resume">
+        <a href="<?php /* @escapeNotVerified */ echo $_author->getResumeUrl();?>"><?php /* @escapeNotVerified */ echo __('Resume') ?></a>
+    </div>
+    <?php endif;?>
+    <div class="author-avatar">
+        <?php /* @escapeNotVerified */  echo $block->getImage($_author, 'author_view', ['width' => 100, 'height' => 100, 'type' => 'avatar'])->toHtml(); ?>
+    </div>
 </div>

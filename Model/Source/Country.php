@@ -20,25 +20,24 @@ namespace Sample\News\Model\Source;
 use Magento\Directory\Model\ResourceModel\Country\CollectionFactory as CountryCollectionFactory;
 use Magento\Framework\Option\ArrayInterface;
 
-class Country implements ArrayInterface
+class Country extends AbstractSource implements ArrayInterface
 {
     /**
      * @var \Sample\News\Model\Author
      */
     protected $countryCollectionFactory;
-    /**
-     * @var array
-     */
-    protected $options;
 
     /**
-     * constructor
-     *
      * @param CountryCollectionFactory $countryCollectionFactory
+     * @param array $options
      */
-    public function __construct(CountryCollectionFactory $countryCollectionFactory)
+    public function __construct(
+        CountryCollectionFactory $countryCollectionFactory,
+        array $options = []
+    )
     {
         $this->countryCollectionFactory = $countryCollectionFactory;
+        parent::__construct($options);
     }
 
     /**
@@ -48,22 +47,9 @@ class Country implements ArrayInterface
      */
     public function toOptionArray()
     {
-        if (is_null($this->options)) {
+        if (count($this->options) == 0) {
             $this->options = $this->countryCollectionFactory->create()->toOptionArray(' ');
         }
         return $this->options;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOptions()
-    {
-        $countryOptions = $this->toOptionArray();
-        $_options = [];
-        foreach ($countryOptions as $option) {
-            $_options[$option['value']] = $option['label'];
-        }
-        return $_options;
     }
 }
