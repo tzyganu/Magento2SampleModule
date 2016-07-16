@@ -19,9 +19,8 @@ namespace Sample\News\Controller\Author;
 
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Model\Session;
-use Magento\Rss\Controller\Feed\Index;
 
-class Rss extends Index
+class Rss extends \Magento\Rss\Controller\Feed\Index
 {
     /**
      * @return void
