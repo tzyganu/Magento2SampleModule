@@ -23,7 +23,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Image as MagentoImage;
-use Magento\Framework\Image\Factory as ImageFactory;
+use Magento\Framework\Image\Factory as MagentoImageFactory;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
@@ -216,7 +216,7 @@ class Image extends AbstractModel
         Uploader $uploader,
         Database $coreFileStorageDatabase,
         Filesystem $filesystem,
-        ImageFactory $imageFactory,
+        MagentoImageFactory $imageFactory,
         Repository $assetRepo,
         ViewFileSystem $viewFileSystem,
         ScopeConfigInterface $scopeConfig,
