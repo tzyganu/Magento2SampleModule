@@ -20,7 +20,6 @@ namespace Sample\News\Block\Author;
 use Magento\Framework\UrlFactory;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Theme\Block\Html\Pager;
 use Sample\News\Model\Author;
 use Sample\News\Model\ResourceModel\Author\CollectionFactory as AuthorCollectionFactory;
 
@@ -79,7 +78,7 @@ class ListAuthor extends Template
     {
         parent::_prepareLayout();
         /** @var \Magento\Theme\Block\Html\Pager $pager */
-        $pager = $this->getLayout()->createBlock(Pager::class, 'sample_news.author.list.pager');
+        $pager = $this->getLayout()->createBlock('Magento\Theme\Block\Html\Pager', 'sample_news.author.list.pager');
         $pager->setCollection($this->getAuthors());
         $this->setChild('pager', $pager);
         $this->getAuthors()->load();
