@@ -111,8 +111,8 @@ class View extends Action
         $this->coreRegistry->register('current_author', $author);
 
         $resultPage = $this->resultPageFactory->create();
-        //$title = ($author->getMetaTitle()) ?: $author->getName();
-        $resultPage->getConfig()->getTitle()->set($author->getName());
+        $title = ($author->getMetaTitle()) ? $author->getMetaTitle() : $author->getName();
+        $resultPage->getConfig()->getTitle()->set($title);
         $resultPage->getConfig()->setDescription($author->getMetaDescription());
         $resultPage->getConfig()->setKeywords($author->getMetaKeywords());
         if ($this->scopeConfig->isSetFlag(self::BREADCRUMBS_CONFIG_PATH, ScopeInterface::SCOPE_STORE)) {
